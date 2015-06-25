@@ -1,0 +1,8 @@
+<div class="cell tableCell" data-rowid="<%- row.id %>" 
+	data-columnid="<%- column.id %>" data-colidx="<%- colidx %>">
+	<% (function(){
+		var cell = row.findCell(column) || {};		
+		var value = cell.value || ''; %>
+		<div class="content"><%- value %></div>
+	<%	}()) %>	
+</div>

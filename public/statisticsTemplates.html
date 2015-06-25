@@ -1,0 +1,49 @@
+
+<!-- popup -->
+<script class="statistics popup tmpl" type="text/template">
+<div class="statistics popup">
+	<div class="header">Statistics</div>
+	<div class="content">
+		<div class="week">
+			<span class="previous">previous</span>
+			<span class="change" title="click to change"><%- week %></span>
+			<span class="next">next</span>
+			<div class="datePicker"><!-- data-picker is rendered here --></div>
+		</div>			
+		<div class="periods">
+		<%= renderPeriods() %>		
+		</div>
+		<div class="statistics container">
+			<!-- statistic-data templ is rendered here for a selected day -->
+		</div>		
+	</div>
+</div>
+</script>
+
+
+
+
+<script class="statistics period-select tmpl" type="text/template">
+<div class="period-select" data-weekday="<%- day %>"><%- label %></div>
+</script>
+
+<script class="statistics data tmpl" type="text/template">
+<div class="table-container">
+	<!-- statistics table is rendered here -->
+</div>
+<div class="big-figures">
+	<div class="target"><%- target %></div>
+	<div class="scheduled"><%- scheduled %></div>
+	<% if(actual != undefined){ %>	
+	<div class="actual"><%- actual %></div>
+	<% } %>
+	<% if(forecast != undefined){ %>	
+	<div class="forecast"><%- forecast %></div>
+	<% } %>	
+</div>
+</script>
+
+
+
+
+

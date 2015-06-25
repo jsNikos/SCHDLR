@@ -17,14 +17,33 @@ app.set('view engine', 'ejs');
 // uncomment after placing your favicon in /public
 //app.use(favicon(__dirname + '/public/favicon.ico'));
 app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+//app.use(bodyParser.json());
+//app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(require('less-middleware')(path.join(__dirname, 'public')));
+app.use(require('less-middleware')(path.join(__dirname, 'public'), {compiler: {compress: false, yuicompress:false}}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 app.use('/users', users);
+
+var proxy = require('http-proxy').createProxyServer({
+	target: {
+		host: 'localhost',
+		port: 9090
+	},
+	ws: true})
+	.on('error', console.error);
+
+app.all('/webfile', function(req, res){
+	proxy.web(req, res);
+});
+app.all('/Image', function(req, res){
+	proxy.web(req, res);
+});
+app.all('/ws/webScheduler/*', function(req, res){
+	proxy.web(req, res);
+});
+
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
@@ -57,5 +76,11 @@ app.use(function(err, req, res, next) {
     });
 });
 
+
+var server = app.listen(3000, function () {
+	  var host = server.address().address;
+	  var port = server.address().port;
+	  console.log('Example app listening at http://%s:%s', host, port);
+	});
 
 module.exports = app;
