@@ -1,0 +1,17 @@
+<div class="sendToAll send-dialog">
+	<div class="header">
+		Sending SMS <span class="closing">X</span>
+	</div>
+	<div class="content">
+		<div class="message">
+			You are about to send an SMS to every employee scheduled to work the
+			week of <%-
+			timeZoneUtils.parseInServerTimeAsMoment(week.startOfWeek).format('dddd, MMMM D YYYY') %>.
+			<br><br>Do you want to send SMS now?
+		</div>
+		<div class="button-bar">
+			<button data-role="send-to-all" class="send button-decor">Send SMS to All Employees</button>
+			<button data-role="cancel" class="cancel button-decor">No</button>
+		</div>
+	</div>
+</div>

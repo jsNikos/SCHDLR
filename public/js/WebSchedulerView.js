@@ -1,4 +1,5 @@
-define(['libs/WeekPicker', 'libs/timeZoneUtils'], function(WeekPicker, timeZoneUtils){
+define(['libs/WeekPicker', 'libs/timeZoneUtils', 'SendSmsController'], 
+function(WeekPicker, timeZoneUtils, SendSmsController){
 	return WebSchedulerView;
 	
 	/**
@@ -10,6 +11,7 @@ define(['libs/WeekPicker', 'libs/timeZoneUtils'], function(WeekPicker, timeZoneU
 		var controller = args.controller;
 		// this view component (table) can be dynamically replaced (byEmplsTableController or byRolesTableController)
 		this.schedulerTableCtrl = args.schedulerTableCtrl;
+		var sendSmsController = new SendSmsController({controller: controller}); 
 		
 		// {WeekPicker}
 		this.weekPicker = undefined;
@@ -23,11 +25,9 @@ define(['libs/WeekPicker', 'libs/timeZoneUtils'], function(WeekPicker, timeZoneU
 		var $tableHeader = jQuery('.table-header');
 		var $weekDisplay = jQuery('.week-display');
 	
-		// templates
-		var notAuthorPopupTmpl = _.template(jQuery('#notAuthorPopupTmpl').text());
+		// templates		
 		var loginPopupTmpl = _.template(jQuery('#loginPopupTmpl').text());
-		var modNotPermittedTmpl = _.template(jQuery('#modNotPermittedTmpl').text());
-		var masterSaveNotPermittedTmpl = _.template(jQuery('#masterSaveNotPermittedTmpl').text());
+		var errorPopupTmpl = _.template(jQuery('#errorPopupTmpl').text());
 		var skippedEmployeesTmpl = _.template(jQuery('#skippedEmployeesTmpl').text());
 		var stateActionsTmpl = _.template(jQuery('#stateActionsTmpl').text());
 		var stateChangeIssuesTmpl = _.template(jQuery('#stateChangeIssuesTmpl').text());
@@ -43,8 +43,16 @@ define(['libs/WeekPicker', 'libs/timeZoneUtils'], function(WeekPicker, timeZoneU
 			initMasterScheduler();				
 			initStateActions();	
 			initTableHeader();
+			initSendSms();
 		}		
-
+		
+		function initSendSms(){
+			$content.find('[data-role="sendSms"]').buttonDecor().on('click', function(){
+				var $button = jQuery(this).buttonDecor('startLoading');
+				sendSmsController.handleSendSms($button, scope.schedulerTableCtrl.week);
+			});
+		}		
+		
 		/**
 		 * Delegating click-listener on tableHeader for statistics-link.
 		 */
@@ -177,9 +185,9 @@ define(['libs/WeekPicker', 'libs/timeZoneUtils'], function(WeekPicker, timeZoneU
 				return;
 			}			
 			initTemplateRestore();
-			initTemplateSave();		
+			initTemplateSave();			
 			$masterSchedule.show();			
-		}
+		}		
 		
 		/**
 		 * Registers click-listener on restore-button.
@@ -217,13 +225,33 @@ define(['libs/WeekPicker', 'libs/timeZoneUtils'], function(WeekPicker, timeZoneU
 			}));
 		};
 		
+		/**
+		 * @param data : {title, msg} optional
+		 */
+		this.showServerError = function(data){
+			data = _.extend({title: 'Some error happened',
+				msg:'Sorry. The last operation failed.'}, data);			 
+			jQuery.decor.dialogDecor({
+				$el : jQuery(errorPopupTmpl(data)),
+				options : {
+					editorWidth : 350,
+					editorHeight : 200,
+					warning : true,
+					onTheFly : true,
+					showClosing : true
+				}
+			}).showDialog();
+		};
+		
 		
 		/**
 		 * Shows not-authorized popup.
 		 */
 		this.showNotAuthorized = function(){
+			var data = {title: 'No permission to see',
+					msg:'You have not required authorization to access this application.'}
 			jQuery.decor.dialogDecor({
-				$el : jQuery(notAuthorPopupTmpl()),
+				$el : jQuery(errorPopupTmpl(data)),
 				options : {
 					editorWidth : 350,
 					editorHeight : 200,
@@ -240,8 +268,9 @@ define(['libs/WeekPicker', 'libs/timeZoneUtils'], function(WeekPicker, timeZoneU
 		 * @param args : {msg (string)} - msg the message to display
 		 */
 		this.showScheduleModNotPermitted = function(args){
+			args.title = 'No permission to modify';
 			jQuery.decor.dialogDecor({
-				$el : jQuery(modNotPermittedTmpl(args)),
+				$el : jQuery(errorPopupTmpl(args)),
 				options : {
 					editorWidth : 400,
 					editorHeight : 200,
@@ -253,12 +282,33 @@ define(['libs/WeekPicker', 'libs/timeZoneUtils'], function(WeekPicker, timeZoneU
 		};
 		
 		/**
+		 * Shows pop-up for saying that sending of schedule via sms is not permitted
+		 * due to not required authorization.
+		 * @param args : {msg (string)} - msg the message to display
+		 */
+		this.showSmsScheduleNotPermitted = function(args){
+			args.title = 'No permission to send';
+			jQuery.decor.dialogDecor({
+				$el : jQuery(errorPopupTmpl(args)),
+				options : {
+					editorWidth : 400,
+					editorHeight : 200,
+					warning : true,
+					onTheFly : true,
+					showClosing : true
+				}
+			}).showDialog();
+		};		
+		
+		/**
 		 * Shows pop-up for saying that modification of schedule is not permitted
 		 * due to date-in-past.
 		 */
 		this.showMasterSaveNotPermitted = function(){
+			var data = {title: 'Empty Schedule',
+					msg:'The week does not contain any shifts.'};
 			jQuery.decor.dialogDecor({
-				$el : jQuery(masterSaveNotPermittedTmpl()),
+				$el : jQuery(errorPopupTmpl(data)),
 				options : {
 					editorWidth : 400,
 					editorHeight : 200,

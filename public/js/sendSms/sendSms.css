@@ -1,0 +1,22 @@
+/* status colors */
+/* dialogs */
+/* gantt-chart colors */
+.send-dialog .content {
+  padding: 10px 20px;
+}
+.send-dialog .button-bar {
+  text-align: right;
+  margin-top: 20px;
+}
+.send-dialog .button-bar button {
+  margin: 10px;
+}
+.send-dialog.sendToAll .button-bar .send {
+  background-image: linear-gradient(to bottom, #2de70b, #2d790b);
+  background-image: -o-linear-gradient(top, #2de70b, #2d790b);
+  background-image: -ms-linear-gradient(top, #2de70b, #2d790b);
+  background-image: -webkit-linear-gradient(top, #2de70b, #2d790b);
+  background-color: #2de70b;
+  color: white;
+  font-weight: bold;
+}

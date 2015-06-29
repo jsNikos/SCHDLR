@@ -37,6 +37,7 @@ require.config({
 		jquery : 'libs/jquery-1.10.2.min',
 		moment : 'libs/moment.min',
 		text : 'libs/text',
+		css: 'libs/css',
 		underscore : 'libs/underscore-min',	
 		'underscore-ext': 'libs/underscore-ext',		
 		'jquery.event.drag-2.2' : 'libs/jquery-foodtec-ui/gantt-decor/libs/jquery.event.drag-2.2',		
@@ -59,12 +60,18 @@ require.config({
 		ByRolesEditShiftView : 'ByRolesEditShiftView',
 		TotalsModel : 'TotalsModel',
 		SchedulerTableView : 'SchedulerTableView',
-		MoveInfoModel : 'MoveInfoModel'
+		MoveInfoModel : 'MoveInfoModel',
+		SendSmsController : 'sendSms/SendSmsController'
 	},
 	shim:{		
 		'underscore-ext':{
 			deps:['underscore']
 		}
+	},
+	map: {
+		  '*': {
+			    'css': 'css' 
+			  }
 	},
 	urlArgs : 'version='+scheduler.version
 });
@@ -91,6 +98,9 @@ require.config({
 			</select>
 			<div class="datePicker"></div>			
 		</div>
+		
+		<button data-role="sendSms" class="sendSms" title="Sends SMS to scheduled employee in this week">Send SMS</button>
+							
 		<div class="actions">
 			<div class="master-schedule">
 				<button id="templateRestore"
@@ -295,42 +305,12 @@ require.config({
 	<!-- popup -->
 	<script id="errorPopupTmpl" type="text/template">
 	<div class="error-popup">
-	  <div class="header"><%- title %></div>
+	  <div class="header"><%- title || 'Some error happened' %></div>
 	  <div class="content">
 	   <span class="msg"><%- msg %></span>
 	  </div>
 	</div>
     </script>
-    
-    <!-- popup -->
-    <script id="notAuthorPopupTmpl" type="text/template">
-	<div class="error-popup">
-	  <div class="header">No permission to see</div>
-	  <div class="content">
-	   <span class="msg">You have not required authorization to access this application.</span>
-	  </div>
-	</div>
-    </script>
-    
-    <!-- popup -->
-    <script id="modNotPermittedTmpl" type="text/template">
-	<div class="error-popup">
-	  <div class="header">No permission to modify</div>
-	  <div class="content">
-	   <span class="msg"><%- msg %></span>
-	  </div>
-	</div>
-	</script>   
-	
-	<!-- popup -->
-	<script id="masterSaveNotPermittedTmpl" type="text/template">
-	<div class="error-popup">
-	  <div class="header">Empty Schedule</div>
-	  <div class="content">
-	   <span class="msg">The week does not contain any shifts.</span>
-	  </div>
-	</div>
-	</script> 
 	
     <!-- popup -->
     <script id="loginPopupTmpl" type="text/template">

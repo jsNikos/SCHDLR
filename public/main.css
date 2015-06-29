@@ -32,9 +32,12 @@ body {
   position: absolute;
   top: 20px;
   left: 20px;
+  z-index: 1;
 }
 .option-bar .switchView-wrapper {
-  margin-left: 20px;
+  display: block;
+  margin-left: 0;
+  margin-top: 7px;
 }
 .option-bar #switchView {
   font-family: arial;
@@ -49,8 +52,6 @@ body {
 }
 .option-bar .actions {
   display: inline-block;
-  width: 45%;
-  text-align: right;
 }
 .option-bar .actions .master-schedule {
   display: none;
@@ -81,6 +82,10 @@ body {
   background-image: -ms-linear-gradient(top, #ffffff, #ff6666);
   background-image: -webkit-linear-gradient(top, #ffffff, #ff6666);
   background-color: #ffffff;
+}
+.sendSms {
+  height: 53px;
+  vertical-align: top;
 }
 .table-header {
   background-image: linear-gradient(to bottom, #e8e8e8, #dfdfdf);

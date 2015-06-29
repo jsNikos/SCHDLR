@@ -1,0 +1,16 @@
+<div class="sendToChanged send-dialog">
+	<div class="header">
+		Sending SMS <span class="closing">X</span>
+	</div>
+	<div class="content">
+		<div class="message">
+			This schedule has already been sent to <%- smsSendInfo.emplWithSendDateCount %> employees,
+			but <%- smsSendInfo.changedEmplCount %> of them have new changes since the last SMS.
+			<br><br>Do you want to send to all or only to those with changes?
+		</div>
+		<div class="button-bar">
+			<button data-role="send-to-all" class="send button-decor">Send to All</button>
+			<button data-role="send-to-changed" class="cancel button-decor">Send only to Changed</button>
+		</div>
+	</div>
+</div>

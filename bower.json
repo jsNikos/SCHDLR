@@ -1,0 +1,14 @@
+{
+  "name": "webscheduler",
+  "version": "0.0.0",
+  "authors": [
+    "''"
+  ],
+  "moduleType": [
+    "amd"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "require-css": "~0.1.8"
+  }
+}

@@ -147,7 +147,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 		 */
 		this.updateTableHeader = function(){
 			view.updateTableHeader();
-		};
+		};		
 		
 		/**
 		 * Handles selection of department. Changes state and triggers reload.
@@ -233,10 +233,20 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 					// not authorized
 					handleNotAuthorized(jqxhr);					
 					break;
+				case 500:
+					handleServerSideError(jqxhr);
+					break;
 				default:
 					break;
 				}				
 			}); 
+		}
+		
+		/**
+		 * Handles server-side errors by showing general error-message.
+		 */
+		function handleServerSideError(jqxhr){
+			view.showServerError();
 		}
 		
 		/**
@@ -279,6 +289,8 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 				view.showScheduleModNotPermitted({msg : jqxhr.responseJSON.msg});
 			} else if(jqxhr.responseJSON && jqxhr.responseJSON.type === 'WebSchedulerOutdated'){
 				view.showOutdatedScheduleTmpl({onReloadClick : location.reload.bind(location, true)});
+			} else if(jqxhr.responseJSON && jqxhr.responseJSON.type === 'SmsScheduleNotPermitted'){
+				view.showSmsScheduleNotPermitted({msg : jqxhr.responseJSON.msg});
 			} else if (jqxhr.responseJSON && jqxhr.responseJSON.type) {
 				// a local ajax-error handler is expected to treat this
 			} else {
@@ -419,7 +431,13 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 			});
 		};
 		
-
+		this.showLoading = function(){
+			view.schedulerTableCtrl.tableView.showLoading();
+		};
+		
+		this.hideLoading = function(){
+			view.schedulerTableCtrl.tableView.hideLoading();
+		};
 		
 		// contains logic to put current state into url
 		function updateUrl(){
