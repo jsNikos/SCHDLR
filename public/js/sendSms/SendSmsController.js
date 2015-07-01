@@ -46,11 +46,11 @@ function(sendToAllDialogHtml, sendToChangedDialogHtml, timeZoneUtils){
 			switch ($button.attr('data-role')) {			
 			case 'send-to-all':				
 				webSchedulerController.showLoading();
-				requestSendSms(week, false).always(webSchedulerController.hideLoading);
+				requestSendSms(week, true).always(webSchedulerController.hideLoading);
 				break;
 			case 'send-to-changed':				
 				webSchedulerController.showLoading();
-				requestSendSms(week, true).always(webSchedulerController.hideLoading);
+				requestSendSms(week, false).always(webSchedulerController.hideLoading);
 				break;
 			default:
 				break;
