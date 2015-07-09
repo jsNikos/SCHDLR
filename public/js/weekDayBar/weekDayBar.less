@@ -1,0 +1,68 @@
+.weekDayBar .week {
+  text-align: center;
+  color: #2b5ca1;
+  font-size: 20px;
+  padding: 10px 0px 20px 0px;
+  position: relative;
+  z-index: 1;
+}
+
+.weekDayBar .periods {
+  height: 40px;
+}
+.weekDayBar .period-select {
+  width: 12%;
+  float: left;
+  text-align: center;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  background-image: linear-gradient(to bottom, #cfcfcf, #bebebe);
+  background-image: -o-linear-gradient(top, #cfcfcf, #bebebe);
+  background-image: -ms-linear-gradient(top, #cfcfcf, #bebebe);
+  background-image: -webkit-linear-gradient(top, #cfcfcf, #bebebe);
+  background-color: #cfcfcf;
+  height: 40px;
+  border-right: 1px solid #bbbbbb;
+  line-height: 40px;
+  cursor: pointer;
+  box-shadow: 0 1px 1px 0 #FFFFFF inset;
+}
+.weekDayBar .period-select:last-child {
+  border-right: none;
+}
+.weekDayBar .period-select:hover {
+  background-image: linear-gradient(to bottom, #b5b5b5, #a4a4a4);
+  background-image: -o-linear-gradient(top, #b5b5b5, #a4a4a4);
+  background-image: -ms-linear-gradient(top, #b5b5b5, #a4a4a4);
+  background-image: -webkit-linear-gradient(top, #b5b5b5, #a4a4a4);
+  background-color: #b5b5b5;
+  color: white;
+}
+.weekDayBar .period-select.selected {
+  background-image: linear-gradient(to bottom, #8caef8, #6995f8);
+  background-image: -o-linear-gradient(top, #8caef8, #6995f8);
+  background-image: -ms-linear-gradient(top, #8caef8, #6995f8);
+  background-image: -webkit-linear-gradient(top, #8caef8, #6995f8);
+  background-color: #8caef8;
+  color: white;
+}
+
+.weekDayBar .week > span:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+.weekDayBar .week .previous,
+.weekDayBar .week .next {
+  font-size: 12px;
+  font-weight: normal;
+  font-style: italic;
+  margin: 0 15px;
+}
+.weekDayBar .week .datePicker {
+  display: none;
+  position: absolute;
+  top: 40px;
+  left: 50%;
+  margin-left: -140px;
+  font-size: 15px;
+}

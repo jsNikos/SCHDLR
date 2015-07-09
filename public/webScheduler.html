@@ -14,8 +14,8 @@
 <link rel="stylesheet" type="text/css" href="editShift.css" />
 <link rel="stylesheet" type="text/css" href="schedulerTable.css" />
 
-<script type="text/javascript" src="js/libs/jquery-1.10.2.min.js"></script>
-<script type="text/javascript" src="js/libs/jquery-migrate-1.2.1.min.js"></script>
+<script type="text/javascript" src="js/libs/jquery-1.10.2.min.js"></script>   
+<script type="text/javascript" src="js/libs/jquery-migrate-1.2.1.min.js"></script>  
 
 <script type="text/javascript" src="js/Utils.js"></script>
 <script type="text/javascript">
@@ -61,11 +61,15 @@ require.config({
 		TotalsModel : 'TotalsModel',
 		SchedulerTableView : 'SchedulerTableView',
 		MoveInfoModel : 'MoveInfoModel',
-		SendSmsController : 'sendSms/SendSmsController'
+		SendSmsController : 'sendSms/SendSmsController',
+		datatable : 'libs/jquery-datatables/js/jquery.dataTables.custom'
 	},
 	shim:{		
 		'underscore-ext':{
 			deps:['underscore']
+		},
+		'datatable': {
+			deps:['css!libs/jquery-datatables/css/jquery.dataTables.min']
 		}
 	},
 	map: {
@@ -88,10 +92,6 @@ require.config({
 			<div class="week-arrow left" title="go to previous"></div>
 			<button id="weekButton">Week of <span class="week-display"><!-- selected week is rendered here --></span></button>
 			<div class="week-arrow right" title="go to next"></div>
-<!-- 			<select id="departmentSelect" title="Department"> -->
-<!-- 				<option>test</option> -->
-<!-- 				<option>test dfsdf</option> -->
-<!-- 			</select> -->
 			<select id="switchView" title="Schedule by">
 				<option value="byEmployees">Employee</option>
 				<option value="byRoles">Role</option>
@@ -161,7 +161,7 @@ require.config({
 	<script type="text/javascript" src="js/libs/lodash.js"></script>
 	<script type="text/javascript">
 		window.lodash = _.noConflict();
-	</script>
+    </script>	 
 	
 	<script type="text/javascript">	
 		jQuery(function() {
@@ -169,7 +169,7 @@ require.config({
 				new WebSchedulerController();	
 			});			
 		});		
-	</script>
+    </script>
 
 	<!-- templates -->	
 	<script id="tableHeaderTmpl" type="text/template">
@@ -177,7 +177,8 @@ require.config({
 	<% if(!hideState){ %>
 		<span class="state <%- scheduleState.name %>" title="State of schedule-week"><%- scheduleState.displayName %></span>
 	<% } %>
-	<span class="statistics">Show Statistics</span>
+	<span class="audits">Audits</span>
+	<span class="statistics">Statistics</span>
 	<span class="print">Print View</span>
 	</script>
 	

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="ISO-8859-1">
+<title>Insert title here</title>
+
+
+<link rel="stylesheet" type="text/css" href="/js/libs/jquery-datatables/css/jquery.dataTables.min.css"/>
+
+<script type="text/javascript" src="/js/libs/require.js"></script>
+<script type="text/javascript">
+// config. require.js
+require.config({
+	baseUrl : '../js',
+	paths : {	
+		datatable : 'libs/jquery-datatables/js/jquery.dataTables',
+		css: 'libs/css'
+	},
+	shim:{		
+		'datatable': {
+			deps:['css!libs/jquery-datatables/css/jquery.dataTables.min']
+		}
+	},
+	map: {
+		  '*': {
+			    'css': 'css' 
+			  }
+	}
+});
+</script>
+
+
+<script type="text/javascript" src="/js/libs/jquery-1.10.2.min.js"></script>
+	
+
+
+</head>
+<body>
+
+	<table id="table_id" class="display">
+    <thead>
+        <tr>
+            <th>Column 1</th>
+            <th>Column 2</th>
+        </tr>
+    </thead>
+    <tbody>
+        <tr>
+            <td>Row 1 Data 1</td>
+            <td>Row 1 Data 2</td>
+        </tr>
+        <tr>
+            <td>Row 2 Data 1</td>
+            <td>Row 2 Data 2</td>
+        </tr>
+    </tbody>
+</table>
+
+<script>
+require(['datatable'], function(){	
+	jQuery('#table_id').dataTable();
+});
+
+</script>
+</body>
+</html>

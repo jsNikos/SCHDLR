@@ -1,0 +1,43 @@
+@import "../../utils.less";
+
+.dialog-decor-wrapper.audits {
+  position: absolute;
+}
+
+.audits.popup .content{
+    padding: 0 20px;
+}
+
+.audits.popup .audits.container{
+	padding-top: 10px;
+}
+
+.audits.popup .dataTables_wrapper.no-footer .dataTables_scrollBody{
+	border: none;
+}
+
+.audits.popup .dataTables_wrapper .dataTables_length,
+.audits.popup .dataTables_wrapper .dataTables_filter,
+.audits.popup .dataTables_wrapper .dataTables_info,
+.audits.popup .dataTables_wrapper .dataTables_processing,
+.audits.popup .dataTables_wrapper .dataTables_paginate {
+    color: @fontColor;
+}
+
+.audits.popup table.dataTable thead th {
+    border-bottom-color: #999999;
+    border-right: 1px #999999 solid;      
+}
+
+.audits.popup table.dataTable thead th:last-child{
+	border-right: none;
+}
+
+.audits.popup .dataTables_filter{
+	margin-bottom: 10px;
+}
+
+.audits.popup .dataTables_scrollHead thead>tr{
+	.linear-gradient-top-bottom(#cfcfcf, #bebebe);
+} 
+

@@ -57,8 +57,10 @@ function(WeekPicker, timeZoneUtils, SendSmsController){
 		 * Delegating click-listener on tableHeader for statistics-link.
 		 */
 		function initTableHeader(){
-			jQuery($tableHeader).on('click', '.statistics', controller.handleStatisticsClicked);
-			jQuery($tableHeader).on('click', '.print', controller.handlePrintClicked);
+			jQuery($tableHeader)
+				.on('click', '.statistics', controller.handleStatisticsClicked)
+				.on('click', '.print', controller.handlePrintClicked)
+				.on('click', '.audits', controller.handleAuditsClicked);
 		}		
 		
 		

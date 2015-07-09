@@ -118,7 +118,18 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 			findSchedulerTableController(function(schedulerTableCtrl){
 				schedulerTableCtrl.handleStatisticsClicked.apply(schedulerTableCtrl, args);
 			});
-		};		
+		};
+		
+		/**
+		 * Delegates handling to current active scheduleTableController-instance.
+		 * (byRoles or byEmpl)
+		 */
+		this.handleAuditsClicked = function(){
+			var args = Array.prototype.slice.call(arguments);
+			findSchedulerTableController(function(schedulerTableCtrl){
+				schedulerTableCtrl.handleAuditsClicked.apply(schedulerTableCtrl, args);
+			});
+		};
 		
 		/**
 		 * Handles click on print-view link by navigating to scheduler's print-view in reports

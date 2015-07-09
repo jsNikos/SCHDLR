@@ -347,7 +347,13 @@ define(['SchedulesModelUtils',
 				var statisticsController = new StatisticsController({tableController: scope});
 				statisticsController.show();
 			});			
-		};				
+		};		
+		
+		this.handleAuditsClicked = function(){
+			require(['audits/AuditsController'], function(AuditsController){				
+				(new AuditsController({tableController: scope})).show();
+			});
+		};
 		
 		/**
 		 * Handles create shift -event by showing-up create-dialog.
