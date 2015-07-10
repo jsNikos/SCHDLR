@@ -35,12 +35,14 @@ function(auditsPopupHtml, WeekDayBarController, timeZoneUtils){
 			jQuery(window).on('resize', controller.handleResize);
 			
 			// adding weekDay-bar
-			scope.weekDayBarController = (new WeekDayBarController({week: controller.tableController.week,
+			scope.weekDayBarController = (new WeekDayBarController({
+							             week: controller.tableController.week,
 							DAY_COORD_FORMAT : controller.tableController.DAY_COORD_FORMAT,
-							startOfWeekDay: controller.tableController.startOfWeekDay,
-							$el: $auditsPopup.find('.week-day-container'),
-							onChangePeriod: controller.handleChangePeriod,
-							onChangeWeek: controller.handleChangeWeek})).show();
+							   startOfWeekDay: controller.tableController.startOfWeekDay,
+							              $el: $auditsPopup.find('.week-day-container'),
+							   onChangePeriod: controller.handleChangePeriod,
+							     onChangeWeek: controller.handleChangeWeek
+							     })).show();
 			dialog.showDialog();
 		};	
 		

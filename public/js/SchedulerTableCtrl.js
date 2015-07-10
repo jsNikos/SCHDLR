@@ -343,7 +343,7 @@ define(['SchedulesModelUtils',
 		 * Handles click on statistics-link and triggers to open statistics-popup.
 		 */
 		this.handleStatisticsClicked = function(){
-			require(['StatisticsController'], function(StatisticsController){
+			require(['statistics/StatisticsController'], function(StatisticsController){
 				var statisticsController = new StatisticsController({tableController: scope});
 				statisticsController.show();
 			});			

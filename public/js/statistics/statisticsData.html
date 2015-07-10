@@ -1,0 +1,13 @@
+<div class="table-container">
+	<!-- statistics table is rendered here -->
+</div>
+<div class="big-figures">
+	<div class="target"><%- target %></div>
+	<div class="scheduled"><%- scheduled %></div>
+	<% if(actual != undefined){ %>	
+	<div class="actual"><%- actual %></div>
+	<% } %>
+	<% if(forecast != undefined){ %>	
+	<div class="forecast"><%- forecast %></div>
+	<% } %>	
+</div>
