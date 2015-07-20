@@ -4,7 +4,8 @@ define(['libs/timeZoneUtils',
         'text!statistics/statisticsPopup.html',
         'text!statistics/statisticsData.html',
         'table-decor/jQuery.decor.hierarchyTable',
-        'css!statistics/statistics.css'],
+        'css!statistics/statistics.css',
+        'animo'],
 function(timeZoneUtils, WeekPicker, WeekDayBarController,
 		statisticsPopupHtml, statisticsDataHtml){
 	return StatisticsView;
@@ -59,7 +60,8 @@ function(timeZoneUtils, WeekPicker, WeekDayBarController,
 							     })).show();			
 			
 			// render popup-container
-			dialogDecor.showDialog();						
+			dialogDecor.showDialog();	
+			dialogDecor.$el.animo( { animation: 'flipInX' } );
 			$statisticsContainer = jQuery('.statistics.container', $statisticsPopup);
 			this.showLoadingState();			
 		};

@@ -29,6 +29,11 @@
 }
 .audits.popup .dataTables_filter {
   margin-bottom: 10px;
+  width: 100%;
+  text-align: left;
+}
+.audits.popup .dataTables_filter [type="search"] {
+  width: 50%;
 }
 .audits.popup .dataTables_scrollHead thead > tr {
   background-image: linear-gradient(to bottom, #cfcfcf, #bebebe);
@@ -36,4 +41,7 @@
   background-image: -ms-linear-gradient(top, #cfcfcf, #bebebe);
   background-image: -webkit-linear-gradient(top, #cfcfcf, #bebebe);
   background-color: #cfcfcf;
+}
+.audits.popup td.detail {
+  white-space: pre-wrap;
 }

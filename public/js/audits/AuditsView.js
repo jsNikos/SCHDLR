@@ -2,7 +2,9 @@ define(['text!audits/auditsPopup.html',
         'weekDayBar/WeekDayBarController',   
         'libs/timeZoneUtils',
         'datatable',
-        'css!audits/audits.css'],
+        'css!audits/audits.css',
+        'underscore',
+        'animo'],
 function(auditsPopupHtml, WeekDayBarController, timeZoneUtils){
 	return AuditsView;
 	
@@ -43,7 +45,8 @@ function(auditsPopupHtml, WeekDayBarController, timeZoneUtils){
 							   onChangePeriod: controller.handleChangePeriod,
 							     onChangeWeek: controller.handleChangeWeek
 							     })).show();
-			dialog.showDialog();
+			dialog.showDialog();			
+			dialog.$el.animo( { animation: 'flipInX' } );
 		};	
 		
 		/**
@@ -73,7 +76,19 @@ function(auditsPopupHtml, WeekDayBarController, timeZoneUtils){
 		};
 				
 		function formatDate(timestamp){
+			timestamp = parseInt(timestamp);
 			return timeZoneUtils.parseInServerTimeAsMoment(timestamp).format('M/DD/YY h:mm a');
+		}	
+		
+		function onDetailCellCreated(td){
+			jQuery(td).addClass('detail');
+		}	
+		
+		function onRender(formatter){
+			return function(value){
+				var escaped = _.escape(value);
+				return formatter != undefined ? formatter(escaped) : escaped; 
+			}
 		}
 		
 		/**
@@ -83,12 +98,12 @@ function(auditsPopupHtml, WeekDayBarController, timeZoneUtils){
 			jQuery('<table></table>').addClass('row-border').appendTo($auditsContainer)
 				.DataTable( {
 					data: controller.findCurrentModel(),
-					columns: [{ data: 'date', title: 'Date', width: '100px', render: formatDate},
-					          { data: 'employee', title: 'Employee', width: '100px'},
-					          { data: 'what', title: 'What', width: '100px' },
-					          { data: 'scheduleDate', title: 'Schedule Date', width: '100px', render: formatDate},
-					          { data: 'status', title: 'Status', width: '50px' },
-					          { data: 'detail', title: 'Detail' }],
+					columns: [{ data: 'date', title: 'Date', width: '100px', render: onRender(formatDate)},
+					          { data: 'employee', title: 'Employee', width: '100px', render: onRender()},
+					          { data: 'what', title: 'What', width: '100px', render: onRender()},
+					          { data: 'scheduleDate', title: 'Schedule Date', width: '100px', render: onRender(formatDate)},
+					          { data: 'status', title: 'Status', width: '50px', render: onRender() },
+					          { data: 'detail', title: 'Detail', createdCell: onDetailCellCreated, render: onRender()}],
 					paging: false,
 					scrollY: 300,
 					info: false

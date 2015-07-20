@@ -1,3 +1,11 @@
+@import "../../utils.less";
+
+.weekDayBar{
+	.flex-block();
+	.flex-direction(column);
+	.align-items(center); 
+}
+
 .weekDayBar .week {
   text-align: center;
   color: #2b5ca1;
@@ -9,10 +17,13 @@
 
 .weekDayBar .periods {
   height: 40px;
+  width: 100%;
+  .flex-block();
 }
 .weekDayBar .period-select {
-  width: 12%;
-  float: left;
+  .flex-basis(12%); 
+  .flex-grow(1);
+  .flex-shrink(1);
   text-align: center;
   -moz-box-sizing: border-box;
   box-sizing: border-box;
@@ -27,6 +38,12 @@
   cursor: pointer;
   box-shadow: 0 1px 1px 0 #FFFFFF inset;
 }
+
+html.no-flexbox .weekDayBar .period-select{
+	width: 12%;
+  float: left;
+}
+
 .weekDayBar .period-select:last-child {
   border-right: none;
 }

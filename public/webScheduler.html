@@ -14,6 +14,8 @@
 <link rel="stylesheet" type="text/css" href="editShift.css" />
 <link rel="stylesheet" type="text/css" href="schedulerTable.css" />
 
+<script type="text/javascript" src="/webfile?name=modernizr.js"></script>
+
 <script type="text/javascript" src="js/libs/jquery-1.10.2.min.js"></script>   
 <script type="text/javascript" src="js/libs/jquery-migrate-1.2.1.min.js"></script>  
 
@@ -62,7 +64,8 @@ require.config({
 		SchedulerTableView : 'SchedulerTableView',
 		MoveInfoModel : 'MoveInfoModel',
 		SendSmsController : 'sendSms/SendSmsController',
-		datatable : 'libs/jquery-datatables/js/jquery.dataTables.custom'		
+		datatable : 'libs/jquery-datatables/js/jquery.dataTables.custom',
+		animo : 'libs/animo/animo'		
 	},
 	shim:{		
 		'underscore-ext':{
@@ -70,6 +73,9 @@ require.config({
 		},
 		'datatable': {
 			deps:['css!libs/jquery-datatables/css/jquery.dataTables.min']
+		},
+		'animo': {
+			deps:['css!libs/animo/animate+animo.css']
 		}
 	},
 	map: {

@@ -30,7 +30,7 @@ define(['audits/AuditsView'], function(AuditsView){
 		 * @param resp : {week : Week (optional), auditData : [AuditDataHolder], weekDay: string}
 		 */
 		function updateModel(resp){
-			var auditData = resp.auditData;
+			var auditData = resp.auditData;			
 			scope.auditDataList[resp.weekDay] = auditData;					
 		}
 		
