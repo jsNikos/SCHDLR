@@ -43,6 +43,12 @@ app.all('/Image', function(req, res){
 app.all('/ws/webScheduler/*', function(req, res){
 	proxy.web(req, res);
 });
+app.all('/Login*', function(req, res){
+	proxy.web(req, res);
+});
+app.all('/reports/*', function(req, res){
+	proxy.web(req, res);
+});
 
 
 // catch 404 and forward to error handler
