@@ -1,4 +1,31 @@
-/* statistics popup */
+.dialog-decor-wrapper.statistics {
+  position: absolute;
+}
+.statistics.popup .content {
+  padding: 0px 20px 0px 20px;
+}
+.statistics.popup .week {
+  text-align: center;
+  color: #2b5ca1;
+  font-size: 20px;
+  padding: 10px 0px 20px 0px;
+  position: relative;
+  z-index: 1;
+}
+.statistics.popup .statistics.container.loading:before {
+  content: '';
+  background-image: url("/loading.gif");
+  background-repeat: no-repeat;
+  background-size: contain;
+  width: 50px;
+  height: 50px;
+  position: absolute;
+  top: 0px;
+  bottom: 0px;
+  left: 0px;
+  right: 0px;
+  margin: auto;
+}
 .statistics.popup .statistics.container {
   padding: 20px 20px 0px 20px;
   -moz-box-sizing: border-box;

@@ -1,7 +1,7 @@
 define(['SchedulesModelUtils',
         'ValidateShiftModifUtils',
         'MoveInfoModel',
-        'GanttChartController',
+        'ganttChart/GanttChartController',
         'libs/timeZoneUtils',
         'libs/EventEmitter',
         'libs/timeZoneUtils'], 

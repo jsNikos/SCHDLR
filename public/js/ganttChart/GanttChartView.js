@@ -1,4 +1,8 @@
-define(['libs/timeZoneUtils'], function(timeZoneUtils){
+define(['libs/timeZoneUtils',
+        'text!ganttChart/ganttChartPopup.html',
+        'animo',
+        'css!ganttChart/ganttChart.css'],
+function(timeZoneUtils, ganttChartPopupHtml){
 	return GanttChartView;
 	
 	/**
@@ -17,8 +21,10 @@ define(['libs/timeZoneUtils'], function(timeZoneUtils){
 		var $ganttContainer = undefined;
 		
 		// templates
-		var ganttChartPopup = _.template(jQuery('#ganttChartPopup').text());
-		var lineInfoTmpl = _.template(jQuery('#lineInfoTmpl').text());
+		var ganttChartPopup = _.template(ganttChartPopupHtml);
+		var lineInfoTmpl = _.template('<div class="line-info" title="<%- info %>">\n'+
+									  	'<div class="info"><%- info %></div>\n'+
+									  '</div>');
 		
 		// parameter
 		var rowWidth = 200;
@@ -59,7 +65,8 @@ define(['libs/timeZoneUtils'], function(timeZoneUtils){
 			jQuery(window).on('resize', controller.handleResize);
 			
 			// render gantt-container
-			dialogDecor.showDialog();						
+			dialogDecor.showDialog();	
+			dialogDecor.$el.animo( { animation: 'flipInX' } );
 			$ganttContainer = jQuery('.gantt.container', $ganttPopup).addClass('loading');
 		};
 		

@@ -1,0 +1,6 @@
+**** general clean-up  *****
+
+- the shift-editor can go into folder together with its templates
+  and less (see statistics for instance)
+  
+- the image files can go into image folder, ensure to update all links

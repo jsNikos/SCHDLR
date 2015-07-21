@@ -1,5 +1,5 @@
-define(['GanttChartModel', 
-        'GanttChartView',
+define(['ganttChart/GanttChartModel', 
+        'ganttChart/GanttChartView',
         'gantt-decor/jQuery.decor.gantt'], function(GanttChartModel, GanttChartView){
 	return GanttChartController;
 	
