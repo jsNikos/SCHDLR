@@ -27,10 +27,7 @@ function(timeZoneUtils, ganttChartPopupHtml){
 									  '</div>');
 		
 		// parameter
-		var rowWidth = 200;
-		
-		function init(){			
-		}
+		var rowWidth = 200;		
 		
 		/**
 		 * Hides loading state on view.
@@ -244,8 +241,6 @@ function(timeZoneUtils, ganttChartPopupHtml){
 		function formatShiftTime(time){
 			return timeZoneUtils.parseInServerTimeAsMoment(time).format('HH:mm');
 		}
-		
-		init();
 		
 	}
 	

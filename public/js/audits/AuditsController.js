@@ -110,7 +110,7 @@ define(['audits/AuditsView'], function(AuditsView){
 				if (timeout) {
 					clearTimeout(timeout);
 				}
-				timout = setTimeout(function() {
+				timeout = setTimeout(function() {
 					auditsView.clearAuditsContainer();
 					auditsView.renderAudits();
 					timeout = undefined;
