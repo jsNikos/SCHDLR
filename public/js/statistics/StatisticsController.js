@@ -118,7 +118,7 @@ function(StatisticsView, timeZoneUtils, WeekDayBarController){
 				if (timeout) {
 					clearTimeout(timeout);
 				}
-				timout = setTimeout(function() {
+				timeout = setTimeout(function() {
 					statisticsView.renderStatistics();
 					timeout = undefined;
 				}, 300);
