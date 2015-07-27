@@ -4,14 +4,16 @@ define(['SchedulesModelUtils',
         'ganttChart/GanttChartController',
         'libs/timeZoneUtils',
         'libs/EventEmitter',
-        'libs/timeZoneUtils'], 
+        'libs/timeZoneUtils',
+        'q'], 
  function(SchedulesModelUtils,
 		 ValidateShiftModifUtils,
 		 MoveInfoModel,
 		 GanttChartController,
 		 timeZoneUtils,
 		 EventEmitter,
-		 timeZoneUtils){
+		 timeZoneUtils,
+		 q){
 	_.extend(SchedulerTableCtrl.prototype, new SchedulesModelUtils()); 
 	_.extend(SchedulerTableCtrl.prototype, new ValidateShiftModifUtils());
 	
@@ -343,15 +345,21 @@ define(['SchedulesModelUtils',
 		 * Handles click on statistics-link and triggers to open statistics-popup.
 		 */
 		this.handleStatisticsClicked = function(){
-			require(['statistics/StatisticsController'], function(StatisticsController){
-				var statisticsController = new StatisticsController({tableController: scope});
-				statisticsController.show();
-			});			
+			return q.Promise(function(resolve){
+				require(['statistics/StatisticsController'], function(StatisticsController){
+					var statisticsController = new StatisticsController({tableController: scope});
+					statisticsController.show();
+					resolve();
+				});			
+			});
 		};		
 		
 		this.handleAuditsClicked = function(){
-			require(['audits/AuditsController'], function(AuditsController){				
-				(new AuditsController({tableController: scope})).show();
+			return q.Promise(function(resolve){
+				require(['audits/AuditsController'], function(AuditsController){				
+					(new AuditsController({tableController: scope})).show();
+					resolve();
+				});
 			});
 		};
 		

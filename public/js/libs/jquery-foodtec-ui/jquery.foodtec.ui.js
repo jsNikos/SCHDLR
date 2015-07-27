@@ -168,6 +168,43 @@
 	}
 	new ButtonDecor();
 	
+	/**
+	 * Decorates links.
+	 */
+	function LinkDecor(){
+		var scope = this;
+		
+		function init(){
+			jQuery.fn.linkDecor = function(options_, args) {
+				this.each(function() {
+					jQuery(this).addClass('link-decor');
+					if(typeof options_ === 'string'){
+						var method = options_;
+						scope[method].call(this, args);
+					}			
+				});
+				return this;
+			};
+		}
+		
+		/**
+		 * Remove loading-state from link.
+		 */
+		this.stopLoading = function(){
+			return jQuery(this).removeClass('loading');
+		};
+		
+		/**
+		 * Renders link in a loading-state.
+		 */
+		this.startLoading = function(){
+			return jQuery(this).addClass('loading');
+		};
+		
+		init();		
+	}
+	new LinkDecor();
+	
 	
 
 	/**

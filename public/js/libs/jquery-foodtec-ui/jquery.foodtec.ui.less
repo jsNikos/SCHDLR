@@ -1,6 +1,5 @@
-/* status colors */
-/* dialogs */
-/* gantt-chart colors */
+@import "../../../utils.less";
+
 /* status colors */
 /* dialogs */
 /* gantt-chart colors */
@@ -443,25 +442,25 @@
   position: absolute;
   top: 0px;
 }
+
 /* link-decor */
-.link-decor {
-  position: relative;
-  cursor: pointer;
-  font-style: italic;
+.link-decor{
+	position: relative;
+	cursor: pointer;
+	font-style: italic;
 }
-.link-decor:hover {
-  text-decoration: underline;
+
+.link-decor:hover{
+	text-decoration: underline;
 }
-.link-decor.loading {
-  pointer-events: none;
+
+.link-decor.loading{
+	pointer-events: none;
 }
-.link-decor.loading:after {
-  content: '';
-  position: absolute;
-  top: 0px;
-  bottom: 0px;
-  left: 0px;
-  right: 0px;
-  background: url("loading.gif") no-repeat center center rgba(255, 255, 255, 0.5);
-  background-size: contain;
+
+.link-decor.loading:after{
+	content: '';	
+	.absolute-stretch();
+    background: url("loading.gif") no-repeat center center rgba(255, 255, 255, 0.5);
+    background-size: contain;
 }

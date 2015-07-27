@@ -129,14 +129,7 @@ body {
 .table-header .print,
 .table-header .audits {
   margin-left: 50px;
-  font-style: italic;
   font-size: 15px;
-  cursor: pointer;
-}
-.table-header .statistics:hover,
-.table-header .print:hover,
-.table-header .audits:hover {
-  text-decoration: underline;
 }
 .error-popup .content {
   padding: 40px 20px;

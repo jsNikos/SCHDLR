@@ -58,10 +58,20 @@ function(WeekPicker, timeZoneUtils, SendSmsController){
 		 */
 		function initTableHeader(){
 			jQuery($tableHeader)
-				.on('click', '.statistics', controller.handleStatisticsClicked)
-				.on('click', '.print', controller.handlePrintClicked)
-				.on('click', '.audits', controller.handleAuditsClicked);
-		}		
+				.on('click', '.statistics', handleLinkClick.bind(null, controller.handleStatisticsClicked))
+				.on('click', '.print', handleLinkClick.bind(null, controller.handlePrintClicked))
+				.on('click', '.audits', handleLinkClick.bind(null, controller.handleAuditsClicked));
+		}
+		
+		function handleLinkClick(handler, event){
+			var $link = jQuery(event.target).addClass('loading');
+			return handler().then(function(){
+				$link.removeClass('loading');
+			}).fail(function(){
+				controller.logError();
+				$link.removeClass('loading');
+			});			
+		}
 		
 		
 		/** updates table-header with selected week-info and scheduleState.		

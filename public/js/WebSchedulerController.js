@@ -1,5 +1,5 @@
-define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'],
-  function(WebSchedulerView, SchedulerTableCtrl){
+define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'underscore'],
+  function(WebSchedulerView, SchedulerTableCtrl, q){
 	return WebSchedulerController;
 	
 	/**
@@ -25,11 +25,11 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 			initPopState();
 
 			// find and create the schedulerTableController
-			findSchedulerTableController(function(tableController) {
+			findSchedulerTableController().then(function(instanceHolder) {
 				// init view
 				view = new WebSchedulerView({
 					controller : scope,
-					schedulerTableCtrl : tableController
+					schedulerTableCtrl : instanceHolder.instance
 				});
 				// trigger to render table (with current data-model)
 				view.schedulerTableCtrl.tableView.showLoading();
@@ -45,44 +45,48 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 					},
 					newData : false
 				});				
-			});
+			}).fail(scope.logError);
 		}		
+		
+		this.logError = function(err){
+			window.console && console.error(err); 
+		};
 		
 		/**
 		 * Creates are returns a schedulerTableController-instance depending on the
 		 * current 'selectedView'.		  
-		 * @param initReady : function(instance, isNew), function which is called when init of controller is ready,
-		 *    				'isNew' says if instance was created in this call		
+		 * @param promise resolved with : {instance: ScheduleTableController, isNew: boolean}		
 		 */
-		function findSchedulerTableController(initReady) {
-			if(typeof initReady !== 'function'){
-				initReady = function(){};
-			}
-			
-			// loading controller which is required only
-			if(scope.selectedView === 'byEmployees'){
-				require(['ByEmplsTableController'], function(ByEmplsTableController){
-					instantiate(byEmplsTableController, ByEmplsTableController);
-				});
-			}else if (scope.selectedView === 'byRoles') {
-				require(['ByRolesTableController'], function(ByRolesTableController){
-					instantiate(byRolesTableController, ByRolesTableController);
-				});				
-			}
-			return;
+		function findSchedulerTableController() {
+			return q.Promise(function(resolve){
+				if(typeof initReady !== 'function'){
+					initReady = function(){};
+				}
+				
+				// loading controller which is required only
+				if(scope.selectedView === 'byEmployees'){
+					require(['ByEmplsTableController'], function(ByEmplsTableController){
+						instantiate(byEmplsTableController, ByEmplsTableController, resolve);
+					});
+				}else if (scope.selectedView === 'byRoles') {
+					require(['ByRolesTableController'], function(ByRolesTableController){
+						instantiate(byRolesTableController, ByRolesTableController, resolve);
+					});				
+				}
+			});
 			
 			// contains logic how to init and if necessary
-			function instantiate(instance, Constr) {
+			function instantiate(instance, Constr, resolve) {
 				if (!instance) {
 					createInstance();
 				} else {
-					initReady(instance, false);
+					resolve({instance: instance, isNew: false});
 				}
 				function createInstance(args) {
 					instance = new Constr({
 						webSchedulerController : scope,
 						onInitReady : function(instance) {
-							initReady(instance, true);
+							resolve({instance: instance, isNew: true});
 						}
 					});
 					// cashing the instance
@@ -96,7 +100,8 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 					instance.on(instance.BEFORE_TABLE_REFRESH, updateStateActions)
 							.on(instance.INITIAL_DATA_FETCHED, handleTableInitDataFetched);
 				}
-			}			
+			}						
+			
 		}
 		
 		/**
@@ -113,10 +118,9 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 		 * Delegates handling to current active scheduleTableController-instance.
 		 * (byRoles or byEmpl)
 		 */
-		this.handleStatisticsClicked = function(){
-			var args = Array.prototype.slice.call(arguments);
-			findSchedulerTableController(function(schedulerTableCtrl){
-				schedulerTableCtrl.handleStatisticsClicked.apply(schedulerTableCtrl, args);
+		this.handleStatisticsClicked = function(){			
+			return findSchedulerTableController().then(function(instanceHolder){
+				return instanceHolder.instance.handleStatisticsClicked();
 			});
 		};
 		
@@ -125,9 +129,8 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 		 * (byRoles or byEmpl)
 		 */
 		this.handleAuditsClicked = function(){
-			var args = Array.prototype.slice.call(arguments);
-			findSchedulerTableController(function(schedulerTableCtrl){
-				schedulerTableCtrl.handleAuditsClicked.apply(schedulerTableCtrl, args);
+			return findSchedulerTableController().then(function(instanceHolder){
+				return instanceHolder.instance.handleAuditsClicked();
 			});
 		};
 		
@@ -136,7 +139,8 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 		 * with parameter based on current model.
 		 */
 		this.handlePrintClicked = function(){
-			findSchedulerTableController(function(schedulerTableCtrl) {
+			return findSchedulerTableController().then(function(instanceHolder) {
+				var schedulerTableCtrl = instanceHolder.instance;
 				var printViewParams = {
 						date : (schedulerTableCtrl.week.businessStartOfWeek/1000).toString(16),
 						to : (schedulerTableCtrl.week.businessEndOfWeek/1000).toString(16),
@@ -187,12 +191,12 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 			var $button = jQuery(event.target);
 			$button.buttonDecor('startLoading');
 			var action = $button.attr('data-action');
-			findSchedulerTableController(function(scheduleTableCtrl){
+			findSchedulerTableController().then(function(instanceHolder){
 				// request state-change
 				requestChangeScheduleState({
 					action : action,
 					dateInWeek : scope.selectedDate.getTime(),
-					scheduleState : JSON.stringify(_.chain(scheduleTableCtrl.scheduleState).pick('type').value())				
+					scheduleState : JSON.stringify(_.chain(instanceHolder.instance.scheduleState).pick('type').value())				
 				}, function(resp) {					
 					// check for issues
 					if(!resp.blocker || resp.blocker.length === 0){
@@ -205,7 +209,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 						$button.buttonDecor('stopLoading');
 					}			
 				});
-			});			
+			}).fail(scope.logError);			
 		};
 		
 		/**
@@ -269,13 +273,13 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 			scope.selectedView = selectedView;
 			updateUrl();
 			// set schedulerTableCtrl instance and trigger re-render
-			findSchedulerTableController(function(schedulerTableCtrl, isNew) {
+			findSchedulerTableController().then(function(instanceHolder) {
 				// trigger to hide current
 				view.schedulerTableCtrl.hideView();
 				// trigger to halt current table-refresh task (if any)
 				view.schedulerTableCtrl.abortCurrentRefreshTable();				
 				// switch table-controller
-				view.schedulerTableCtrl = schedulerTableCtrl;				
+				view.schedulerTableCtrl = instanceHolder.instance;				
 				view.schedulerTableCtrl.showView(); 
 				view.schedulerTableCtrl.tableView.showLoading();
 				view.schedulerTableCtrl.refreshTable({ 
@@ -287,9 +291,9 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'underscore-ext', 'underscore'
 					abort : function() {
 						view.schedulerTableCtrl.tableView.hideLoading();
 					},
-					newData : !isNew
+					newData : !instanceHolder.isNew
 				});
-			});
+			}).fail(scope.logError);
 		};
 
 		/**

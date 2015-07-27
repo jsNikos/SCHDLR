@@ -65,7 +65,8 @@ require.config({
 		MoveInfoModel : 'MoveInfoModel',
 		SendSmsController : 'sendSms/SendSmsController',
 		datatable : 'libs/jquery-datatables/js/jquery.dataTables.custom',
-		animo : 'libs/animo/animo'		
+		animo : 'libs/animo/animo',
+		q : 'libs/q'
 	},
 	shim:{		
 		'underscore-ext':{
@@ -183,9 +184,9 @@ require.config({
 	<% if(!hideState){ %>
 		<span class="state <%- scheduleState.name %>" title="State of schedule-week"><%- scheduleState.displayName %></span>
 	<% } %>
-	<span class="audits">Audits</span>
-	<span class="statistics">Statistics</span>
-	<span class="print">Print View</span>
+	<span class="audits link-decor">Audits</span>
+	<span class="statistics link-decor">Statistics</span>
+	<span class="print link-decor">Print View</span>
 	</script>
 	
 	<script id="stateActionsTmpl" type="text/template">
