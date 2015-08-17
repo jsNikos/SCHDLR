@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf8">
+<title>Labor Scheduler</title>
+
+<link rel="stylesheet" type="text/css"
+	href="../commons/libs/jQuery-ui/jquery-ui-1.10.4.custom.css" />
+<link rel="stylesheet" type="text/css"
+	href="../commons/libs/jquery-foodtec-ui/jquery.foodtec.ui.css" />
+<link rel="stylesheet" type="text/css"
+	href="../commons/libs/jquery-ui-timepicker/jquery.ui.timepicker.css" />
+<link rel="stylesheet" type="text/css" href="main.css" />
+<link rel="stylesheet" type="text/css" href="editShift.css" />
+<link rel="stylesheet" type="text/css" href="schedulerTable.css" />
+
+<script type="text/javascript" src="/webfile?name=modernizr.js"></script>
+
+<script type="text/javascript" src="../commons/libs/jQuery.js"></script>   
+<script type="text/javascript" src="js/libs/jquery-migrate-1.2.1.min.js"></script>  
+
+<script type="text/javascript" src="js/Utils.js"></script>
+<script type="text/javascript">
+	scheduler.Utils.authIfRequired();
+</script>
+
+<!-- this enhances the schedule -global by a hash of release version -->
+<script src="/ws/webScheduler/findReleaseVersionHash"></script>
+
+<script type="text/javascript" src="../commons/libs/require.js"></script>
+<script type="text/javascript">
+// config. require.js
+require.config({
+	baseUrl : 'js',
+	paths : {
+		libs : 'libs',		
+		'gantt-decor' : '../../commons/libs/jquery-foodtec-ui/gantt-decor',
+		'table-decor' : '../../commons/libs/jquery-foodtec-ui/table-decor',
+		jquery : 'libs/jquery-1.10.2.min',
+		moment : '../../commons/libs/moment.min',
+		'moment-timezone': '../../commons/libs/moment-timezone-with-data.min',
+		text : '../../commons/libs/text',
+		css: '../../commons/libs/css',
+		underscore : '../../commons/libs/underscore',	
+		'underscore-ext': '../../commons/libs/underscore-ext',		
+		'jquery.event.drag-2.2' : '../../commons/libs/jquery-foodtec-ui/gantt-decor/libs/jquery.event.drag-2.2',		
+		WebSchedulerController : 'WebSchedulerController', /* that's main */
+		WebSchedulerView : 'WebSchedulerView',
+		ByEmplsTableController : 'ByEmplsTableController',
+		ByRolesTableController : 'ByRolesTableController',
+		SchedulerTableCtrl : 'SchedulerTableCtrl',
+		ByEmplsTotalsModel : 'ByEmplsTotalsModel',
+		ByEmplsTableView : 'ByEmplsTableView',
+		ByEmplsEditShiftController : 'ByEmplsEditShiftController',
+		ByRolesTotalsModel: 'ByRolesTotalsModel',
+		ByRolesEditShiftController : 'ByRolesEditShiftController',
+		ByRolesTableView : 'ByRolesTableView',
+		SchedulesModelUtils : 'SchedulesModelUtils',
+		ValidateShiftModifUtils : 'ValidateShiftModifUtils',
+		EditShiftController : 'EditShiftController',
+		EditShiftView : 'EditShiftView',
+		ByEmplsEditShiftView : 'ByEmplsEditShiftView',
+		ByRolesEditShiftView : 'ByRolesEditShiftView',
+		TotalsModel : 'TotalsModel',
+		SchedulerTableView : 'SchedulerTableView',
+		MoveInfoModel : 'MoveInfoModel',
+		SendSmsController : 'sendSms/SendSmsController',
+		datatable : 'libs/jquery-datatables/js/jquery.dataTables.custom',
+		animo : '../../commons/libs/animo/animo',
+		q : '../../commons/libs/q',
+		EventEmitter : '../../commons/libs/EventEmitter',
+		timeZoneUtils : '../../commons/libs/timeZoneUtils'
+	},
+	shim:{		
+		'underscore-ext':{
+			deps:['underscore']
+		},
+		'datatable': {
+			deps:['css!libs/jquery-datatables/css/jquery.dataTables.min']
+		},
+		'animo': {
+			deps:['css!../../commons/libs/animo/animate+animo.css']
+		}
+	},
+	map: {
+		  '*': {
+			    'css': 'css' 
+			  }
+	},
+	urlArgs : 'version='+scheduler.version
+});
+</script>
+
+</head>
+<body>
+
+	<div class="option-bar">
+		<div class="departments-tabs">			
+			<!-- departments are rendered here if scheduleBy is department -->			
+		</div>
+		<div class="settings">
+			<div class="week-arrow left" title="go to previous"></div>
+			<button id="weekButton">Week of <span class="week-display"><!-- selected week is rendered here --></span></button>
+			<div class="week-arrow right" title="go to next"></div>
+			<select id="switchView" title="Schedule by">
+				<option value="byEmployees">Employee</option>
+				<option value="byRoles">Role</option>
+			</select>
+			<div class="datePicker"></div>			
+		</div>
+		
+		<button data-role="sendSms" class="sendSms" title="Sends SMS to scheduled employee in this week">Send SMS</button>
+							
+		<div class="actions">
+			<div class="master-schedule">
+				<button id="templateRestore"
+					title="Overwrites the current week with a former saved schedule. Note: only days in future are changed!">Restore
+					From Master</button>
+				<button id="templateSave"
+					title="Saves the current week as template, to use for restore.">Save
+					as Master</button>
+			</div>
+			<div class="state-change">
+				<!-- stateAction-buttons are rendered here  -->
+			</div>
+		</div>
+	</div>
+	<div class="table-header">
+	<!-- tableHeaderTmpl is rendered here -->
+	</div>
+
+	<!-- scheduler-table el for by-empls-view -->
+	<div class="scheduler-wrapper by-empls">
+		<table class="week-days-header">
+			<!-- week-days are rendered here -->
+		</table>
+		<table class="scheduler">
+			<!-- shift-columns and week-day header is rendered here -->
+		</table>
+		<table class="totals-footer">
+			<!-- weekly-totals are rendered here -->
+		</table>
+		<div class="loading-overlay"></div>
+	</div>
+	
+	<!-- scheduler-table el for by-roles-view -->
+	<div class="scheduler-wrapper by-roles">
+		<table class="week-days-header">
+			<!-- week-days are rendered here -->
+		</table>
+		<table class="scheduler">
+			<!-- shift-columns and week-day header is rendered here -->
+		</table>
+		<table class="totals-footer">
+			<!-- weekly-totals are rendered here -->
+		</table>
+		<div class="loading-overlay"></div>
+	</div>
+	
+	<!-- form used for dynamic link navigation -->
+	<form class="dynamik-links" method="post" target="_blank" action=""></form>
+	
+	<script type="text/javascript"
+		src="../commons/libs/jquery-ui/jquery-ui-1.10.4.custom.min.js"></script>	
+	<script type="text/javascript" src="../commons/libs/jquery-foodtec-ui/jquery.foodtec.ui.js"></script>
+	<script type="text/javascript"
+		src="../commons/libs/jquery-ui-timepicker/jquery.ui.timepicker.js"></script>
+	<script type="text/javascript" src="../commons/libs/jquery.parsequery.js"></script>
+	<script type="text/javascript" src="../commons/libs/jquery.tinysort.min.js"></script>	
+	<script type="text/javascript" src="../commons/libs/lodash.js"></script>
+	<script type="text/javascript">
+		window.lodash = _.noConflict();
+    </script>	 
+	
+	<script type="text/javascript">	
+		jQuery(function() {
+			require(['WebSchedulerController'], function(WebSchedulerController){
+				new WebSchedulerController();	
+			});			
+		});		
+    </script>
+
+	<!-- templates -->	
+	<script id="tableHeaderTmpl" type="text/template">
+	<span><%- selectedWeek %><span/>
+	<% if(!hideState){ %>
+		<span class="state <%- scheduleState.name %>" title="State of schedule-week"><%- scheduleState.displayName %></span>
+	<% } %>
+	<span class="audits link-decor">Audits</span>
+	<span class="statistics link-decor">Statistics</span>
+	<span class="print link-decor">Print View</span>
+	</script>
+	
+	<script id="stateActionsTmpl" type="text/template">
+	<% _.each(authorizedActions, function(action){ %>
+	<button class="button-decor" data-action="<%- action.name %>" title="Changes schedule-week state"><%- action.displayName %></button>
+	<% }); %>
+	</script>
+	
+	<!-- edit-dialog for byEmployees -view -->
+	<script id="byEmplsEditDialog" type="text/template">
+	<div class="edit-dialog">
+		<div class="header">
+			Shift Editor <span class="for-whom">for</span> <span class="closing">X</span>
+		</div>
+		<div class="content">
+			<div class="date-header">
+				<!-- data-header is rendred here -->
+			</div>
+			<div class="interval-line">
+				<div class="label">From:</div>
+				<input class="from-time input-decor" type="text" readonly="readonly" />
+				<div class="label">To:</div>
+				<input class="to-time input-decor" type="text" readonly="readonly" />
+			</div>
+			<div class="select-line">
+				<div class="label">As:</div>
+				<select name="role">
+					<!-- roles are rendered here -->
+				</select>
+			</div>
+			<div class="shift-warning"><!-- warnings are rendered here --></div>
+			<div class="unavailability">
+				<div class="label">Availability</div>
+				<div class="unavail-container">
+					<!-- unavail-info are rendered here -->
+				</div>
+			</div>
+			<div class="button-bar">
+				<div class="shift-val-error">
+					<!-- validation errors are rendered here -->
+				</div>
+				<button class="apply button-decor">Apply</button>
+				<button class="cancel button-decor">Cancel</button>
+			</div>
+		</div>
+	</div>
+	</script>	
+	
+	<script id="overtimeWarnTmpl" type="text/template">
+	<span><img src="images/warning.gif"/>Shift produces overtime of <span class="hours"><%- overtimeHours %>h</span></span>
+	</script>
+
+
+	<script id="weekDateTmpl" type="text/template">
+	<td><div class="week-day" data-weekday="<%- date %>" ><%- name %></div></td>
+    </script>
+    
+    <script id="weeklyTotalTmpl" type="text/template">
+	<td><div class="weekly-total" data-weekday="<%- weekDay %>"><!-- totals are rendered here --></div></td>
+    </script>
+
+	<!-- this is for employee-column's resp. role-column's cells   -->
+	<script id="navigationCellTmpl" type="text/template">
+	<td data-name="<%- name %>" class="nav-cell name">
+		<span><%- displayName %></span>
+		<!-- rowTotalTmpl is rendered here -->
+    </td>
+    </script>
+    
+    <script id="rowTotalTmpl" type="text/template">
+    <span class="row-total">
+      (<span class="total" title="Total hours"><%- total %></span> 
+       <span class="overhours" title="Overtime hours"><%- overhours %></span>)
+    </span>
+	</script>
+
+	<script id="shiftColumnTmpl" type="text/template">
+    <td class="shifts" data-employee="<%- employeeName %>" data-role="<%- role %>" data-weekday="<%- weekDay %>">
+	  <div class="positioner">
+		<div class="day-hours">
+			<!-- shiftCellTotalTmpl is rendered here -->
+		</div>
+		<div class="shift-creator">click to create</div>		
+      </div>					
+	</td>
+    </script>   
+    
+    <script id="shiftCellTotalTmpl" type="text/template">
+	<span>
+	   <span class="total" title="Total hours"><%- total %></span>
+	   <span class="overhours" title="Overtime hours"><%- overhours %></span>
+	</span>
+    </script>
+    
+    <script id="shiftsBlockerTmpl" type="text/template">
+	<div class="blocker"></div>
+	</script>
+
+    <!-- this shift template is intended for 'byEmployees-view' -->
+	<script id="shiftTmpl" type="text/template">
+    <div class="shift">
+		<img class="role" width="16px" height="16px" title="<%- role.name %>" src="/Image?name=<%- role.image %>" /> 
+        <span class="period" data-startime="<%- startTime %>"><%- startTimeDispl %> - <%- endTimeDispl %></span>
+        <div class="close-icon"></div>
+	</div>
+	</script>
+	
+	<!-- this shift template is intended for 'byRoles-view' -->
+	<script id="byRolesShiftTmpl" type="text/template">
+    <div class="shift">
+		<div class="employee-name"><%- employee.displayName %></div> 
+        <span class="period" data-startime="<%- startTime %>"><%- startTimeDispl %> - <%- endTimeDispl %></span>
+        <div class="close-icon"></div>
+	</div>
+	</script>		
+
+	<script id="unavailInfoTmpl" type="text/template">
+	<div class="unavail-info">
+		<div class="period <%- unavailType %>"><%- startTime %> - <%- endTime %></div>
+		<div class="type"><%- type %></div>
+	</div>			
+    </script>	
+	
+	<!-- popup -->
+	<script id="errorPopupTmpl" type="text/template">
+	<div class="error-popup">
+	  <div class="header"><%- title || 'Some error happened' %></div>
+	  <div class="content">
+	   <span class="msg"><%- msg %></span>
+	  </div>
+	</div>
+    </script>
+	
+    <!-- popup -->
+    <script id="loginPopupTmpl" type="text/template">
+	<div class="error-popup">
+	  <div class="header">Login required</div>
+	  <div class="content">
+	   <span class="msg">The application requires login. Please use the link to login.
+	   <a href="<%- loginUrl %>">login</a>
+	   </span>	
+	  </div>
+	</div>
+    </script>
+    
+    <!-- popup -->
+    <script id="skippedEmployeesTmpl" type="text/template">
+    <div class="skipped-empl popup">
+	  <div class="header">Info: Save as Master</div>
+	  <div class="content">
+	   <span class="msg">The following list of employees has been skipped because they are terminated.</span>
+	   <ul class="employee-list">
+	   <% _.each(employees, function(employee){ %>
+		  <li><%- employee.displayName %></li>
+       <% }); %>
+	   </ul>	   	
+	  </div>
+	</div>
+    </script>
+    
+    <!-- popup -->
+    <script id="overwriteIssuesTmpl" type="text/template">
+    <div class="overwrite-issues popup">
+	  <div class="header">Override</div>
+	  <div class="content">	   
+	   	<ul class="issues-list">
+	   	<% _.each(validationIssues, function(validationIssue){ %>
+		  <li><%- validationIssue.errorMsg %></li>
+       	<% }); %>		
+	   	</ul>
+		<div class="button-bar">				
+			<button class="overwrite button-decor" title="Click to override the issues">Override</button>
+			<button class="cancel button-decor">Cancel</button>
+		</div>	   	
+	  </div>
+	</div>
+    </script>
+    
+    <!-- popup -->
+    <script id="stateChangeIssuesTmpl" type="text/template">
+    <div class="state-change-issues popup">
+	  <div class="header">State-Change Issues</div>
+	  <div class="content">	 
+		<span class="msg">State cannot be changed due to following issues.</span>  
+	   	<ul class="issues-list">
+	   	<% _.each(blocker, function(block){ %>
+		  <li><%- block %></li>
+       	<% }); %>	
+	   	</ul>			   	
+	  </div>
+	</div>
+    </script>
+    
+    <!-- popup -->
+    <script id="outdatedScheduleTmpl" type="text/template">
+    <div class="outdated-schedule popup">
+	  <div class="header">Schedule is out of date</div>
+	  <div class="content">	   
+	   	<span class="msg">You need to reload the scheduler in order to perform the operation.</span>  
+		<div class="button-bar">				
+			<button class="reload button-decor" title="Click to reload">Reload</button>			
+		</div>	   	
+	  </div>
+	</div>
+    </script>
+    	
+	<!-- temaplate to render department-tab -->
+	<script id="departmentTmpl" type="text/template">
+	<div class="department" data-id="<%- department.name %>">
+		<img width="16px" height="16px" src="/Image?name=<%- department.image %>">
+		<span><%- department.name %></span>
+	</div>
+	</script>
+	
+</body>
+</html>

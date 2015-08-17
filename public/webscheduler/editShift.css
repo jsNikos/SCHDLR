@@ -1,0 +1,148 @@
+/* status colors */
+/* dialogs */
+/* gantt-chart colors */
+.edit-dialog .header .for-whom {
+  font-size: 20px;
+}
+.edit-dialog .date-header {
+  color: #2b5ca1;
+  font-size: 20px;
+  text-align: center;
+  padding: 10px 0px;
+}
+.edit-dialog .button-bar .button-decor.apply {
+  background-image: linear-gradient(to bottom, #2de70b, #2d790b);
+  background-image: -o-linear-gradient(top, #2de70b, #2d790b);
+  background-image: -ms-linear-gradient(top, #2de70b, #2d790b);
+  background-image: -webkit-linear-gradient(top, #2de70b, #2d790b);
+  background-color: #2de70b;
+  color: white;
+  font-weight: bold;
+}
+.edit-dialog .button-bar .button-decor[disabled] {
+  background-image: linear-gradient(to bottom, #cccccc, #cccccc);
+  background-image: -o-linear-gradient(top, #cccccc, #cccccc);
+  background-image: -ms-linear-gradient(top, #cccccc, #cccccc);
+  background-image: -webkit-linear-gradient(top, #cccccc, #cccccc);
+  background-color: #cccccc;
+  color: #dddddd;
+  box-shadow: 0 1px 2px -1px #000000, 0 1px 1px 0 #ffffff inset;
+}
+.edit-dialog .label {
+  color: #000000;
+  display: inline-block;
+  text-align: right;
+  width: 100px;
+}
+.edit-dialog input.from-time,
+.edit-dialog input.to-time,
+.edit-dialog input.who {
+  width: 90px;
+  text-align: center;
+  padding: 5px;
+  cursor: pointer;
+}
+.edit-dialog .select-line {
+  margin: 40px 0px;
+}
+.edit-dialog .select-line .select-wrapper {
+  vertical-align: middle;
+  max-width: 430px;
+  min-width: 130px;
+}
+.edit-dialog .select-line .select-decor {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.edit-dialog .shift-warning {
+  text-align: center;
+  padding: 5px 0px;
+  margin-top: -28px;
+  color: #f2883a;
+  height: 18px;
+}
+.edit-dialog .shift-warning img {
+  width: 18px;
+  height: 18px;
+  margin-right: 5px;
+  vertical-align: top;
+}
+.edit-dialog .unavailability {
+  width: 525px;
+  margin: 0px auto;
+  border-top: 1px solid #a3a3a3;
+  padding: 10px 0px 0px 20px;
+}
+.edit-dialog .unavailability .label {
+  text-align: right;
+  width: auto;
+}
+.edit-dialog .unavail-container {
+  height: 120px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
+.edit-dialog .unavail-info {
+  padding-top: 10px;
+}
+.edit-dialog .unavail-info .period {
+  display: inline-block;
+  width: 130px;
+  text-align: right;
+  background-image: url("images/unavailable.png");
+  background-repeat: no-repeat;
+}
+.edit-dialog .unavail-info .period.EmployeeScheduleDetail {
+  background-image: url("images/scheduled.png");
+}
+.edit-dialog .unavail-info .period.available {
+  background-image: url("images/available.png");
+}
+.edit-dialog .unavail-info .type {
+  display: inline-block;
+  text-align: left;
+  padding-left: 20px;
+}
+.edit-dialog .shift-val-error {
+  position: absolute;
+  width: 380px;
+  top: 0px;
+  left: 0px;
+  text-align: center;
+  padding-top: 13px;
+  color: #e65c5c;
+}
+.edit-dialog .who-select .employeeName {
+  cursor: pointer;
+}
+.edit-dialog .who-select .employeeName:hover {
+  color: #f58400;
+}
+.edit-dialog .who-line {
+  margin: 40px 0px;
+  height: 68px;
+  overflow-y: visible;
+}
+.edit-dialog input.who {
+  width: auto;
+  max-width: 450px;
+  cursor: default;
+  background-color: #cccccc;
+}
+.edit-dialog input.who.enabled {
+  cursor: pointer;
+  background-color: #ffffff;
+}
+.edit-dialog .who-select {
+  margin: 3px 3px 0px 104px;
+  display: none;
+}
+.edit-dialog .who-select .employee-list {
+  list-style: none;
+  padding: 0px;
+  margin: 0px;
+  max-height: 80px;
+  overflow-x: hidden;
+  overflow-y: auto;
+}
