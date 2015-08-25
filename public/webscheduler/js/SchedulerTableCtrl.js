@@ -70,7 +70,7 @@ define(['SchedulesModelUtils',
                           'dailyOvertimeHours', 'weeklyOvertimeHours', 'roles',
                           'scheduleState', 'authorizedActions', 'isScheduleModifiable',
                           'timeZone', 'departments', 'scheduleBy', 'selectedDepartment',
-                          'startOfWeekDay', 'useMasterSchedule'];
+                          'startOfWeekDay', 'useMasterSchedule', 'scheduleInfo'];
 		
 		this.init = function(onInitReady) {		
 			scope = this;

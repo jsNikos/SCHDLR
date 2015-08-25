@@ -167,7 +167,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 		/**
 		 * Handles selection of department. Changes state and triggers reload.
 		 */
-		this.handDepartmentSelect = function($department){
+		this.handleDepartmentSelect = function($department){
 			scope.selectedDepartmentName = $department.attr('data-id');
 			updateUrl();
 			view.schedulerTableCtrl.tableView.showLoading();
@@ -188,9 +188,47 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 		 * Shows pop-up in case state cannot be changed due to restrictions.
 		 */
 		this.handleStateChangeClick = function(event){			
-			var $button = jQuery(event.target);
-			$button.buttonDecor('startLoading');
-			var action = $button.attr('data-action');
+			var $postButton = jQuery(event.target);
+			$postButton.buttonDecor('startLoading');
+			var action = $postButton.attr('data-action');
+			
+			if(action === 'POST'){
+				confirmToPost($postButton);
+			} else{
+				changeScheduleState($postButton, action);
+			}					
+		};
+		
+		function confirmToPost($postButton){
+			// show confirmation
+			require(['text!schedulerActions/postingDialog.html', 'css!schedulerActions/postingDialog.css'], function(postingDialogHtml){
+			var	view = jQuery.decor.dialogDecor({
+					$el : jQuery(_.template(postingDialogHtml)()),
+					options : {
+						onTheFly : true,
+						editorHeight: 200,
+						showClosing: false
+					}
+				});
+				view.showDialog()
+				    .$el.on('click', 'button', handleChoice);
+				
+				function handleChoice(event){
+					var $target = jQuery(event.target);
+					if($target.attr('data-role') === 'confirm-post'){
+						changeScheduleState($postButton, 'POST');					
+					} else{
+						$postButton.buttonDecor('stopLoading');
+					}			
+					view.closeDialog();
+				}	
+			});			
+		}
+		
+		/**
+		 * Requests to change the schedule state.
+		 */
+		function changeScheduleState($postButton, action){
 			findSchedulerTableController().then(function(instanceHolder){
 				// request state-change
 				requestChangeScheduleState({
@@ -206,11 +244,11 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 						// show blocker in pop-up
 						view.showStateChangeBlocker(resp.blocker);
 						view.enableStateChange();
-						$button.buttonDecor('stopLoading');
+						$postButton.buttonDecor('stopLoading');
 					}			
 				});
 			}).fail(scope.logError);			
-		};
+		}
 		
 		/**
 		 * @param data : {action (ScheduleStateAction), dateInWeek (Long), scheduleState }

@@ -1,0 +1,14 @@
+.posting-dialog .content {
+  padding: 10px 20px;
+}
+.posting-dialog .button-bar {
+  margin-top: 20px;
+  text-align: right;
+}
+.posting-dialog .confirm-post {
+  background-color: #2de70b;
+  background-image: linear-gradient(to bottom, #2de70b, #2d790b);
+  color: white;
+  font-weight: bold;
+  margin: 10px;
+}

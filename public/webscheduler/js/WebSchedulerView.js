@@ -1,5 +1,5 @@
-define(['libs/WeekPicker', 'timeZoneUtils', 'SendSmsController'], 
-function(WeekPicker, timeZoneUtils, SendSmsController){
+define(['libs/WeekPicker', 'timeZoneUtils', 'SendSmsController', 'schedulerActions/SchedulerActionsController'], 
+function(WeekPicker, timeZoneUtils, SendSmsController, SchedulerActionsController){
 	return WebSchedulerView;
 	
 	/**
@@ -12,6 +12,7 @@ function(WeekPicker, timeZoneUtils, SendSmsController){
 		// this view component (table) can be dynamically replaced (byEmplsTableController or byRolesTableController)
 		this.schedulerTableCtrl = args.schedulerTableCtrl;
 		var sendSmsController = new SendSmsController({controller: controller}); 
+		var schedulerActionsController = new SchedulerActionsController({controller: controller});
 		
 		// {WeekPicker}
 		this.weekPicker = undefined;
@@ -42,6 +43,7 @@ function(WeekPicker, timeZoneUtils, SendSmsController){
 			initSwitchViewSelect();
 			initMasterScheduler();				
 			initStateActions();	
+			schedulerActionsController.view.init(); //TODO
 			initTableHeader();
 			initSendSms();
 		}		
@@ -81,7 +83,8 @@ function(WeekPicker, timeZoneUtils, SendSmsController){
 	    	$tableHeader.empty().append(tableHeaderTmpl({
 				selectedWeek : 'Week of ' + week,
 				scheduleState : scope.schedulerTableCtrl.scheduleState,
-				hideState : scope.schedulerTableCtrl.scheduleState.name === 'PendingState' && !scope.schedulerTableCtrl.existsShift()
+				hideState : scope.schedulerTableCtrl.scheduleState.name === 'PendingState' && !scope.schedulerTableCtrl.existsShift(),
+				scheduleInfo : scope.schedulerTableCtrl.scheduleInfo
 			}));
 		
 			$weekDisplay.text(timeZoneUtils.parseInServerTimeAsMoment(scope.schedulerTableCtrl.week.startOfWeek).format('MMM D YYYY'));
@@ -180,7 +183,7 @@ function(WeekPicker, timeZoneUtils, SendSmsController){
 				}
 				$departmentsTabs.find('.department').removeClass('selected');
 				$department.addClass('selected');
-				controller.handDepartmentSelect($department);
+				controller.handleDepartmentSelect($department);
 			});		
 		}
 		

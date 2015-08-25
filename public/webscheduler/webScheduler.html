@@ -182,18 +182,23 @@ require.config({
 
 	<!-- templates -->	
 	<script id="tableHeaderTmpl" type="text/template">
-	<span><%- selectedWeek %><span/>
-	<% if(!hideState){ %>
+	<div>
+	 <div>
+	  <span><%- selectedWeek %><span/>
+	  <% if(!hideState){ %>
 		<span class="state <%- scheduleState.name %>" title="State of schedule-week"><%- scheduleState.displayName %></span>
-	<% } %>
-	<span class="audits link-decor">Audits</span>
-	<span class="statistics link-decor">Statistics</span>
-	<span class="print link-decor">Print View</span>
+	  <% } %>
+	  <span class="audits link-decor">Audits</span>
+	  <span class="statistics link-decor">Statistics</span>
+	  <span class="print link-decor">Print View</span>
+	 </div>
+	 <div class="scheduleInfo"><%- scheduleInfo %><div>
+	</div>
 	</script>
 	
 	<script id="stateActionsTmpl" type="text/template">
 	<% _.each(authorizedActions, function(action){ %>
-	<button class="button-decor" data-action="<%- action.name %>" title="Changes schedule-week state"><%- action.displayName %></button>
+	<button class="button-decor" data-action="<%- action.name %>" title="Changes state of schedule for the whole week"><%- action.displayName %></button>
 	<% }); %>
 	</script>
 	
