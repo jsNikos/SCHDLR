@@ -1,5 +1,5 @@
-define(['SchedulerTableCtrl', 'ByEmplsTotalsModel', 'ByEmplsTableView', 'ByEmplsEditShiftController'],
-  function(SchedulerTableCtrl, ByEmplsTotalsModel, ByEmplsTableView, ByEmplsEditShiftController){
+define(['SchedulerTableCtrl', 'ByEmplsTotalsModel', 'ByEmplsTableView', 'q'],
+  function(SchedulerTableCtrl, ByEmplsTotalsModel, ByEmplsTableView, q){
 	ByEmplsTableController.prototype = new SchedulerTableCtrl();
 	return ByEmplsTableController;		
 	
@@ -70,12 +70,14 @@ define(['SchedulerTableCtrl', 'ByEmplsTotalsModel', 'ByEmplsTableView', 'ByEmpls
 		/**
 		 * Creates instance of editShift (this dialog is on-the-fly and thus always needs
 		 * new instance before shown)
-		 * @returns {EditShiftController} : specific instance, either byEmpls or byRoles.
+		 * @returns promise : resolving to new instance of EditShiftController
 		 */
 		this.createEditShiftController = function(){
-			return new ByEmplsEditShiftController({
-				controller : scope
-			});			
+			return q.Promise(function(resolve){
+				require(['ByEmplsEditShiftController'], function(ByEmplsEditShiftController){
+					resolve(new ByEmplsEditShiftController({controller : scope}));
+				});
+			});					
 		};
 		
 		/**

@@ -1,3 +1,5 @@
+@import "../../utils.less";
+
 .posting-dialog .content{
 	padding: 10px 20px
 }
@@ -13,4 +15,16 @@ background-color: #2de70b;
     color: white;
     font-weight: bold;
     margin: 10px;
+}
+
+.posting-dialog .not-scheduled-departm{
+	font-style: italic;
+    margin: 10px 0;
+    max-height: 70px;
+    max-width: 90%;
+    overflow-y: auto;
+}
+
+.posting-dialog .warning{
+	color: @mediumWarnColor;
 }

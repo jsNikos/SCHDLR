@@ -1,10 +1,16 @@
 <div class="posting-dialog">
 	<div class="header">
-		Posting the Schedule
+		Posting Weekly Schedule
 	</div>
 	<div class="content">
 		<div class="message">
-			Is this schedule complete for all managers?<br><br>
+			<% if(scheduleBy === 'Department' && nonScheduledDepartment.length > 0){ %>
+			The following departments are not scheduled:<br>
+			<div class="not-scheduled-departm">
+				<div><%- nonScheduledDepartment.join(', ') %></div>
+			</div>
+			<% } %>
+			<span class="warning">Is this schedule complete for the whole week and all departments?</span><br><br>
 			Once you POST, nobody will be able to edit it until it gets approved or rejected.			
 		</div>
 		<div class="button-bar">

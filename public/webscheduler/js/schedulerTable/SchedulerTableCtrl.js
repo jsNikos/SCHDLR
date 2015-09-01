@@ -1,14 +1,12 @@
 define(['SchedulesModelUtils',
         'ValidateShiftModifUtils',
-        'MoveInfoModel',
-        'ganttChart/GanttChartController',
+        'MoveInfoModel',        
         'EventEmitter',
         'timeZoneUtils',
         'q'], 
  function(SchedulesModelUtils,
 		 ValidateShiftModifUtils,
 		 MoveInfoModel,
-		 GanttChartController,
 		 EventEmitter,
 		 timeZoneUtils,
 		 q){
@@ -93,10 +91,7 @@ define(['SchedulesModelUtils',
 				scope.tableView.on('drop', handleDrop);
 				scope.tableView.on('remove', handleRemove);
 				scope.tableView.on('create', handleCreate);
-				scope.tableView.on('edit', handleEdit);
-				
-				// init gantt-chart
-				ganttChartController = new GanttChartController({tableController: scope});
+				scope.tableView.on('edit', handleEdit);				
 				
 				// called registered init-ready event handler: this event means, controller is initialized view instance
 				// is created and about to render (may not be ready with rendering)
@@ -336,7 +331,9 @@ define(['SchedulesModelUtils',
 		 */
 		this.handleWeekDayClicked = function($weekDay){
 			var weekDay = $weekDay.attr('data-weekday');
-			ganttChartController.showGanttView(weekDay);
+			require(['ganttChart/GanttChartController'], function(GanttChartController){
+				(new GanttChartController({tableController: scope})).showGanttView(weekDay);
+			});
 		};
 		
 		/**
@@ -367,15 +364,20 @@ define(['SchedulesModelUtils',
 		 */
 		function handleCreate(args){
 			scope.tableView.addShiftsBlocker(args.$shifts);
-			scope.createEditShiftController().showForCreate(args, function(){
-				scope.tableView.removeShiftsBlocker(args.$shifts);
-			});
+			scope.createEditShiftController()
+				 .then(function(editShiftController){
+					 	return editShiftController.showForCreate(args); 					 			
+				  })
+				 .then(function(){
+					scope.tableView.removeShiftsBlocker(args.$shifts);
+				  })
+				 .fail(scope.webSchedulerController.logError);				
 		}
 		
 		/**
 		 * Creates instance of editShift (this dialog is on-the-fly and thus always needs
 		 * new instance before shown)
-		 * @returns {EditShiftController} : specific instance, either byEmpls or byRoles.
+		 * @returns promise : resolving to new instance of EditShiftController, either byEmpls or byRoles.
 		 */
 		this.createEditShiftController = function(){
 			throw new Error('this is abstract');	
@@ -388,9 +390,14 @@ define(['SchedulesModelUtils',
 		function handleEdit(args){
 			var $shifts = scope.tableView.findShiftsCell(scope.findShiftsCellCoord(args.scheduleDetail));
 			scope.tableView.addShiftsBlocker($shifts);
-			scope.createEditShiftController().showForEdit(args, function(){
-				scope.tableView.removeShiftsBlocker($shifts);
-			});
+			scope.createEditShiftController()
+			     .then(function(editShiftController){
+			    	return editShiftController.showForEdit(args);							
+			      })
+			     .then(function(){
+			    	scope.tableView.removeShiftsBlocker($shifts); 
+			     })
+			     .fail(scope.webSchedulerController.logError);			
 		}
 		
 		/**

@@ -13,6 +13,7 @@
     "prefixer": "https://raw.githubusercontent.com/JoelSutherland/LESS-Prefixer/master/prefixer.less",
     "animate": "https://raw.githubusercontent.com/daneden/animate.css/master/animate.css",
     "animo.js": "~1.0.2",
-    "q": "https://raw.githubusercontent.com/kriskowal/q/v1/q.js"
+    "q": "https://raw.githubusercontent.com/kriskowal/q/v1/q.js",
+    "vue": "~0.12.10"
   }
 }

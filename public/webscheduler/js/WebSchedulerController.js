@@ -25,7 +25,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 			initPopState();
 
 			// find and create the schedulerTableController
-			findSchedulerTableController().then(function(instanceHolder) {
+			scope.findSchedulerTableController().then(function(instanceHolder) {
 				// init view
 				view = new WebSchedulerView({
 					controller : scope,
@@ -57,7 +57,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 		 * current 'selectedView'.		  
 		 * @param promise resolved with : {instance: ScheduleTableController, isNew: boolean}		
 		 */
-		function findSchedulerTableController() {
+		this.findSchedulerTableController = function() {
 			return q.Promise(function(resolve){
 				if(typeof initReady !== 'function'){
 					initReady = function(){};
@@ -102,7 +102,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 				}
 			}						
 			
-		}
+		};
 		
 		/**
 		 * Handles data-fetch event when schedulerTableController is initialized, by
@@ -119,7 +119,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 		 * (byRoles or byEmpl)
 		 */
 		this.handleStatisticsClicked = function(){			
-			return findSchedulerTableController().then(function(instanceHolder){
+			return scope.findSchedulerTableController().then(function(instanceHolder){
 				return instanceHolder.instance.handleStatisticsClicked();
 			});
 		};
@@ -129,7 +129,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 		 * (byRoles or byEmpl)
 		 */
 		this.handleAuditsClicked = function(){
-			return findSchedulerTableController().then(function(instanceHolder){
+			return scope.findSchedulerTableController().then(function(instanceHolder){
 				return instanceHolder.instance.handleAuditsClicked();
 			});
 		};
@@ -139,7 +139,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 		 * with parameter based on current model.
 		 */
 		this.handlePrintClicked = function(){
-			return findSchedulerTableController().then(function(instanceHolder) {
+			return scope.findSchedulerTableController().then(function(instanceHolder) {
 				var schedulerTableCtrl = instanceHolder.instance;
 				var printViewParams = {
 						date : (schedulerTableCtrl.week.businessStartOfWeek/1000).toString(16),
@@ -181,90 +181,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 					view.schedulerTableCtrl.tableView.hideLoading();
 				}
 			});
-		};
-		
-		/**
-		 * Handles state-action button click, by requesting state change from server.
-		 * Shows pop-up in case state cannot be changed due to restrictions.
-		 */
-		this.handleStateChangeClick = function(event){			
-			var $postButton = jQuery(event.target);
-			$postButton.buttonDecor('startLoading');
-			var action = $postButton.attr('data-action');
-			
-			if(action === 'POST'){
-				confirmToPost($postButton);
-			} else{
-				changeScheduleState($postButton, action);
-			}					
-		};
-		
-		function confirmToPost($postButton){
-			// show confirmation
-			require(['text!schedulerActions/postingDialog.html', 'css!schedulerActions/postingDialog.css'], function(postingDialogHtml){
-			var	view = jQuery.decor.dialogDecor({
-					$el : jQuery(_.template(postingDialogHtml)()),
-					options : {
-						onTheFly : true,
-						editorHeight: 200,
-						showClosing: false
-					}
-				});
-				view.showDialog()
-				    .$el.on('click', 'button', handleChoice);
-				
-				function handleChoice(event){
-					var $target = jQuery(event.target);
-					if($target.attr('data-role') === 'confirm-post'){
-						changeScheduleState($postButton, 'POST');					
-					} else{
-						$postButton.buttonDecor('stopLoading');
-					}			
-					view.closeDialog();
-				}	
-			});			
-		}
-		
-		/**
-		 * Requests to change the schedule state.
-		 */
-		function changeScheduleState($postButton, action){
-			findSchedulerTableController().then(function(instanceHolder){
-				// request state-change
-				requestChangeScheduleState({
-					action : action,
-					dateInWeek : scope.selectedDate.getTime(),
-					scheduleState : JSON.stringify(_.chain(instanceHolder.instance.scheduleState).pick('type').value())				
-				}, function(resp) {					
-					// check for issues
-					if(!resp.blocker || resp.blocker.length === 0){
-						// reload page, all shift-cells needs to be recreated because of modifiable-logic
-						location.reload(true);
-					} else{
-						// show blocker in pop-up
-						view.showStateChangeBlocker(resp.blocker);
-						view.enableStateChange();
-						$postButton.buttonDecor('stopLoading');
-					}			
-				});
-			}).fail(scope.logError);			
-		}
-		
-		/**
-		 * @param data : {action (ScheduleStateAction), dateInWeek (Long), scheduleState }
-		 * @param callback : function(resp),
-		 * 				resp - {scheduleState : ScheduleState, permittedActions : [ScheduleStateAction], blocker : [String]}
-		 */
-		function requestChangeScheduleState(data, callback){
-			jQuery.ajax({
-				url : scope.CONTROLLER_URL + '/changeScheduleState',
-				type : 'POST',
-				data : data,
-				success : function(resp){
-					callback(resp);
-				}
-			});
-		};
+		};		
 		
 		function updateStateActions(){
 			view.updateStateActions();
@@ -311,7 +228,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 			scope.selectedView = selectedView;
 			updateUrl();
 			// set schedulerTableCtrl instance and trigger re-render
-			findSchedulerTableController().then(function(instanceHolder) {
+			scope.findSchedulerTableController().then(function(instanceHolder) {
 				// trigger to hide current
 				view.schedulerTableCtrl.hideView();
 				// trigger to halt current table-refresh task (if any)

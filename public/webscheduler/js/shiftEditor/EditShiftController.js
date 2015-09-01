@@ -1,4 +1,4 @@
-define(['ValidateShiftModifUtils', 'timeZoneUtils'], function(ValidateShiftModifUtils, timeZoneUtils){
+define(['ValidateShiftModifUtils', 'timeZoneUtils', 'q'], function(ValidateShiftModifUtils, timeZoneUtils, q){
 	_.chain(EditShiftController.prototype).extend(new ValidateShiftModifUtils());
 	return EditShiftController;
 	
@@ -374,50 +374,43 @@ define(['ValidateShiftModifUtils', 'timeZoneUtils'], function(ValidateShiftModif
 		 * 
 		 * @param args :
 		 *            {$shifts, employeeName, weekDay}
-		 * @param callback : function(), called when dialog is rendered		
+		 * @returns promise : resolved against the dialog being rendered		
 		 * 
 		 */
-		this.showForCreate = function(args, callback) {
-			if(typeof callback !== 'function'){
-				callback = function(){};
-			}	
-			
-			this.$selectedShift = undefined;
+		this.showForCreate = function(args) {			
+			scope.$selectedShift = undefined;
 			// sets shiftsCell-coordinates onto model		
-			jQuery.extend(this, scope.tableController.extractCoordFromShiftsCell(args.$shifts));					
+			jQuery.extend(scope, scope.tableController.extractCoordFromShiftsCell(args.$shifts));					
 
-			scope.fetchEditDialogInit(function() {
+			return scope.fetchEditDialogInit().then(function(resp) {
+				scope.updateModel(resp);
 				extractOpenCloseTimes(scope.weekDay);	
 				initView();
 				scope.editShiftView.on('submit', handleSubmit);
 				scope.editShiftView.showDialog();
-				scope.editShiftView.applyInitData();
-				callback();
-			});		
+				scope.editShiftView.applyInitData();				
+			});					
 		};	
 		
 		
 		
 		/**
 		 * 
-		 * @param args : {$shift, scheduleDetail}, the scheduleDetail of the selected shift and the selected shift.
-		 * @param callback : function(), called when dialog is rendered
-		 * @returns xhr : the request-instance, to make it abortable
+		 * @param args : {$shift, scheduleDetail}, the scheduleDetail of the selected shift and the selected shift.		 
+		 * @returns promise : resolved against the dialog being rendered
 		 */
-		this.showForEdit = function(args, callback) {
-			if(typeof callback !== 'function'){
-				callback = function(){};
-			}	
+		this.showForEdit = function(args, callback) {			
 			scope.scheduleDetail = args.scheduleDetail;
-			this.employeeName = scope.scheduleDetail.employeeName;
-			this.weekDay = scope.scheduleDetail.weekDay;			
-			this.role = scope.scheduleDetail.role.name;
-			this.modifiable = scope.scheduleDetail.modifiable && scope.tableController.isScheduleModifiable;		
-			this.selectedStartTime = new Date(scope.scheduleDetail.startTime);
-			this.selectedEndTime = moment(scope.scheduleDetail.endTime).add('second', 1).toDate();
+			scope.employeeName = scope.scheduleDetail.employeeName;
+			scope.weekDay = scope.scheduleDetail.weekDay;			
+			scope.role = scope.scheduleDetail.role.name;
+			scope.modifiable = scope.scheduleDetail.modifiable && scope.tableController.isScheduleModifiable;		
+			scope.selectedStartTime = new Date(scope.scheduleDetail.startTime);
+			scope.selectedEndTime = moment(scope.scheduleDetail.endTime).add('second', 1).toDate();
 			scope.$selectedShift = args.$shift;			
-					
-			return scope.fetchEditDialogInit(function() {
+
+			return scope.fetchEditDialogInit().then(function(resp) {
+				scope.updateModel(resp);
 				extractOpenCloseTimes(scope.weekDay);
 				initView();
 				scope.editShiftView.on('submit', handleSubmit);
@@ -427,8 +420,7 @@ define(['ValidateShiftModifUtils', 'timeZoneUtils'], function(ValidateShiftModif
 				scope.editShiftView.showWarnings();
 				!scope.modifiable && scope.editShiftView.disableApply();
 				scope.editShiftView.showDialog();
-				callback();
-			});
+			});					
 		};	
 		
 		/**
@@ -473,7 +465,7 @@ define(['ValidateShiftModifUtils', 'timeZoneUtils'], function(ValidateShiftModif
 		 * @param args
 		 *            {employeeName, weekDay}
 		 */
-		this.fetchEditDialogInit = function(callback) {
+		this.fetchEditDialogInit = function() {
 			var dateInWeek = timeZoneUtils.parseInServerTimeAsMoment(scope.weekDay, scope.tableController.DAY_COORD_FORMAT).valueOf(); 
 			return jQuery.ajax({
 				url : scope.tableController.CONTROLLER_URL + '/findEditDialogInit',
@@ -484,11 +476,6 @@ define(['ValidateShiftModifUtils', 'timeZoneUtils'], function(ValidateShiftModif
 					dateInWeek : dateInWeek,
 					role : scope.role,
 					scheduleDetail : scope.scheduleDetail ? JSON.stringify(scope.scheduleDetail) : null
-				},
-				success : function(resp){
-					// sync model
-					scope.updateModel(resp);
-					callback();
 				}
 			});
 		};

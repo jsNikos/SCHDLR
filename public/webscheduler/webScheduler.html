@@ -46,24 +46,24 @@ require.config({
 		'jquery.event.drag-2.2' : '../../commons/libs/jquery-foodtec-ui/gantt-decor/libs/jquery.event.drag-2.2',		
 		WebSchedulerController : 'WebSchedulerController', /* that's main */
 		WebSchedulerView : 'WebSchedulerView',
-		ByEmplsTableController : 'ByEmplsTableController',
-		ByRolesTableController : 'ByRolesTableController',
-		SchedulerTableCtrl : 'SchedulerTableCtrl',
-		ByEmplsTotalsModel : 'ByEmplsTotalsModel',
-		ByEmplsTableView : 'ByEmplsTableView',
-		ByEmplsEditShiftController : 'ByEmplsEditShiftController',
-		ByRolesTotalsModel: 'ByRolesTotalsModel',
-		ByRolesEditShiftController : 'ByRolesEditShiftController',
-		ByRolesTableView : 'ByRolesTableView',
-		SchedulesModelUtils : 'SchedulesModelUtils',
-		ValidateShiftModifUtils : 'ValidateShiftModifUtils',
-		EditShiftController : 'EditShiftController',
-		EditShiftView : 'EditShiftView',
-		ByEmplsEditShiftView : 'ByEmplsEditShiftView',
-		ByRolesEditShiftView : 'ByRolesEditShiftView',
-		TotalsModel : 'TotalsModel',
-		SchedulerTableView : 'SchedulerTableView',
-		MoveInfoModel : 'MoveInfoModel',
+		ByEmplsTableController : 'schedulerTable/byEmpl/ByEmplsTableController',
+		ByRolesTableController : 'schedulerTable/byRole/ByRolesTableController',
+		SchedulerTableCtrl : 'schedulerTable/SchedulerTableCtrl',
+		ByEmplsTotalsModel : 'schedulerTable/byEmpl/ByEmplsTotalsModel',
+		ByEmplsTableView : 'schedulerTable/byEmpl/ByEmplsTableView',
+		ByEmplsEditShiftController : 'shiftEditor/byEmpl/ByEmplsEditShiftController',
+		ByRolesTotalsModel: 'schedulerTable/byRole/ByRolesTotalsModel',
+		ByRolesEditShiftController : 'shiftEditor/byRole/ByRolesEditShiftController',
+		ByRolesTableView : 'schedulerTable/byRole/ByRolesTableView',
+		SchedulesModelUtils : 'schedulerTable/SchedulesModelUtils',
+		ValidateShiftModifUtils : 'schedulerTable/ValidateShiftModifUtils',
+		EditShiftController : 'shiftEditor/EditShiftController',
+		EditShiftView : 'shiftEditor/EditShiftView',
+		ByEmplsEditShiftView : 'shiftEditor/byEmpl/ByEmplsEditShiftView',
+		ByRolesEditShiftView : 'shiftEditor/byRole/ByRolesEditShiftView',
+		TotalsModel : 'schedulerTable/TotalsModel',
+		SchedulerTableView : 'schedulerTable/SchedulerTableView',
+		MoveInfoModel : 'schedulerTable/MoveInfoModel',
 		SendSmsController : 'sendSms/SendSmsController',
 		datatable : 'libs/jquery-datatables/js/jquery.dataTables.custom',
 		animo : '../../commons/libs/animo/animo',
@@ -160,8 +160,7 @@ require.config({
 	<!-- form used for dynamic link navigation -->
 	<form class="dynamik-links" method="post" target="_blank" action=""></form>
 	
-	<script type="text/javascript"
-		src="../commons/libs/jquery-ui/jquery-ui-1.10.4.custom.min.js"></script>	
+	<script type="text/javascript" src="../commons/libs/jQuery-ui/jquery-ui-1.10.4.custom.min.js"></script>	
 	<script type="text/javascript" src="../commons/libs/jquery-foodtec-ui/jquery.foodtec.ui.js"></script>
 	<script type="text/javascript"
 		src="../commons/libs/jquery-ui-timepicker/jquery.ui.timepicker.js"></script>
@@ -371,22 +370,7 @@ require.config({
 	  </div>
 	</div>
     </script>
-    
-    <!-- popup -->
-    <script id="stateChangeIssuesTmpl" type="text/template">
-    <div class="state-change-issues popup">
-	  <div class="header">State-Change Issues</div>
-	  <div class="content">	 
-		<span class="msg">State cannot be changed due to following issues.</span>  
-	   	<ul class="issues-list">
-	   	<% _.each(blocker, function(block){ %>
-		  <li><%- block %></li>
-       	<% }); %>	
-	   	</ul>			   	
-	  </div>
-	</div>
-    </script>
-    
+        
     <!-- popup -->
     <script id="outdatedScheduleTmpl" type="text/template">
     <div class="outdated-schedule popup">

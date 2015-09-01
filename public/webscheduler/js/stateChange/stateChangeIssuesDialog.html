@@ -1,0 +1,11 @@
+<div class="state-change-issues popup">
+	<div class="header">State-Change Issues</div>
+	<div class="content">
+		<span class="msg">State cannot be changed due to following
+			issues.</span>
+		<ul class="issues-list">
+			<% _.each(blocker, function(block){ %>
+			<li><%- block %></li> <% }); %>
+		</ul>
+	</div>
+</div>

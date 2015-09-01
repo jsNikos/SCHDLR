@@ -269,7 +269,7 @@
 			scope.$el.addClass('dialog-decor-target').css({
 				'margin-left' : -options.editorWidth / 2 + 'px',
 				'width' : options.editorWidth + 'px',
-				'height' : options.editorHeight + 'px'
+				'height' : options.editorHeight === 'auto' ? 'auto' : (options.editorHeight + 'px')
 			});
 
 			scope.$header.css({
@@ -277,7 +277,7 @@
 			});			
 
 			scope.$content.css({
-				height : (options.editorHeight - options.headerHeight) + 'px',
+				height : options.editorHeight === 'auto' ? 'auto' : ((options.editorHeight - options.headerHeight) + 'px'),
 				border : '1px solid ' + options.borderColor
 			});
 

@@ -1,5 +1,5 @@
-define(['libs/WeekPicker', 'timeZoneUtils', 'SendSmsController', 'schedulerActions/SchedulerActionsController'], 
-function(WeekPicker, timeZoneUtils, SendSmsController, SchedulerActionsController){
+define(['libs/WeekPicker', 'timeZoneUtils', 'stateChange/StateChangeController'], 
+function(WeekPicker, timeZoneUtils, StateChangeController){
 	return WebSchedulerView;
 	
 	/**
@@ -10,16 +10,14 @@ function(WeekPicker, timeZoneUtils, SendSmsController, SchedulerActionsControlle
 		var scope = this;
 		var controller = args.controller;
 		// this view component (table) can be dynamically replaced (byEmplsTableController or byRolesTableController)
-		this.schedulerTableCtrl = args.schedulerTableCtrl;
-		var sendSmsController = new SendSmsController({controller: controller}); 
-		var schedulerActionsController = new SchedulerActionsController({controller: controller});
+		this.schedulerTableCtrl = args.schedulerTableCtrl;		
+		var stateChangeController = undefined;
 		
 		// {WeekPicker}
 		this.weekPicker = undefined;
 		
 		// el's
-		var $content = jQuery('body');
-		var $stateChange = jQuery('.state-change', $content);
+		var $content = jQuery('body');		
 		var $departmentsTabs = jQuery('.departments-tabs', $content);
 		var $masterSchedule = jQuery('.master-schedule', $content);
 		var $restoreMaster = jQuery('#templateRestore', $masterSchedule);
@@ -29,9 +27,7 @@ function(WeekPicker, timeZoneUtils, SendSmsController, SchedulerActionsControlle
 		// templates		
 		var loginPopupTmpl = _.template(jQuery('#loginPopupTmpl').text());
 		var errorPopupTmpl = _.template(jQuery('#errorPopupTmpl').text());
-		var skippedEmployeesTmpl = _.template(jQuery('#skippedEmployeesTmpl').text());
-		var stateActionsTmpl = _.template(jQuery('#stateActionsTmpl').text());
-		var stateChangeIssuesTmpl = _.template(jQuery('#stateChangeIssuesTmpl').text());
+		var skippedEmployeesTmpl = _.template(jQuery('#skippedEmployeesTmpl').text());			
 		var outdatedScheduleTmpl = _.template(jQuery('#outdatedScheduleTmpl').text());
 		var departmentTmpl = _.template(jQuery('#departmentTmpl').text());
 		var tableHeaderTmpl = _.template(jQuery('#tableHeaderTmpl').text());
@@ -41,9 +37,10 @@ function(WeekPicker, timeZoneUtils, SendSmsController, SchedulerActionsControlle
 			initWeekArrows();
 			initDepartmentSelect();
 			initSwitchViewSelect();
-			initMasterScheduler();				
-			initStateActions();	
-			schedulerActionsController.view.init(); //TODO
+			initMasterScheduler();			
+			stateChangeController = new StateChangeController({webSchedulerController: controller,
+															   		webSchedulerView : scope,
+															    $el: jQuery('.state-change', $content)});
 			initTableHeader();
 			initSendSms();
 		}		
@@ -51,7 +48,10 @@ function(WeekPicker, timeZoneUtils, SendSmsController, SchedulerActionsControlle
 		function initSendSms(){
 			$content.find('[data-role="sendSms"]').buttonDecor().on('click', function(){
 				var $button = jQuery(this).buttonDecor('startLoading');
-				sendSmsController.handleSendSms($button, scope.schedulerTableCtrl.week);
+				require(['SendSmsController'], function(SendSmsController){
+					(new SendSmsController({controller: controller}))
+						.handleSendSms($button, scope.schedulerTableCtrl.week);;
+				});
 			});
 		}		
 		
@@ -75,6 +75,9 @@ function(WeekPicker, timeZoneUtils, SendSmsController, SchedulerActionsControlle
 			});			
 		}
 		
+		this.updateStateActions = function(){
+			stateChangeController.updateStateActions();
+		};		
 		
 		/** updates table-header with selected week-info and scheduleState.		
 		*/
@@ -215,31 +218,6 @@ function(WeekPicker, timeZoneUtils, SendSmsController, SchedulerActionsControlle
 				});
 		}		
 		
-		
-		/**
-		 * Registers click-listeners which delegate clicked action to controller.
-		 */
-		function initStateActions(){
-			$stateChange.on('click', 'button', function(event) {
-				// disable buttons
-				jQuery('button', $stateChange).attr('disabled', 'disabled');
-				controller.handleStateChangeClick(event);
-			});
-		}
-		
-		this.enableStateChange = function(){
-			jQuery('button', $stateChange).removeAttr('disabled');
-		};
-		
-		/**
-		 * Re-renders action-buttons based on schedulerState-model in schedulerTableController.
-		 */
-		this.updateStateActions = function() {
-			$stateChange.empty().append(stateActionsTmpl({
-				authorizedActions : scope.schedulerTableCtrl.authorizedActions
-			}));
-		};
-		
 		/**
 		 * @param data : {title, msg} optional
 		 */
@@ -256,8 +234,7 @@ function(WeekPicker, timeZoneUtils, SendSmsController, SchedulerActionsControlle
 					showClosing : true
 				}
 			}).showDialog();
-		};
-		
+		};		
 		
 		/**
 		 * Shows not-authorized popup.
@@ -367,26 +344,7 @@ function(WeekPicker, timeZoneUtils, SendSmsController, SchedulerActionsControlle
 					showClosing : true
 				}
 			}).showDialog();
-		};
-		
-		/**
-		 * Shows pop-up containing issues with change of schedule-state.
-		 * @param blocker: [string] - issues msgs
-		 */
-		this.showStateChangeBlocker = function(blocker){
-			jQuery.decor.dialogDecor({
-				$el : jQuery(stateChangeIssuesTmpl({
-					blocker : blocker
-				})),
-				options : {
-					editorWidth : 350,
-					editorHeight : 200,
-					warning : true,
-					onTheFly : true,
-					showClosing : true
-				}
-			}).showDialog();
-		};	
+		};		
 		
 		/**
 		 * Shows outdate-schedule pop-up.

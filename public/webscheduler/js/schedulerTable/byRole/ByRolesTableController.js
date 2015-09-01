@@ -1,5 +1,5 @@
-define(['SchedulerTableCtrl', 'ByRolesTotalsModel', 'ByRolesEditShiftController', 'ByRolesTableView'],
- function(SchedulerTableCtrl, ByRolesTotalsModel, ByRolesEditShiftController, ByRolesTableView){
+define(['SchedulerTableCtrl', 'ByRolesTotalsModel', 'ByRolesTableView', 'q'],
+ function(SchedulerTableCtrl, ByRolesTotalsModel, ByRolesTableView, q){
 	ByRolesTableController.prototype = new SchedulerTableCtrl();
 	return ByRolesTableController;		
 	
@@ -43,9 +43,11 @@ define(['SchedulerTableCtrl', 'ByRolesTotalsModel', 'ByRolesEditShiftController'
 		 * @returns {EditShiftController} : specific instance, either byEmpls or byRoles.
 		 */
 		this.createEditShiftController = function(){
-			return new ByRolesEditShiftController({
-				controller : scope
-			});			
+			return q.Promise(function(resolve){
+				require(['ByRolesEditShiftController'], function(ByRolesEditShiftController){
+					resolve(new ByRolesEditShiftController({controller : scope}));
+				});
+			});					
 		};
 		
 		/**

@@ -1,3 +1,6 @@
+/* status colors */
+/* dialogs */
+/* gantt-chart colors */
 .posting-dialog .content {
   padding: 10px 20px;
 }
@@ -11,4 +14,14 @@
   color: white;
   font-weight: bold;
   margin: 10px;
+}
+.posting-dialog .not-scheduled-departm {
+  font-style: italic;
+  margin: 10px 0;
+  max-height: 70px;
+  max-width: 90%;
+  overflow-y: auto;
+}
+.posting-dialog .warning {
+  color: #f2883a;
 }
