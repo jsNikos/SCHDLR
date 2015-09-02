@@ -1,4 +1,4 @@
-define(['EventEmitter', 'timeZoneUtils'], function(EventEmitter, timeZoneUtils){
+define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'], function(EventEmitter, timeZoneUtils){
 	return function(args){
 		SchedulerTableView.prototype = new EventEmitter();
 		return new SchedulerTableView(args);

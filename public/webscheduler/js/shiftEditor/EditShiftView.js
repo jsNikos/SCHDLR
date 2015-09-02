@@ -1,4 +1,4 @@
-define(['timeZoneUtils'], function(timeZoneUtils){
+define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtils){
 	return EditShiftView;
 	
 	/**

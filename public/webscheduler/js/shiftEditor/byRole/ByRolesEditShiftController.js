@@ -1,6 +1,6 @@
 define(['EditShiftController',
         'ByRolesEditShiftView',
-        'text!../byRolesEditDialog.html',
+        'text!shiftEditor/byRole/byRolesEditDialog.html',
         'timeZoneUtils'],
 function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml, timeZoneUtils){
 	return function(args){
