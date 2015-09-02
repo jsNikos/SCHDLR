@@ -90,14 +90,14 @@
   display: inline-block;
   width: 130px;
   text-align: right;
-  background-image: url("images/unavailable.png");
+  background-image: url("../../images/unavailable.png");
   background-repeat: no-repeat;
 }
 .edit-dialog .unavail-info .period.EmployeeScheduleDetail {
-  background-image: url("images/scheduled.png");
+  background-image: url("../../images/scheduled.png");
 }
 .edit-dialog .unavail-info .period.available {
-  background-image: url("images/available.png");
+  background-image: url("../../images/available.png");
 }
 .edit-dialog .unavail-info .type {
   display: inline-block;
