@@ -189,7 +189,13 @@ require.config({
 	  <span class="statistics link-decor">Statistics</span>
 	  <span class="print link-decor">Print View</span>
 	 </div>
-	 <div class="scheduleInfo"><%- scheduleInfo %><div>
+	 <div class="scheduleInfo">
+		<% if(scheduleInfo) { %>			
+		<%    scheduleInfo.split('\n').forEach(function(part){ %>
+					<%- part %></br>
+		<%    }); %>
+		<% } %>
+	<div>
 	</div>
 	</script>
 	

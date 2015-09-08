@@ -6,8 +6,13 @@
 		<div class="message">
 			<% if(scheduleBy === 'Department' && nonScheduledDepartment.length > 0){ %>
 			The following departments are not scheduled:<br>
-			<div class="not-scheduled-departm">
+			<div class="not-scheduled-entity">
 				<div><%- nonScheduledDepartment.join(', ') %></div>
+			</div>
+			<% } else if(_.contains(['All', 'Role'], scheduleBy) && nonScheduledRoles.length > 0){ %>
+			The following roles are not scheduled:<br>
+			<div class="not-scheduled-entity">
+				<div><%- nonScheduledRoles.join(', ') %></div>
 			</div>
 			<% } %>
 			<span class="warning">Is this schedule complete for the whole week and all departments?</span><br><br>
