@@ -74,8 +74,8 @@ define(['SchedulesModelUtils',
 			scope = this;
 			// fetch the model
 			fetchScheduleTableInit(scope.webSchedulerController.selectedDate,
-								   scope.webSchedulerController.selectedDepartmentName,
-								   handleResponse);
+								   scope.webSchedulerController.selectedDepartmentName).then(handleResponse);
+			
 			function handleResponse(resp) {
 				// init model
 				scope.fire(scope.INITIAL_DATA_FETCHED, resp); 
@@ -103,10 +103,7 @@ define(['SchedulesModelUtils',
 		 * In case selected-department is not already set (from state) sets it to
 		 * the first in departments- list
 		 */
-		function initSelectedDepartment(){
-			if(scope.webSchedulerController.selectedDepartmentName != undefined){
-				return;
-			}			
+		function initSelectedDepartment(){					
 			scope.webSchedulerController.selectedDepartmentName = scope.selectedDepartment && scope.selectedDepartment.name;						
 		}
 		
@@ -171,7 +168,7 @@ define(['SchedulesModelUtils',
 
 			// either first fetch new data or directly render model
 			if (newData) {  
-				xhr = fetchScheduleTableInit(args.dateInWeek, args.selectedDepartmentName, function(resp) {
+				xhr = fetchScheduleTableInit(args.dateInWeek, args.selectedDepartmentName).then(function(resp) {
 					// refresh model
 					jQuery.extend(scope, _.pick(resp, modelProps));
 					initSelectedDepartment();				
@@ -630,7 +627,7 @@ define(['SchedulesModelUtils',
 		 *            {Date} : any day in week, can be null
 		 * @param selectedDepartmentName : string
 		 */
-		function fetchScheduleTableInit(date, selectedDepartmentName, callback) {
+		function fetchScheduleTableInit(date, selectedDepartmentName) {
 			return jQuery.ajax({ 
 				url : scope.CONTROLLER_URL + '/findScheduleTableInit',
 				dataType : 'json',
@@ -638,8 +635,7 @@ define(['SchedulesModelUtils',
 				data : {
 					dateInWeek : date ? date.getTime() : null,
 					selectedDepartment : selectedDepartmentName
-				},
-				success : callback
+				}
 			});
 		}
 
