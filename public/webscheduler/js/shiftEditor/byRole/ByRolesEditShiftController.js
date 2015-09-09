@@ -81,22 +81,18 @@ function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml, timeZ
 		 * 				 endTime,
 		 * 				 scheduleDetail : ScheduleDetailHolder (in case of an edit)
 		 * 				 }
-		 * @param callback : function({unavailableEmployees : [EmployeeHolder]}) 
+		 * @param promise : resolving with {unavailableEmployees : [EmployeeHolder]} 
 		 */
-		function fetchUnavailableEmployees(args, callback){
+		function fetchUnavailableEmployees(args){
 			var data = _.clone(args);
 			if(data.scheduleDetail){
 				data.scheduleDetail = JSON.stringify(data.scheduleDetail);
 			}
-			jQuery.ajax({
+			return jQuery.ajax({
 				url : scope.tableController.CONTROLLER_URL + '/findUnavailableEmployees',
 				dataType : 'json',
 				type : 'POST',
-				data : data,
-				success : function(result){
-					scope.unavailableEmployees = result.unavailableEmployees;
-					callback && callback(result);
-				} 					
+				data : data
 			});
 		}
 		
@@ -203,7 +199,8 @@ function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml, timeZ
 			};
 			_.extend(reqParams, scope.findPeriodToSubmit());
 			scope.editShiftView.disableWhoSelect();
-			fetchUnavailableEmployees(reqParams, function(){
+			fetchUnavailableEmployees(reqParams).then(function(resp){
+				scope.unavailableEmployees = resp.unavailableEmployees;			
 				scope.editShiftView.updateSelectWhoTab();
 				scope.editShiftView.enableWhoSelect();
 			});

@@ -36,13 +36,14 @@ define(['EditShiftView'], function(EditShiftView){
 		 * Registers click-listener which triggers to open employee-selector
 		 * in case it is enabled.
 		 */
-		function initWhoInput(){
-			$who.on('click', function(){
+		function initWhoInput(){			
+			$who.on('click', function(){				
 				if(!$who.hasClass('enabled')){
+					$who.tooltip('open'); 
 					return;
-				}
+				}				
 				$whoSelect.show();				
-			});
+			}).tooltip();
 		}
 		
 		/**
@@ -141,6 +142,7 @@ define(['EditShiftView'], function(EditShiftView){
 	     * Enables who-select.
 	     */
 	    this.enableWhoSelect = function(){
+	    	$who.tooltip('disable');
 	    	$who.addClass('enabled');
 	    };
 	    
