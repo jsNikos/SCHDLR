@@ -147,15 +147,11 @@
   box-shadow: 0 0 7px 5px rgba(0, 0, 0, 0.3) inset, 0 3px 3px 0 #000000;
   display: inline-block;
   font-weight: bold;
-  height: 16px;
   margin: 5px;
   padding: 3px 10px;
   width: 100px;
   text-align: center;
   cursor: move;
-}
-.scheduler-wrapper.by-roles .shift {
-  height: 35px;
 }
 .scheduler-wrapper .shift .employee-name {
   font-style: italic;

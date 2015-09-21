@@ -88,7 +88,8 @@ function(timeZoneUtils, ganttChartPopupHtml){
 				customCellStates : controller.customCellStates,
 				onLineDrawn : onLineDrawn,
 				addCellState : addCellState,
-				formatColumnLabel : createColLabelFormatter()
+				formatColumnLabel : createColLabelFormatter(),
+				headerColumnHeight : controller.tableController.weeklyScheduleInRegularTimeFormat ? '75px' : '55px'
 			}, controller.ganttChartModel);
 			$ganttContainer.ganttDecor(options);
 		};
@@ -239,7 +240,8 @@ function(timeZoneUtils, ganttChartPopupHtml){
 		 * @return String
 		 */
 		function formatShiftTime(time){
-			return timeZoneUtils.parseInServerTimeAsMoment(time).format('HH:mm');
+			var formatStrg = controller.tableController.weeklyScheduleInRegularTimeFormat ? 'h:mm a' : 'HH:mm';
+			return timeZoneUtils.parseInServerTimeAsMoment(time).format(formatStrg);
 		}
 		
 	}

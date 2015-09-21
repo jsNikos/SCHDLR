@@ -164,7 +164,8 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 		function formatUnavailTime(time, isEndtime) {
 			var mom = timeZoneUtils.parseInServerTimeAsMoment(time); 
 			isEndtime && mom.add(1, 'seconds');
-			return mom.format('HH:mm');
+			var timeFormat = scope.editShiftCtrl.tableController.weeklyScheduleInRegularTimeFormat ? 'h:mm a' : 'HH:mm';
+			return mom.format(timeFormat);
 		}
 		
 		
@@ -187,6 +188,8 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 		 */
 		function initPeriodInputs() {
 			var options = {
+				showPeriod : !!scope.editShiftCtrl.tableController.weeklyScheduleInRegularTimeFormat,
+				showLeadingZero: !scope.editShiftCtrl.tableController.weeklyScheduleInRegularTimeFormat,
 				minutes : {
 					starts : 0,
 					interval : scope.editShiftCtrl.tableController.scheduleGranularity

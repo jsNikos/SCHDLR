@@ -20,6 +20,7 @@ define(['./GanttView', './GanttDragHandler', 'jquery.event.drag-2.2'], function(
 		// options:
 		this.cellWidth = 30;
 		this.rowWidth = 40;
+		this.headerColumnHeight = undefined;
 		this.readonly; // makes view read-only
 		this.customCellStates = {}; // custom cell states
 		this.onLineDrawn = function(ganttController, lineModel){}; // called whenever a line is drawn from model

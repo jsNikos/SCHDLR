@@ -299,7 +299,11 @@ require.config({
 	<script id="shiftTmpl" type="text/template">
     <div class="shift">
 		<img class="role" width="16px" height="16px" title="<%- role.name %>" src="/Image?name=<%- role.image %>" /> 
-        <span class="period" data-startime="<%- startTime %>"><%- startTimeDispl %> - <%- endTimeDispl %></span>
+        <span class="period" data-startime="<%- startTime %>">
+		 <%- startTimeDispl %> 
+			<% if(weeklyScheduleInRegularTimeFormat){ %> <br> <% } else{ %> - <% } %> 			 
+		 <%- endTimeDispl %>
+        </span>
         <div class="close-icon"></div>
 	</div>
 	</script>
@@ -308,7 +312,11 @@ require.config({
 	<script id="byRolesShiftTmpl" type="text/template">
     <div class="shift">
 		<div class="employee-name"><%- employee.displayName %></div> 
-        <span class="period" data-startime="<%- startTime %>"><%- startTimeDispl %> - <%- endTimeDispl %></span>
+        <span class="period" data-startime="<%- startTime %>">
+		 <%- startTimeDispl %> 
+			<% if(weeklyScheduleInRegularTimeFormat){ %> <br> <% } else{ %> - <% } %>  
+    	 <%- endTimeDispl %>
+        </span>
         <div class="close-icon"></div>
 	</div>
 	</script>		

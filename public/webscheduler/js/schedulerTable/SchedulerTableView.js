@@ -415,6 +415,14 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			throw new Error('this is abstract');
 		};
 		
+		function findTimeFormatOnShifts(){
+			if(scope.tableController.weeklyScheduleInRegularTimeFormat){
+				return 'h:mm a';
+			} else{
+				return 'HH:mm';
+			}
+		} 
+		
 		/**
 		 * Creates and returns a shift from the given scheduleDetail.
 		 * Adds draggable listener.
@@ -426,8 +434,9 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			});
 			var data = jQuery.extend({}, scheduleDetail, {
 				employee : employee,
-				startTimeDispl: timeZoneUtils.parseInServerTimeAsMoment(scheduleDetail.startTime).format('HH:mm'),  
-			    endTimeDispl: timeZoneUtils.parseInServerTimeAsMoment(scheduleDetail.endTime).add(1, 'seconds').format('HH:mm')
+				startTimeDispl: timeZoneUtils.parseInServerTimeAsMoment(scheduleDetail.startTime).format(findTimeFormatOnShifts()),  
+			    endTimeDispl: timeZoneUtils.parseInServerTimeAsMoment(scheduleDetail.endTime).add(1, 'seconds').format(findTimeFormatOnShifts()),
+			    weeklyScheduleInRegularTimeFormat : scope.tableController.weeklyScheduleInRegularTimeFormat
 			});
 			var $shift = jQuery(scope.getShiftTmpl()(data));			
 			
