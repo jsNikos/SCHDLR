@@ -22,9 +22,7 @@ function(timeZoneUtils, ganttChartPopupHtml){
 		
 		// templates
 		var ganttChartPopup = _.template(ganttChartPopupHtml);
-		var lineInfoTmpl = _.template('<div class="line-info" title="<%- info %>">\n'+
-									  	'<div class="info"><%- info %></div>\n'+
-									  '</div>');
+		var lineInfoTmpl = _.template('<div class="line-info" title="<%- info %>"></div>');
 		
 		// parameter
 		var rowWidth = 200;		
@@ -231,8 +229,12 @@ function(timeZoneUtils, ganttChartPopupHtml){
 			var info = controller.tableController.findEmployee(lineModel.employeeName).displayName;
 			info += ' (' + formatShiftTime(lineModel.startTime) + ' - ' + formatShiftTime(lineModel.endTime + 1000) + ')';
 			var $lineInfo = jQuery(lineInfoTmpl({info: info})).data('scheduleDetail', lineModel);			
-			controller.tableController.tableView.reRenderValidIssues($lineInfo);
-			jQuery('[data-lineid="'+lineModel.id+'"]', $ganttContainer).wrapAll($lineInfo);
+			controller.tableController.tableView.reRenderValidIssues($lineInfo);			
+			jQuery('[data-lineid="'+lineModel.id+'"]', $ganttContainer)
+				.wrapAll($lineInfo)
+				.first()
+				.parent()
+				.prepend(_.template('<div class="info"><%- info %></div>')({info: info}));			
 		}
 		
 		/**
