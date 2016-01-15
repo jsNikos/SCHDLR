@@ -188,7 +188,7 @@ define(['./ganttGridTmpl'], function(gridTmpl) {
 			// compute table width
 			var columnsWidth = controller.columns.length * cellWidth; 
 			$columns.width(columnsWidth); 
-			(headerColumnHeight != undefined) && $columns.css('height', headerColumnHeight); 
+			(headerColumnHeight != undefined) && $columns.css('height', headerColumnHeight);
 			$ganttTable.width(columnsWidth); 
 
 			// adjust cell-dims
@@ -197,7 +197,7 @@ define(['./ganttGridTmpl'], function(gridTmpl) {
 				height : cellHeight
 			});
 			jQuery('.tableCell', $columns).css('width', cellWidth);
-			(headerColumnHeight != undefined) && jQuery('.tableCell', $columns).css('height', headerColumnHeight); 
+			(headerColumnHeight != undefined) && jQuery('.tableCell', $columns).css('height', headerColumnHeight);
 
 			// adjust cell-container		
 			$cellContainer.css({

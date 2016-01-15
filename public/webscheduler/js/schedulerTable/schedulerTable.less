@@ -145,14 +145,17 @@
   border-radius: 11px 11px 11px 11px;
   box-shadow: 0 0 7px 5px rgba(0, 0, 0, 0.3) inset, 0 3px 3px 0 #000000;
   display: inline-block;
-  font-weight: bold;  
+  font-weight: bold;
+  height: 16px;
   margin: 5px;
   padding: 3px 10px;
   width: 100px;
   text-align: center;
   cursor: move;
 }
-
+.scheduler-wrapper.by-roles .shift {
+  height: 35px;
+}
 .scheduler-wrapper .shift .employee-name {
   font-style: italic;
   font-size: 12px;
@@ -228,7 +231,7 @@
   width: 12px;
   cursor: pointer;
   display: none;
-  background-image: url("../../images/close_icon_sprite.png");
+  background-image: url("images/close_icon_sprite.png");
   background-position: 0px -12px;
 }
 .scheduler-wrapper .shift.error .close-icon {
