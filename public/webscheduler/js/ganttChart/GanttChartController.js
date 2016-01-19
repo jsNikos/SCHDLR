@@ -1,8 +1,8 @@
-define(['ganttChart/GanttChartModel', 
+define(['ganttChart/GanttChartModel',
         'ganttChart/GanttChartView',
         'gantt-decor/jQuery.decor.gantt'], function(GanttChartModel, GanttChartView){
 	return GanttChartController;
-	
+
 	/**
 	 * Intended to support gantt-view of a day.
 	 * @args : {tableController : ScheduleTableCtrl}
@@ -12,18 +12,18 @@ define(['ganttChart/GanttChartModel',
 		this.tableController = args.tableController;
 		var ganttChartView = undefined;
 		this.ganttChartModel = undefined;
-		
+
 		// custom cell states
 		this.customCellStates = {
 			green : 'green', /* shift overwriting forecasted shift */
 			yellow : 'yellow', /* shift without forecasted shift */
 			red : 'red' /* forecasted shift */
 		};
-		
+
 		function init(){
 			ganttChartView = new GanttChartView({controller: scope});
 		}
-		
+
 		/**
 		 * Triggers to fetch data from server and to show gantt-chart.
 		 */
@@ -39,14 +39,14 @@ define(['ganttChart/GanttChartModel',
 					shiftForecasts : resp.shiftForecasts,
 					timeSlots : resp.timeSlots,
 					labelGranularity : resp.labelGranularity
-				});			
-				
+				});
+
 				// render the gantt-chart
-				ganttChartView.renderGanttChart();				
+				ganttChartView.renderGanttChart();
 			});
-		};	
-		
-		
+		};
+
+
 		/**
 		 * Handles resize-events by triggering to re-render the gantt-chart.
 		 */
@@ -54,17 +54,17 @@ define(['ganttChart/GanttChartModel',
 			ganttChartView.clearGanttChart();
 			this.renderDuringResize();
 		}.bind(this);
-		
+
 		/**
 		 * Render-call to be used during resizing-events.
 		 */
 		this.renderDuringResize = _ext.waitAtLeast(function(){
 			ganttChartView.renderGanttChart();
 		}, 500);
-		
+
 		/**
 		 * Fetches init-data for gantt-chart, for given weekDay.
-		 * 
+		 *
 		 * @param weekDay {String}
 		 * @param callback: function({columnModels : [TimeSlotHolder]})
 		 */
@@ -79,9 +79,9 @@ define(['ganttChart/GanttChartModel',
 				success : callback
 			});
 		}
-		
+
 		init();
-		
+
 	}
-	
+
 });

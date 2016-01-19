@@ -2,51 +2,51 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 	return function(args){
 		SchedulerTableView.prototype = new EventEmitter();
 		return new SchedulerTableView(args);
-	};	
+	};
 
-	/** 
+	/**
 	 * The view manages the pure table, the week-day header and all totals.
 	 * It is ABSTRACT and serves for both 'byEmployees' and 'byRoles'.
 	 * @param args : {$schedulerEl}, the scheduler-table context used for this instance
 	 * @constructor
-	 */	
+	 */
 	function SchedulerTableView(args) {
 		var scope = undefined;
-		this.tableController = undefined;	
+		this.tableController = undefined;
 		this.flagOverhours = true;
-		
+
 		// events
 		var DROP = 'drop';
 		var REMOVE = 'remove';
-		var CREATE = 'create';	
+		var CREATE = 'create';
 		var EDIT = 'edit';
-		
+
 		// el's
 		this.$scheduler = args.$schedulerEl;
 		var $schedulerWrapper = this.$scheduler.parent();
 		var $weekDaysHeader = jQuery('.week-days-header', $schedulerWrapper);
 		var $totalsFooter = jQuery('.totals-footer', $schedulerWrapper);
-		var $loadingOverlay = jQuery('.loading-overlay', $schedulerWrapper);		
-		
-		// template		
+		var $loadingOverlay = jQuery('.loading-overlay', $schedulerWrapper);
+
+		// template
 		var weekDayTmpl = _.template(jQuery('#weekDateTmpl').text());
 		var weeklyTotalTmpl = _.template(jQuery('#weeklyTotalTmpl').text());
 		var rowTotalTmpl = _.template(jQuery('#rowTotalTmpl').text());
 		var shiftsBlockerTmpl = _.template(jQuery('#shiftsBlockerTmpl').text());
 		var errorPopupTmpl = _.template(jQuery('#errorPopupTmpl').text());
 		var shiftCellTotalTmpl = _.template(jQuery('#shiftCellTotalTmpl').text());
-		var overwriteIssuesTmpl = _.template(jQuery('#overwriteIssuesTmpl').text());				
-		
+		var overwriteIssuesTmpl = _.template(jQuery('#overwriteIssuesTmpl').text());
+
 		this.init = function() {
-			scope = this;			
+			scope = this;
 			initShiftRemove();
 			initShiftCreate();
-			initShiftEdit();			
+			initShiftEdit();
 			initWeekDays();
 			initVerticalScroll();
-			initSyncTableWidth();		
-		};		
-		
+			initSyncTableWidth();
+		};
+
 		/**
 		 * Registers delegating click-listener on week-days. Intended
 		 * to trigger gantt-chart view.
@@ -56,7 +56,7 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				scope.tableController.handleWeekDayClicked(jQuery(event.target));
 			});
 		}
-		
+
 		/**
 		 * Handles window-resize by adjusting width of week-day-header and
 		 * totals-footer to width of scheduler-table.
@@ -72,15 +72,15 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				scope.alignTotalsFooter();
 			});
 		}
-		
-		
+
+
 		// scroll-events trigger to check vertical position of week-days-header and totals-footer
 		// and in case fixes it at top resp. at bottom
-		function initVerticalScroll() {			
+		function initVerticalScroll() {
 			jQuery(window).on('scroll', function() {
 				if(!scope.checkListenToWindowEvents()){
 					return;
-				}			
+				}
 				checkPosOfWeekDaysHeader();
 				checkPosOfTotalsFooter();
 
@@ -95,8 +95,8 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				// checkPosOfTotalsFooter();
 				// }, 0);
 			});
-		}		
-		
+		}
+
 		/**
 		 * Checks if current tableView instance listens to window-events.
 		 * This copes with the general problem, to view for one el.
@@ -104,7 +104,7 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 		this.checkListenToWindowEvents = function(){
 			throw new Error('this is abstract');
 		};
-		
+
 		// if position of weekDaysHeader is at upper screen-border, changes to fix-position
 		function checkPosOfWeekDaysHeader() {
 			var $tableHeader = jQuery('.table-header');
@@ -117,56 +117,56 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				$weekDaysHeader.removeClass('fixed');
 			}
 		}
-		
+
 		// if pos. of totals-footer is a lower screen-border, change to fix-positioning
-		function checkPosOfTotalsFooter() {					 
-			var bottomTableToTopScreen = scope.$scheduler.outerHeight() - (jQuery(window).scrollTop() - scope.$scheduler.offset().top); 
-			var tableTobottom = jQuery(window).height() - bottomTableToTopScreen; 
-			if (tableTobottom >= 0) {						
+		function checkPosOfTotalsFooter() {
+			var bottomTableToTopScreen = scope.$scheduler.outerHeight() - (jQuery(window).scrollTop() - scope.$scheduler.offset().top);
+			var tableTobottom = jQuery(window).height() - bottomTableToTopScreen;
+			if (tableTobottom >= 0) {
 				$totalsFooter.removeClass('fixed');
 			} else {
 				$totalsFooter.addClass('fixed');
 				adjustFixedPosToVertScroll($totalsFooter);
 				$totalsFooter.width(scope.$scheduler.width());
-			}						
+			}
 		}
-		
+
 		/**
 		 * Aligns week-day header by adjusting its width to scheduler-table width.
 		 */
 		this.alignWeekDaysHeader = function(){
-			$weekDaysHeader.width(scope.$scheduler.width()); 
+			$weekDaysHeader.width(scope.$scheduler.width());
 		};
-		
+
 		/**
 		 * Aligns totals-footer by adjusting its width to scheduler-table width.
 		 */
 		this.alignTotalsFooter = function(){
 			$totalsFooter.width(scope.$scheduler.width());
 		};
-		
+
 		/**
 		 * Adjust the fixed-poistioned element to the left-scroll position.
 		 * @param $fixed
 		 */
 		function adjustFixedPosToVertScroll($fixed){
 			$fixed.css('left', -jQuery(window).scrollLeft());
-		}			
-		
+		}
+
 		this.hide = function(){
 			$schedulerWrapper.hide();
 		};
-		
+
 		this.show = function(){
 			$schedulerWrapper.show();
 		};
-		
-		// shows loading state on table 
+
+		// shows loading state on table
 		this.showLoading = function(){
 			$loadingOverlay.show();
 		};
-		
-		// hides loading state on table 
+
+		// hides loading state on table
 		this.hideLoading = function(){
 			$loadingOverlay.hide();
 		};
@@ -182,7 +182,7 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				});
 			});
 		}
-		
+
 		/**
 		 * Delegating click listener for shift-editor link.
 		 */
@@ -195,7 +195,7 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				});
 			});
 		}
-		
+
 		/**
 		 * Register delegating click handler to catch clicks on remove-icon of
 		 * a shift.
@@ -207,17 +207,17 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				scope.fire(REMOVE, {
 					scheduleDetail : $shift.data('scheduleDetail'),
 					$shift : $shift
-				});				
+				});
 			});
 		}
-		
+
 		/**
 		 * Removes shift from table.
 		 */
 		this.removeShift = function($shift){
 			$shift.remove();
 		};
-		
+
 		/**
 		 * Async. renders (first clean) the table by applying given model.
 		 * This can be called whenever the model refreshes.
@@ -238,13 +238,13 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				};
 			}
 
-			// clean			
-			scope.$scheduler.empty();			
+			// clean
+			scope.$scheduler.empty();
 			$weekDaysHeader.empty();
 			$totalsFooter.empty();
 			// separating header from body, to make header fixed when scrolling
-			$weekDaysHeader.append(createDateHeader());			
-			
+			$weekDaysHeader.append(createDateHeader());
+
 			// is async
 			createRowsTask = createRows(function(rows) {
 				scope.$scheduler.append(rows);
@@ -252,13 +252,13 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				// is async
 				applySchedulesTask = applySchedules(scope.tableController.schedules, function() {
 					checkPosOfWeekDaysHeader();
-					checkPosOfTotalsFooter();	
-					sortShiftsTask = scope.sortAllShifts(callback);					
+					checkPosOfTotalsFooter();
+					sortShiftsTask = scope.sortAllShifts(callback);
 				});
 				$totalsFooter.append(createTotalsFooter());
 				scope.alignTotalsFooter();
 			});
-						
+
 			return {
 				abort : function() {
 					createRowsTask && createRowsTask.abort();
@@ -269,55 +269,55 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 		};
 
 		/**
-		 * Async. applys given schedules on table.		  
+		 * Async. applys given schedules on table.
 		 * @param schedules
 		 * @param callback : ready-handler
 		 * @return {abort} : where 'abort' is function when called abort processing
 		 */
 		function applySchedules(schedules, callback) {
 			return _ext.asyncEach(schedules, function(schedule) {
-				_.each(schedule.scheduleDetailHolders, function(scheduleDetail) {			
-					scope.addShift(scheduleDetail);				
+				_.each(schedule.scheduleDetailHolders, function(scheduleDetail) {
+					scope.addShift(scheduleDetail);
 				});
 			}, callback);
 		}
-		
+
 		/**
 		 * Adds a shift to table, given by scheduleDetail.
-		 * 
+		 *
 		 * @param scheduleDetail
 		 *            {ScheduleDetail}
 		 * @return $shift : the shift added
 		 */
-		this.addShift = function(scheduleDetail){			
+		this.addShift = function(scheduleDetail){
 			// get the cell by coord.
 			var $td = scope.findShiftsCell(scope.tableController.findShiftsCellCoord(scheduleDetail));
 			var $shift = scope.createShift(scheduleDetail);
 			$td.find('.positioner').append($shift);
 			return $shift;
 		};
-		
-		
+
+
 		/**
 		 * Renews all shift within target-cell given by coordinates, by
 		 * re-creating from scratch.
-		 * @param shiftsCellCoord {weekDay, employeeName} resp. {weekDay, role}	
+		 * @param shiftsCellCoord {weekDay, employeeName} resp. {weekDay, role}
 		 */
 		this.renewShifts = function(shiftsCellCoord){
-			scope.findShiftsforCell(shiftsCellCoord).remove();			
+			scope.findShiftsforCell(shiftsCellCoord).remove();
 			_.each(scope.tableController.findScheduleDetailsInCell(shiftsCellCoord), function(scheduleDetail) {
 				scope.addShift(scheduleDetail);
 			});
 			scope.sortShifts(shiftsCellCoord);
 		};
-		
-		
+
+
 		/**
 		 * Async. sorts all shifts-cells.
 		 * @param callback : function()
 		 * @returns {abort}, where 'abort' is function when called aborts processing
 		 */
-		this.sortAllShifts = function(callback) {	
+		this.sortAllShifts = function(callback) {
 			var rowElements = scope.tableController.findRowElements();
 			return _ext.asyncEach(rowElements, function(rowElement) {
 				_.each(scope.tableController.schedules, function(schedule) {
@@ -327,35 +327,35 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				});
 			}, callback);
 		};
-		
+
 		/**
-		 * Sets the given shifts-cell by shift-startdate.		  
+		 * Sets the given shifts-cell by shift-startdate.
 		 * @param shiftsCellCoord {weekDay, employeeName}
-		 *         
+		 *
 		 */
-		this.sortShifts = function(shiftsCellCoord) {			
+		this.sortShifts = function(shiftsCellCoord) {
 			scope.findShiftsforCell(shiftsCellCoord).tsort('.period', {
 				attr : 'data-startime',
 				place: 'first'
 			});
 		};
-		
+
 		/**
 		 * Returns all shifts corresponding to the given coordinates.
-		 * @param shiftsCellCoord : {weekDay, role or employeeName}		  
+		 * @param shiftsCellCoord : {weekDay, role or employeeName}
 		 */
-		this.findShiftsforCell = function(shiftsCellCoord) {			
+		this.findShiftsforCell = function(shiftsCellCoord) {
 			return scope.findShiftsCell(shiftsCellCoord).find('.shift');
 		};
-		
+
 		/**
-		 * Returns the shifts-cell determined by coord. 
+		 * Returns the shifts-cell determined by coord.
 		 * @param shiftsCellCoord : {weekDay, role or employeeName}
 		 */
 		this.findShiftsCell = function(shiftsCellCoord){
 			throw new Error('this is abstract');
 		};
-		
+
 		/**
 		 * Refreshes total for shift given by coordinates.
 		 * @param shiftsCellCoord : {weekDay}
@@ -364,23 +364,23 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 		this.refreshShiftTotal = function(shiftsCellCoord, $shiftTd) {
 			var rowCoord = shiftsCellCoord[scope.tableController.rowCoordProp];
 			var weekDay = shiftsCellCoord.weekDay;
-			
-			var $td = $shiftTd || scope.findShiftsCell(shiftsCellCoord);			
+
+			var $td = $shiftTd || scope.findShiftsCell(shiftsCellCoord);
 			var $dayHours = jQuery('.day-hours', $td).empty();
-			
+
 			// get the total/overhours
 			var total = scope.tableController.totalsModel.rowTotals[rowCoord][weekDay].total;
 			var overhours = scope.tableController.totalsModel.rowTotals[rowCoord][weekDay].overhours;
-			
-			// only visible when total is > 0			
+
+			// only visible when total is > 0
 			if (total > 0) {
 				$dayHours.append(createShiftCellTotal(total, overhours));
-				$dayHours.css('visibility', 'visible');										         
+				$dayHours.css('visibility', 'visible');
 			} else {
 				$dayHours.css('visibility', 'hidden');
-			}								         
+			}
 		};
-		
+
 		/**
 		 * Creates a span for rendering total/overhours for shift-cells.
 		 * @param total
@@ -394,8 +394,8 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			(overhours > 0) && $totalSpan.find('.overhours').show();
 			return $totalSpan;
 		}
-		
-		
+
+
 		/**
 		 * After a drop-event, but before updating the shift's model reference
 		 * and the model itself - this can be called to place the shift at its
@@ -407,22 +407,22 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			scope.removeShift($shift);
 			scope.sortShifts(scope.tableController.findShiftsCellCoord(scheduleDetail));
 		};
-		
+
 		/**
 		 * Returns the shift's template.
 		 */
 		this.getShiftTmpl = function(){
 			throw new Error('this is abstract');
 		};
-		
+
 		function findTimeFormatOnShifts(){
 			if(scope.tableController.weeklyScheduleInRegularTimeFormat){
 				return 'h:mm a';
 			} else{
 				return 'HH:mm';
 			}
-		} 
-		
+		}
+
 		/**
 		 * Creates and returns a shift from the given scheduleDetail.
 		 * Adds draggable listener.
@@ -434,18 +434,18 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			});
 			var data = jQuery.extend({}, scheduleDetail, {
 				employee : employee,
-				startTimeDispl: timeZoneUtils.parseInServerTimeAsMoment(scheduleDetail.startTime).format(findTimeFormatOnShifts()),  
+				startTimeDispl: timeZoneUtils.parseInServerTimeAsMoment(scheduleDetail.startTime).format(findTimeFormatOnShifts()),
 			    endTimeDispl: timeZoneUtils.parseInServerTimeAsMoment(scheduleDetail.endTime).add(1, 'seconds').format(findTimeFormatOnShifts()),
 			    weeklyScheduleInRegularTimeFormat : scope.tableController.weeklyScheduleInRegularTimeFormat
 			});
-			var $shift = jQuery(scope.getShiftTmpl()(data));			
-			
+			var $shift = jQuery(scope.getShiftTmpl()(data));
+
 			// add scheduleDetail ref
-			$shift.data('scheduleDetail', scheduleDetail); 
-			
+			$shift.data('scheduleDetail', scheduleDetail);
+
 			// render validation-issues on shift, if the lie in future
 			scope.reRenderValidIssues($shift);
-			
+
 			// init d&d only if shift is modifiable
 			if (scheduleDetail.modifiable && scope.tableController.isScheduleModifiable) {
 				// init mouse events
@@ -457,7 +457,7 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 
 				// init draggable
 				$shift.draggable({
-					appendTo : $schedulerWrapper, 
+					appendTo : $schedulerWrapper,
 					helper : 'clone',
 					opacity : 0.5,
 					revert : 'invalid',
@@ -479,9 +479,9 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 		function showIssues(scheduleDetail){
 			return Date.now() <= scheduleDetail.startTime;
 		};
-		
+
 		/**
-		 * Refreshes error/warning-display on given shift. This contains logic to categorize 
+		 * Refreshes error/warning-display on given shift. This contains logic to categorize
 		 * issues into warnings resp errors. When getting more logic into that subject, this is
 		 * the location to pull the logic away from.
 		 * @param $shift : a shift representing el, needs 'scheduleDetail' in data
@@ -492,26 +492,26 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			if(!showIssues(scheduleDetail)){
 				return;
 			}
-			
-			var validationIssues = scope.tableController.extractNotOverwrittenIssues(scheduleDetail);			
+
+			var validationIssues = scope.tableController.extractNotOverwrittenIssues(scheduleDetail);
 			if(scope.tableController.findIssuesOfLevel('ERROR', validationIssues)){
-				$shift.addClass('error');				
+				$shift.addClass('error');
 			} else if(scope.tableController.findIssuesOfLevel('WARNING', validationIssues)){
 				$shift.addClass('warning');
 			} else if(scheduleDetail.overtimeHours){
 				$shift.addClass('warning');
-			}				
+			}
 		};
-		
-		
+
+
 		/**
-		 * Async. creates rows for display in table.		  
+		 * Async. creates rows for display in table.
 		 * @param callback : called with [rows] when finished.
 		 * @returns {abort}: where  'abort' is a function, when called aborts processing.
 		 */
-		function createRows(callback) {			
-			var rows = [];			
-			var rowElements = scope.tableController.findRowElements(); // elements to iterate over to create row			
+		function createRows(callback) {
+			var rows = [];
+			var rowElements = scope.tableController.findRowElements(); // elements to iterate over to create row
 			var asyncTask = _ext.asyncEach(rowElements, function(rowElement) {
 				var $tr = jQuery('<tr></tr>');
 				$tr.append(scope.createNavigationCell(rowElement));
@@ -525,18 +525,18 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			return {abort: function(){
 				asyncTask.abort();
 			}};
-		}	
-		
-		
+		}
+
+
 		/**
 		 * Creates a navigation-cell in table for given data-point.
 		 * Navigation cells are those making-up the first column in table.
 		 * @param rowElement
 		 */
-		this.createNavigationCell = function(rowElement) {			
+		this.createNavigationCell = function(rowElement) {
 			throw new Error('this is abstract');
 		};
-		
+
 		/**
 		 * Creates and returns a total-span shown-up in navigation-column.
 		 * @param args : {total, overhours}
@@ -549,39 +549,39 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			}));
 			// show total only if value > 0
 			!args.total && $rowTotal.hide();
-			$rowTotal.find('.total').css('visibility', 'visible');			
-			args.overhours && $rowTotal.find('.overhours').show();			
+			$rowTotal.find('.total').css('visibility', 'visible');
+			args.overhours && $rowTotal.find('.overhours').show();
 			return $rowTotal;
 		};
-		
+
 		/**
-		 * Returns a formated version of the total to be displayed in table. 
+		 * Returns a formated version of the total to be displayed in table.
 		 * @param total {Number} , duration in millis
 		 * @returns {String},  #.# h
 		 */
-		this.formatTotal = function(total) {		
+		this.formatTotal = function(total) {
 			total = total == undefined ? 0 : total;
 			var value = parseFloat(moment.duration(total).asHours().toFixed(2));
-			return value + 'h ';			
+			return value + 'h ';
 		};
-		
+
 		/**
 		 * Contains formatting logic to present overhours on view.
 		 */
 		function formatOverhours(overhours){
-			overhours = overhours == undefined ? 0 : overhours;			
-			return overhours + 'h ';				
+			overhours = overhours == undefined ? 0 : overhours;
+			return overhours + 'h ';
 		}
-		
+
 		/**
 		 * Creates and returns a shift-cell. Adds drop-support.
-		 * @param rowElement : row's coordinate 
+		 * @param rowElement : row's coordinate
 		 * @param weekDay {String}, in format DAY_COORD_FORMAT
 		 */
 		this.createShiftCell = function(rowElement, weekDay) {
 			throw new Error('this is abstract');
 		};
-		
+
 
 		/**
 		 * Adds styling to given shifts-cell and adds drop-support.
@@ -590,7 +590,7 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			var dayInfo = scope.tableController.findDayInfo(weekDay);
 			var disabled = dayInfo.closed;
 			// when day closed, render disabled
-			if (disabled) {				
+			if (disabled) {
 				$td.addClass('disabled not-modif').find('.positioner').append('<span class="info">Closed</span>');
 			}
 
@@ -616,14 +616,14 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				}
 			});
 		};
-		
+
 		/**
 		 * Adds a blocker to the given shifts-cell.
 		 */
 		this.addShiftsBlocker = function($shifts){
 			$shifts.find('.positioner').append(shiftsBlockerTmpl());
 		};
-		
+
 		/**
 		 * Removes a blocker from given shifts-cell.
 		 */
@@ -631,12 +631,12 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			var $blocker = jQuery('.blocker', $shifts);
 			$blocker.fadeOut(function(){
 				$blocker.remove();
-			});			
+			});
 		};
-		
+
 		/**
 		 * Creates and returns the date-header.
-		 * 
+		 *
 		 * @return {jQuery}, the header-row
 		 */
 		function createDateHeader() {
@@ -647,7 +647,7 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			// append week-days
 			_.each(scope.tableController.weekDays, function(weekDay) {
 				var dayDisplay = timeZoneUtils.parseInServerTimeAsMoment(weekDay, scope.tableController.DAY_COORD_FORMAT)
-											  .format('dddd D');				
+											  .format('dddd D');
 				var $td = jQuery(weekDayTmpl({
 					date : weekDay,
 					name : dayDisplay
@@ -655,10 +655,10 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				$tr.append($td);
 			});
 			return $tr;
-		}		
-		
+		}
+
 		/**
-		 * Creates and returns the totals-footer.		  
+		 * Creates and returns the totals-footer.
 		 * @return {jQuery}, the footer-row
 		 */
 		function createTotalsFooter(){
@@ -666,25 +666,25 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			// append name-col
 			$tr.append('<td></td>');
 			// append week-days
-			_.each(scope.tableController.weekDays, function(weekDay) {									
+			_.each(scope.tableController.weekDays, function(weekDay) {
 				var $td = jQuery(weeklyTotalTmpl({
-					weekDay : weekDay					
+					weekDay : weekDay
 				}));
 				refreshFooterTotal(weekDay, $td.find('.weekly-total'));
 				$tr.append($td);
 			});
 			return $tr;
 		}
-		
+
 		/**
 		 * Triggers to refresh totals.
 		 * This is always necessary because modification to shifts may trigger changes in overtime hours
 		 * for hole week (in byRole-view needs to update all) or you need to tricky determine which
 		 * coordinates are affected.
-		 * @param shiftCellCoords : [{employeeName, weekDay, role}], if given refresh is restricted to those shifts. 
+		 * @param shiftCellCoords : [{employeeName, weekDay, role}], if given refresh is restricted to those shifts.
 		 */
-		this.refreshTotals = function(shiftCellCoords) {			
-			var rowCoords = undefined;			
+		this.refreshTotals = function(shiftCellCoords) {
+			var rowCoords = undefined;
 			if (scope.tableController.webSchedulerController.selectedView === 'byEmployees') {
 				rowCoords = _.pluck(scope.tableController.employees, 'name');
 			} else if (scope.tableController.webSchedulerController.selectedView === 'byRoles') {
@@ -693,19 +693,19 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				throw new Error('Not supported selectedView-value '
 						+ scope.tableController.webSchedulerController.selectedView);
 			}
-			
+
 			var weekDays = scope.tableController.weekDays;
 			// check to restrict refresh
 			if(shiftCellCoords){
 				rowCoords = _.chain(shiftCellCoords).pluck(scope.tableController.rowCoordProp).value();
 				weekDays = _.chain(shiftCellCoords).pluck('weekDay').value();
 			}
-			
+
 			if(scope.tableController.webSchedulerController.selectedView === 'byRoles'){
 				// restrict on roles which are displayed
 				rowCoords = _.intersection(rowCoords, _.pluck(scope.tableController.roles, 'name'));
 			}
-			
+
 			_.each(weekDays, function(weekDay){
 				refreshFooterTotal(weekDay);
 				_.each(rowCoords, function(rowCoord){
@@ -713,23 +713,23 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 					var shiftsCellCoord = {weekDay : weekDay};
 					shiftsCellCoord[scope.tableController.rowCoordProp] = rowCoord;
 					scope.refreshShiftTotal(shiftsCellCoord);
-				});				
-			});			
-		};	
-		
-		
+				});
+			});
+		};
+
+
 		/**
 		 * Refreshes employee-total for given name.
-		 * 
+		 *
 		 * @param rowCoord : for spedifying the row
 		 * @param $navCell : (navigation-cell) is given, this is used as refresh context.
 		 */
-		this.refreshRowTotal = function(rowCoord, $navCell){			
-			$navCell = $navCell || jQuery('.nav-cell.name[data-name="'+rowCoord+'"]', scope.$scheduler);				
-			jQuery('.row-total', $navCell).remove();			
+		this.refreshRowTotal = function(rowCoord, $navCell){
+			$navCell = $navCell || jQuery('.nav-cell.name[data-name="'+rowCoord+'"]', scope.$scheduler);
+			jQuery('.row-total', $navCell).remove();
 			$navCell.append(scope.createRowTotal(scope.tableController.totalsModel.rowTotals[rowCoord]));
-		};		
-		
+		};
+
 
 		/**
 		 * Updates total-value for footer (for given weekDay).
@@ -741,7 +741,7 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			var total = scope.tableController.totalsModel.weeklyTotals[weekDay];
 			$total.text(scope.formatTotal(total));
 		}
-		
+
 		/**
 		 * Shows an error pop-up.
 		 * @param args : {title, msg}
@@ -757,7 +757,7 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 				}
 			}).showDialog();
 		};
-		
+
 		/**
 		 * Shows overwrite-issues pop-up.
 		 * @param args : {validationIssues : [], onOverwrite, onCancel},
@@ -779,7 +779,7 @@ define(['EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedulerTable.css'
 			}).showDialog();
 		};
 
-		
+
 	}
 
 });

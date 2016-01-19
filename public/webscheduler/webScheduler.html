@@ -14,8 +14,8 @@
 
 <script type="text/javascript" src="/webfile?name=modernizr.js"></script>
 
-<script type="text/javascript" src="../commons/libs/jquery.js"></script>   
-<script type="text/javascript" src="js/libs/jquery-migrate-1.2.1.min.js"></script>  
+<script type="text/javascript" src="../commons/libs/jquery.js"></script>
+<script type="text/javascript" src="js/libs/jquery-migrate-1.2.1.min.js"></script>
 
 <script type="text/javascript" src="js/Utils.js"></script>
 <script type="text/javascript">
@@ -26,75 +26,14 @@
 <script src="/ws/webScheduler/findReleaseVersionHash"></script>
 
 <script type="text/javascript" src="../commons/libs/require.js"></script>
-<script type="text/javascript">
-// config. require.js
-require.config({
-	baseUrl : 'js',
-	paths : {
-		libs : 'libs',		
-		'gantt-decor' : '../../commons/libs/jquery-foodtec-ui/gantt-decor',
-		'table-decor' : '../../commons/libs/jquery-foodtec-ui/table-decor',
-		jquery : 'libs/jquery-1.10.2.min',
-		moment : '../../commons/libs/moment.min',
-		'moment-timezone': '../../commons/libs/moment-timezone-with-data.min',
-		text : '../../commons/libs/text',
-		css: '../../commons/libs/css',
-		underscore : '../../commons/libs/underscore',	
-		'underscore-ext': '../../commons/libs/underscore-ext',		
-		'jquery.event.drag-2.2' : '../../commons/libs/jquery-foodtec-ui/gantt-decor/libs/jquery.event.drag-2.2',		
-		WebSchedulerController : 'WebSchedulerController', /* that's main */
-		WebSchedulerView : 'WebSchedulerView',
-		ByEmplsTableController : 'schedulerTable/byEmpl/ByEmplsTableController',
-		ByRolesTableController : 'schedulerTable/byRole/ByRolesTableController',
-		SchedulerTableCtrl : 'schedulerTable/SchedulerTableCtrl',
-		ByEmplsTotalsModel : 'schedulerTable/byEmpl/ByEmplsTotalsModel',
-		ByEmplsTableView : 'schedulerTable/byEmpl/ByEmplsTableView',
-		ByEmplsEditShiftController : 'shiftEditor/byEmpl/ByEmplsEditShiftController',
-		ByRolesTotalsModel: 'schedulerTable/byRole/ByRolesTotalsModel',
-		ByRolesEditShiftController : 'shiftEditor/byRole/ByRolesEditShiftController',
-		ByRolesTableView : 'schedulerTable/byRole/ByRolesTableView',
-		SchedulesModelUtils : 'schedulerTable/SchedulesModelUtils',
-		ValidateShiftModifUtils : 'schedulerTable/ValidateShiftModifUtils',
-		EditShiftController : 'shiftEditor/EditShiftController',
-		EditShiftView : 'shiftEditor/EditShiftView',
-		ByEmplsEditShiftView : 'shiftEditor/byEmpl/ByEmplsEditShiftView',
-		ByRolesEditShiftView : 'shiftEditor/byRole/ByRolesEditShiftView',
-		TotalsModel : 'schedulerTable/TotalsModel',
-		SchedulerTableView : 'schedulerTable/SchedulerTableView',
-		MoveInfoModel : 'schedulerTable/MoveInfoModel',
-		SendSmsController : 'sendSms/SendSmsController',
-		datatable : 'libs/jquery-datatables/js/jquery.dataTables.custom',
-		animo : '../../commons/libs/animo/animo',
-		q : '../../commons/libs/q',
-		EventEmitter : '../../commons/libs/EventEmitter',
-		timeZoneUtils : '../../commons/libs/timeZoneUtils'
-	},
-	shim:{		
-		'underscore-ext':{
-			deps:['underscore']
-		},
-		'datatable': {
-			deps:['css!libs/jquery-datatables/css/jquery.dataTables.min']
-		},
-		'animo': {
-			deps:['css!../../commons/libs/animo/animate+animo.css']
-		}
-	},
-	map: {
-		  '*': {
-			    'css': 'css' 
-			  }
-	},
-	urlArgs : 'version='+scheduler.version
-});
-</script>
+<script type="text/javascript" src="main.js"></script>
 
 </head>
 <body>
 
 	<div class="option-bar">
-		<div class="departments-tabs">			
-			<!-- departments are rendered here if scheduleBy is department -->			
+		<div class="departments-tabs">
+			<!-- departments are rendered here if scheduleBy is department -->
 		</div>
 		<div class="settings">
 			<div class="week-arrow left" title="go to previous"></div>
@@ -104,11 +43,11 @@ require.config({
 				<option value="byEmployees">Employee</option>
 				<option value="byRoles">Role</option>
 			</select>
-			<div class="datePicker"></div>			
+			<div class="datePicker"></div>
 		</div>
-		
+
 		<button data-role="sendSms" class="sendSms" title="Sends SMS to scheduled employee in this week">Send SMS</button>
-							
+
 		<div class="actions">
 			<div class="master-schedule">
 				<button id="templateRestore"
@@ -140,7 +79,7 @@ require.config({
 		</table>
 		<div class="loading-overlay"></div>
 	</div>
-	
+
 	<!-- scheduler-table el for by-roles-view -->
 	<div class="scheduler-wrapper by-roles">
 		<table class="week-days-header">
@@ -154,30 +93,30 @@ require.config({
 		</table>
 		<div class="loading-overlay"></div>
 	</div>
-	
+
 	<!-- form used for dynamic link navigation -->
 	<form class="dynamik-links" method="post" target="_blank" action=""></form>
-	
-	<script type="text/javascript" src="../commons/libs/jQuery-ui/jquery-ui-1.10.4.custom.min.js"></script>	
+
+	<script type="text/javascript" src="../commons/libs/jQuery-ui/jquery-ui-1.10.4.custom.min.js"></script>
 	<script type="text/javascript" src="../commons/libs/jquery-foodtec-ui/jquery.foodtec.ui.js"></script>
 	<script type="text/javascript"
 		src="../commons/libs/jquery-ui-timepicker/jquery.ui.timepicker.js"></script>
 	<script type="text/javascript" src="../commons/libs/jquery.parsequery.js"></script>
-	<script type="text/javascript" src="../commons/libs/jquery.tinysort.min.js"></script>	
+	<script type="text/javascript" src="../commons/libs/jquery.tinysort.min.js"></script>
 	<script type="text/javascript" src="../commons/libs/lodash.js"></script>
 	<script type="text/javascript">
 		window.lodash = _.noConflict();
-    </script>	 
-	
-	<script type="text/javascript">	
-		jQuery(function() {
-			require(['WebSchedulerController'], function(WebSchedulerController){
-				new WebSchedulerController();	
-			});			
-		});		
     </script>
 
-	<!-- templates -->	
+	<script type="text/javascript">
+		jQuery(function() {
+			require(['WebSchedulerController'], function(WebSchedulerController){
+				new WebSchedulerController();
+			});
+		});
+    </script>
+
+	<!-- templates -->
 	<script id="tableHeaderTmpl" type="text/template">
 	<div>
 	 <div>
@@ -190,7 +129,7 @@ require.config({
 	  <span class="print link-decor">Print View</span>
 	 </div>
 	 <div class="scheduleInfo">
-		<% if(scheduleInfo) { %>			
+		<% if(scheduleInfo) { %>
 		<%    scheduleInfo.split('\n').forEach(function(part){ %>
 					<%- part %></br>
 		<%    }); %>
@@ -198,13 +137,13 @@ require.config({
 	<div>
 	</div>
 	</script>
-	
+
 	<script id="stateActionsTmpl" type="text/template">
 	<% _.each(authorizedActions, function(action){ %>
 	<button class="button-decor" data-action="<%- action.name %>" title="Changes state of schedule for the whole week"><%- action.displayName %></button>
 	<% }); %>
 	</script>
-	
+
 	<!-- edit-dialog for byEmployees -view -->
 	<script id="byEmplsEditDialog" type="text/template">
 	<div class="edit-dialog">
@@ -243,8 +182,8 @@ require.config({
 			</div>
 		</div>
 	</div>
-	</script>	
-	
+	</script>
+
 	<script id="overtimeWarnTmpl" type="text/template">
 	<span><img src="images/warning.gif"/>Shift produces overtime of <span class="hours"><%- overtimeHours %>h</span></span>
 	</script>
@@ -253,7 +192,7 @@ require.config({
 	<script id="weekDateTmpl" type="text/template">
 	<td><div class="week-day" data-weekday="<%- date %>" ><%- name %></div></td>
     </script>
-    
+
     <script id="weeklyTotalTmpl" type="text/template">
 	<td><div class="weekly-total" data-weekday="<%- weekDay %>"><!-- totals are rendered here --></div></td>
     </script>
@@ -265,10 +204,10 @@ require.config({
 		<!-- rowTotalTmpl is rendered here -->
     </td>
     </script>
-    
+
     <script id="rowTotalTmpl" type="text/template">
     <span class="row-total">
-      (<span class="total" title="Total hours"><%- total %></span> 
+      (<span class="total" title="Total hours"><%- total %></span>
        <span class="overhours" title="Overtime hours"><%- overhours %></span>)
     </span>
 	</script>
@@ -279,18 +218,18 @@ require.config({
 		<div class="day-hours">
 			<!-- shiftCellTotalTmpl is rendered here -->
 		</div>
-		<div class="shift-creator">click to create</div>		
-      </div>					
+		<div class="shift-creator">click to create</div>
+      </div>
 	</td>
-    </script>   
-    
+    </script>
+
     <script id="shiftCellTotalTmpl" type="text/template">
 	<span>
 	   <span class="total" title="Total hours"><%- total %></span>
 	   <span class="overhours" title="Overtime hours"><%- overhours %></span>
 	</span>
     </script>
-    
+
     <script id="shiftsBlockerTmpl" type="text/template">
 	<div class="blocker"></div>
 	</script>
@@ -298,36 +237,36 @@ require.config({
     <!-- this shift template is intended for 'byEmployees-view' -->
 	<script id="shiftTmpl" type="text/template">
     <div class="shift">
-		<img class="role" width="16px" height="16px" title="<%- role.name %>" src="/Image?name=<%- role.image %>" /> 
+		<img class="role" width="16px" height="16px" title="<%- role.name %>" src="/Image?name=<%- role.image %>" />
         <span class="period" data-startime="<%- startTime %>">
-		 <%- startTimeDispl %> 
+		 <%- startTimeDispl %>
 			<% if(weeklyScheduleInRegularTimeFormat){ %> <br> <% } else{ %> - <% } %>
 		 <%- endTimeDispl %>
         </span>
         <div class="close-icon"></div>
 	</div>
 	</script>
-	
+
 	<!-- this shift template is intended for 'byRoles-view' -->
 	<script id="byRolesShiftTmpl" type="text/template">
     <div class="shift">
-		<div class="employee-name"><%- employee.displayName %></div> 
+		<div class="employee-name"><%- employee.displayName %></div>
         <span class="period" data-startime="<%- startTime %>">
-		 <%- startTimeDispl %> 
+		 <%- startTimeDispl %>
 			<% if(weeklyScheduleInRegularTimeFormat){ %> <br> <% } else{ %> - <% } %>
     	 <%- endTimeDispl %>
         </span>
         <div class="close-icon"></div>
 	</div>
-	</script>		
+	</script>
 
 	<script id="unavailInfoTmpl" type="text/template">
 	<div class="unavail-info">
 		<div class="period <%- unavailType %>"><%- startTime %> - <%- endTime %></div>
 		<div class="type"><%- type %></div>
-	</div>			
-    </script>	
-	
+	</div>
+    </script>
+
 	<!-- popup -->
 	<script id="errorPopupTmpl" type="text/template">
 	<div class="error-popup">
@@ -337,7 +276,7 @@ require.config({
 	  </div>
 	</div>
     </script>
-	
+
     <!-- popup -->
     <script id="loginPopupTmpl" type="text/template">
 	<div class="error-popup">
@@ -345,11 +284,11 @@ require.config({
 	  <div class="content">
 	   <span class="msg">The application requires login. Please use the link to login.
 	   <a href="<%- loginUrl %>">login</a>
-	   </span>	
+	   </span>
 	  </div>
 	</div>
     </script>
-    
+
     <!-- popup -->
     <script id="skippedEmployeesTmpl" type="text/template">
     <div class="skipped-empl popup">
@@ -360,42 +299,42 @@ require.config({
 	   <% _.each(employees, function(employee){ %>
 		  <li><%- employee.displayName %></li>
        <% }); %>
-	   </ul>	   	
+	   </ul>
 	  </div>
 	</div>
     </script>
-    
+
     <!-- popup -->
     <script id="overwriteIssuesTmpl" type="text/template">
     <div class="overwrite-issues popup">
 	  <div class="header">Override</div>
-	  <div class="content">	   
+	  <div class="content">
 	   	<ul class="issues-list">
 	   	<% _.each(validationIssues, function(validationIssue){ %>
 		  <li><%- validationIssue.errorMsg %></li>
-       	<% }); %>		
+       	<% }); %>
 	   	</ul>
-		<div class="button-bar">				
+		<div class="button-bar">
 			<button class="overwrite button-decor" title="Click to override the issues">Override</button>
 			<button class="cancel button-decor">Cancel</button>
-		</div>	   	
+		</div>
 	  </div>
 	</div>
     </script>
-        
+
     <!-- popup -->
     <script id="outdatedScheduleTmpl" type="text/template">
     <div class="outdated-schedule popup">
 	  <div class="header">Schedule is out of date</div>
-	  <div class="content">	   
-	   	<span class="msg">You need to reload the scheduler in order to perform the operation.</span>  
-		<div class="button-bar">				
-			<button class="reload button-decor" title="Click to reload">Reload</button>			
-		</div>	   	
+	  <div class="content">
+	   	<span class="msg">You need to reload the scheduler in order to perform the operation.</span>
+		<div class="button-bar">
+			<button class="reload button-decor" title="Click to reload">Reload</button>
+		</div>
 	  </div>
 	</div>
     </script>
-    	
+
 	<!-- temaplate to render department-tab -->
 	<script id="departmentTmpl" type="text/template">
 	<div class="department" data-id="<%- department.name %>">
@@ -403,6 +342,6 @@ require.config({
 		<span><%- department.name %></span>
 	</div>
 	</script>
-	
+
 </body>
 </html>
