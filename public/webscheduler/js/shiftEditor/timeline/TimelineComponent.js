@@ -30,8 +30,7 @@ define(['text!shiftEditor/timeline/timeline.html',
           },
           handleDrag: handleDrag,
           handleDragEnd: function() {
-            console.log('dragend');
-            //TODO
+            this.$emit('dragend');
           }
         }
       }
@@ -43,14 +42,14 @@ define(['text!shiftEditor/timeline/timeline.html',
         var hasLeft = left && left.shift;
         var hasRight = right && right.shift;
 
-        // only one slot
+        // only one slot (drag started here)
         if (timeSlot.shiftStarts && timeSlot.shiftEnds) {
           unassign(timeSlot);
           return;
         }
 
-        // starting new shift
-        if (!timeSlot.shift && !hasLeft && !hasRight) {
+        // starting new shift (drag started here)
+        if (!hasShift()) {
           assign(timeSlot, true, true);
           return;
         }
@@ -120,8 +119,8 @@ define(['text!shiftEditor/timeline/timeline.html',
               return;
             }
 
+            // ensure valid drag target
             var idx = jQuery(event.target).data('idx');
-            console.log(idx);
             if (idx == undefined) {
               $timeline.trigger('dragend');
               return;
@@ -131,6 +130,10 @@ define(['text!shiftEditor/timeline/timeline.html',
             if (currDraggedTimeSlotIdx === idx) {
               return;
             }
+            // ensure not ot skip drags because browser didn't fire mousemove
+            if (Math.abs(idx - currDraggedTimeSlotIdx) > 1) {
+              return;
+            }
             var prevIdx = currDraggedTimeSlotIdx;
             currDraggedTimeSlotIdx = idx;
             vueScope.handleDrag(vueScope.$data.model.timeSlots[idx], idx, prevIdx);
@@ -138,7 +141,6 @@ define(['text!shiftEditor/timeline/timeline.html',
           .on('dragend', function(event) {
             currDraggedTimeSlotIdx = undefined;
             invalidDragStart = true;
-            console.log(_.filter(vueScope.$data.model.timeSlots, function(elem){ return elem.shift}));
             vueScope.handleDragEnd();
           })
           .on('mouseleave', function(event) {
@@ -146,14 +148,17 @@ define(['text!shiftEditor/timeline/timeline.html',
           });
 
         function checkDragStartInvalid(timeSlotIdx, timeSlot) {
-          var hasShift = !!_.findWhere(vueScope.$data.model.timeSlots, {
-            shiftStarts: true
-          });
-          if (hasShift && !(timeSlot.shiftStarts || timeSlot.shiftEnds)) {
+          if (!timeSlot || hasShift() && !(timeSlot.shiftStarts || timeSlot.shiftEnds)) {
             return true;
           }
           return false;
         }
+      }
+
+      function hasShift() {
+        return !!_.findWhere(vueScope.$data.model.timeSlots, {
+          shiftStarts: true
+        });
       }
 
       function adaptCellWidth() {
