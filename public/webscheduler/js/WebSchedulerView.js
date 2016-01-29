@@ -1,7 +1,7 @@
-define(['libs/WeekPicker', 'timeZoneUtils', 'stateChange/StateChangeController'], 
+define(['libs/WeekPicker', 'timeZoneUtils', 'stateChange/StateChangeController'],
 function(WeekPicker, timeZoneUtils, StateChangeController){
 	return WebSchedulerView;
-	
+
 	/**
 	 * @class WebSchedulerView
 	 * @constructor
@@ -10,41 +10,41 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 		var scope = this;
 		var controller = args.controller;
 		// this view component (table) can be dynamically replaced (byEmplsTableController or byRolesTableController)
-		this.schedulerTableCtrl = args.schedulerTableCtrl;		
+		this.schedulerTableCtrl = args.schedulerTableCtrl;
 		var stateChangeController = undefined;
-		
+
 		// {WeekPicker}
 		this.weekPicker = undefined;
-		
+
 		// el's
-		var $content = jQuery('body');		
+		var $content = jQuery('body');
 		var $departmentsTabs = jQuery('.departments-tabs', $content);
 		var $masterSchedule = jQuery('.master-schedule', $content);
 		var $restoreMaster = jQuery('#templateRestore', $masterSchedule);
 		var $tableHeader = jQuery('.table-header');
 		var $weekDisplay = jQuery('.week-display');
-	
-		// templates		
+
+		// templates
 		var loginPopupTmpl = _.template(jQuery('#loginPopupTmpl').text());
 		var errorPopupTmpl = _.template(jQuery('#errorPopupTmpl').text());
-		var skippedEmployeesTmpl = _.template(jQuery('#skippedEmployeesTmpl').text());			
+		var skippedEmployeesTmpl = _.template(jQuery('#skippedEmployeesTmpl').text());
 		var outdatedScheduleTmpl = _.template(jQuery('#outdatedScheduleTmpl').text());
 		var departmentTmpl = _.template(jQuery('#departmentTmpl').text());
 		var tableHeaderTmpl = _.template(jQuery('#tableHeaderTmpl').text());
-		
-		function init(){			
+
+		function init(){
 			initWeekSelect();
 			initWeekArrows();
 			initDepartmentSelect();
 			initSwitchViewSelect();
-			initMasterScheduler();			
+			initMasterScheduler();
 			stateChangeController = new StateChangeController({webSchedulerController: controller,
 															   		webSchedulerView : scope,
 															    $el: jQuery('.state-change', $content)});
 			initTableHeader();
 			initSendSms();
-		}		
-		
+		}
+
 		function initSendSms(){
 			$content.find('[data-role="sendSms"]').buttonDecor().on('click', function(){
 				var $button = jQuery(this).buttonDecor('startLoading');
@@ -53,8 +53,8 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 						.handleSendSms($button, scope.schedulerTableCtrl.week);;
 				});
 			});
-		}		
-		
+		}
+
 		/**
 		 * Delegating click-listener on tableHeader for statistics-link.
 		 */
@@ -64,7 +64,7 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 				.on('click', '.print', handleLinkClick.bind(null, controller.handlePrintClicked))
 				.on('click', '.audits', handleLinkClick.bind(null, controller.handleAuditsClicked));
 		}
-		
+
 		function handleLinkClick(handler, event){
 			var $link = jQuery(event.target).addClass('loading');
 			return handler().then(function(){
@@ -72,27 +72,28 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 			}).fail(function(){
 				controller.logError();
 				$link.removeClass('loading');
-			});			
+			});
 		}
-		
+
 		this.updateStateActions = function(){
 			stateChangeController.updateStateActions();
-		};		
-		
-		/** updates table-header with selected week-info and scheduleState.		
+		};
+
+		/** updates table-header with selected week-info and scheduleState.
 		*/
-	    this.updateTableHeader = function(){	 
+	    this.updateTableHeader = function(){
 	    	var week = timeZoneUtils.parseInServerTimeAsMoment(scope.schedulerTableCtrl.week.startOfWeek).format('dddd, MMMM D YYYY');
 	    	$tableHeader.empty().append(tableHeaderTmpl({
 				selectedWeek : 'Week of ' + week,
 				scheduleState : scope.schedulerTableCtrl.scheduleState,
 				hideState : scope.schedulerTableCtrl.scheduleState.name === 'PendingState' && !scope.schedulerTableCtrl.existsShift(),
-				scheduleInfo : scope.schedulerTableCtrl.scheduleInfo
+				scheduleInfo : scope.schedulerTableCtrl.scheduleInfo,
+				helplink: scope.schedulerTableCtrl.helplink
 			}));
-		
+
 			$weekDisplay.text(timeZoneUtils.parseInServerTimeAsMoment(scope.schedulerTableCtrl.week.startOfWeek).format('MMM D YYYY'));
 		};
-		
+
 		/**
 		 * Inits select-box for switching the view (byRoles, byEmployees)
 		 */
@@ -114,9 +115,9 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 				return 'Schedule by ' + viewTitle;
 			}
 		}
-		
-		
-		
+
+
+
 		/**
 		 * Register click-listener on save-as-master -button.
 		 */
@@ -126,28 +127,28 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 				controller.handleSaveAsMaster($button);
 			});
 		}
-		
+
 		/**
 		 * Inits the week-selection.
 		 */
 		function initWeekSelect(){
-			var $button = jQuery('#weekButton').buttonDecor();		
+			var $button = jQuery('#weekButton').buttonDecor();
 			scope.weekPicker = new WeekPicker({
 				$el : jQuery('.option-bar .datePicker'),
 				selectedDate : controller.selectedDate,
 				startOfWeekDay: scope.schedulerTableCtrl.startOfWeekDay
-			});			
+			});
 			$button.on('click', function(){
 				scope.weekPicker.getEl().slideToggle();
 			});
-			
+
 			scope.weekPicker.on('dateSelected', function(weekPicker){
 				scope.weekPicker.getEl().slideToggle(function(){
-					controller.handleWeekSelect(weekPicker.selectedDate);	
-				});				
-			});			
+					controller.handleWeekSelect(weekPicker.selectedDate);
+				});
+			});
 		}
-		
+
 		/**
 		 * Registers click-handler on week-select arrows.
 		 */
@@ -157,27 +158,27 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 				var selectedDate = timeZoneUtils.parseInServerTimeAsMoment(controller.selectedDate);
 				$arrow.hasClass('left') && selectedDate.add('weeks', -1);
 				$arrow.hasClass('right') && selectedDate.add('weeks', 1);
-				controller.handleWeekArrowSelect(selectedDate.toDate());			
-			});			
+				controller.handleWeekArrowSelect(selectedDate.toDate());
+			});
 		}
-		
+
 		/**
 		 * Renders departments in case scheduleBy-pref is 'Department', pre-selects
 		 * according to selectedDepartment, registers click-listener to change.
 		 */
 		function initDepartmentSelect(){
-			if(scope.schedulerTableCtrl.scheduleBy !== 'Department' 
+			if(scope.schedulerTableCtrl.scheduleBy !== 'Department'
 				|| scope.schedulerTableCtrl.departments.length === 0){
 				return;
 			}
 			_.chain(scope.schedulerTableCtrl.departments).each(function(department){
 				$createDepartment(department).appendTo($departmentsTabs);
 			});
-			
+
 			// pre-select
 			$departmentsTabs.find('[data-id="'+controller.selectedDepartmentName+'"]')
 							.addClass('selected');
-			
+
 			// add-listener
 			$departmentsTabs.on('click', '.department', function(){
 				var $department = jQuery(this);
@@ -187,26 +188,26 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 				$departmentsTabs.find('.department').removeClass('selected');
 				$department.addClass('selected');
 				controller.handleDepartmentSelect($department);
-			});		
+			});
 		}
-		
+
 		/**
 		 * Creates a department-el based on the given department.
 		 * @param department : DepartmentHolder
 		 */
 		function $createDepartment(department) {
-			return jQuery(departmentTmpl({department : department}));			
+			return jQuery(departmentTmpl({department : department}));
 		}
 
 		function initMasterScheduler(){
 			if(!scope.schedulerTableCtrl.useMasterSchedule){
 				return;
-			}			
+			}
 			initTemplateRestore();
-			initTemplateSave();			
-			$masterSchedule.show();			
-		}		
-		
+			initTemplateSave();
+			$masterSchedule.show();
+		}
+
 		/**
 		 * Registers click-listener on restore-button.
 		 */
@@ -216,14 +217,14 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 					$restoreMaster.buttonDecor('startLoading');
 					controller.handleRestoreClick.call(this);
 				});
-		}		
-		
+		}
+
 		/**
 		 * @param data : {title, msg} optional
 		 */
 		this.showServerError = function(data){
 			data = _.extend({title: 'Some error happened',
-				msg:'Sorry. The last operation failed.'}, data);			 
+				msg:'Sorry. The last operation failed.'}, data);
 			jQuery.decor.dialogDecor({
 				$el : jQuery(errorPopupTmpl(data)),
 				options : {
@@ -234,8 +235,8 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 					showClosing : true
 				}
 			}).showDialog();
-		};		
-		
+		};
+
 		/**
 		 * Shows not-authorized popup.
 		 */
@@ -253,7 +254,7 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 				}
 			}).showDialog();
 		};
-		
+
 		/**
 		 * Shows pop-up for saying that modification of schedule is not permitted
 		 * due to date-in-past.
@@ -272,7 +273,7 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 				}
 			}).showDialog();
 		};
-		
+
 		/**
 		 * Shows pop-up for saying that sending of schedule via sms is not permitted
 		 * due to not required authorization.
@@ -290,8 +291,8 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 					showClosing : true
 				}
 			}).showDialog();
-		};		
-		
+		};
+
 		/**
 		 * Shows pop-up for saying that modification of schedule is not permitted
 		 * due to date-in-past.
@@ -310,7 +311,7 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 				}
 			}).showDialog();
 		};
-		
+
 		/**
 		 * Shows popup which tells to login.
 		 */
@@ -327,7 +328,7 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 				}
 			}).showDialog();
 		};
-		
+
 		/**
 		 * Shows pop-up containing employees which was skipped in save-as-master op.
 		 * @param employees
@@ -344,8 +345,8 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 					showClosing : true
 				}
 			}).showDialog();
-		};		
-		
+		};
+
 		/**
 		 * Shows outdate-schedule pop-up.
 		 * @param args : {onReloadClick : function(event)} - onReloadClick called when corresp.
@@ -354,20 +355,20 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 		this.showOutdatedScheduleTmpl = function(args) {
 			var $el = jQuery(outdatedScheduleTmpl(args))
 						.on('click', '.reload', args.onReloadClick);
-						
+
 			return jQuery.decor.dialogDecor({
 				$el : $el,
 				options : {
 					editorWidth : 450,
 					editorHeight : 200,
-					onTheFly : true,					
+					onTheFly : true,
 					warning : true,
 					showClosing : false
 				}
 			}).showDialog();
 		};
-		
+
 		init();
-		
-	}	
+
+	}
 });

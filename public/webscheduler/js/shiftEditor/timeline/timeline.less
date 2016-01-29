@@ -24,11 +24,11 @@
 
 .timeslot-cell .marker{
   position: absolute;
-  width: 50px;
+  width: 80px;
   height: 40px;
   top: -40px;
   left: 50%;
-  margin-left: -25px;
+  margin-left: -40px;
   text-align: center;
   cursor: move;
 }
@@ -48,5 +48,9 @@
 }
 
 .timeslot-cell.unavail-slot{
+  background-color: #fe9f21;
+}
+
+.timeslot-cell.unavail-slot.scheduled-slot{
   background-color: red;
 }

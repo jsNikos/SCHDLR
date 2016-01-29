@@ -1,17 +1,17 @@
 (function() {
 
 	function GanttDecor(){
-		
-	}	
-	
-	
+
+	}
+
+
 	/**
 	 * Decorates select-boxes.
 	 * @constructor
 	 */
-	function SelectDecor(){	
+	function SelectDecor(){
 		var scope  = this;
-		
+
 		var defOptions = {
 				width : 130, /* set 'null' if controlled from css */
 				height : 28, /* set 'null' if controlled from css */
@@ -28,8 +28,8 @@
 				 * show selections on change-events
 				 */
 				showSelection : true
-			};	
-		
+			};
+
 		/**
 		 * Initializes by adding the instance to jQuery's prototype.
 		 */
@@ -37,20 +37,20 @@
 			jQuery.fn.selectDecor = function(options, args) {
 				var result = this;
 				if(typeof options !== 'string'){
-					// its a set-up					
+					// its a set-up
 					this.each(function(){
 						setup.call(this, options);
 					});
 				}
-				else{			
+				else{
 					this.each(function() {
 						result = scope[options].call(this, args);
 					});
-				}				
+				}
 				return result;
 			};
 		}
-		
+
 		/**
 		 * Sets-up a select-decor on a given select-box.
 		 * @param options_
@@ -79,25 +79,25 @@
 			$select.on('change', function() {
 				options.showSelection && $selectDecor.text(jQuery('option:selected', $select).text());
 			});
-			
+
 			// store ref to options
 			$selectDecor.data('selectDecor', {
 				options : options
 			});
 		}
-		
+
 		/**
 		 * Whenever changing at the select's html, this will sync the state.
 		 */
 		this.refresh = function(){
 			var $select = jQuery(this);
-			var $selectDecor = jQuery('.select-decor', $select.parent());	
+			var $selectDecor = jQuery('.select-decor', $select.parent());
 			var options = $selectDecor.data('selectDecor').options;
 			!options.showTitle && options.showSelection && $selectDecor.text(jQuery('option:selected', $select).text());
 			options.showTitle && !options.showSelection && $selectDecor.text($select.attr('title'));
 			return this;
-		};		
-		
+		};
+
 		/**
 		 * Selects the options with the given value and call to refresh.
 		 * note: no change-event is fired during this action.
@@ -109,9 +109,9 @@
 			jQuery('option[value="'+value+'"]', $select).attr('selected', 'selected');
 			return scope.refresh.call($select);
 		};
-		
+
 		/**
-		 * Returns the current selection as 
+		 * Returns the current selection as
 		 * {value, display}
 		 */
 		this.selected = function() {
@@ -119,20 +119,20 @@
 			return {
 				value : $option.attr('value'),
 				display : $option.text()
-			};			
-		};	
-		
+			};
+		};
+
 		init();
 	}
-	new SelectDecor();	
+	new SelectDecor();
 
-	
+
 	/**
 	 * Decorates buttons.
 	 */
 	function ButtonDecor(){
 		var scope = this;
-		
+
 		function init(){
 			jQuery.fn.buttonDecor = function(options_, args) {
 				this.each(function() {
@@ -140,12 +140,12 @@
 					if(typeof options_ === 'string'){
 						var method = options_;
 						scope[method].call(this, args);
-					}			
+					}
 				});
 				return this;
 			};
 		}
-		
+
 		/**
 		 * Remove loading-state from button.
 		 */
@@ -154,7 +154,7 @@
 			$button.removeClass('loading').removeAttr('disabled');
 			return $button;
 		};
-		
+
 		/**
 		 * Renders button in a loading-state.
 		 */
@@ -163,17 +163,17 @@
 			$button.addClass('loading').attr('disabled', 'disabled');
 			return $button;
 		};
-		
-		init();		
+
+		init();
 	}
 	new ButtonDecor();
-	
+
 	/**
 	 * Decorates links.
 	 */
 	function LinkDecor(){
 		var scope = this;
-		
+
 		function init(){
 			jQuery.fn.linkDecor = function(options_, args) {
 				this.each(function() {
@@ -181,31 +181,31 @@
 					if(typeof options_ === 'string'){
 						var method = options_;
 						scope[method].call(this, args);
-					}			
+					}
 				});
 				return this;
 			};
 		}
-		
+
 		/**
 		 * Remove loading-state from link.
 		 */
 		this.stopLoading = function(){
 			return jQuery(this).removeClass('loading');
 		};
-		
+
 		/**
 		 * Renders link in a loading-state.
 		 */
 		this.startLoading = function(){
 			return jQuery(this).addClass('loading');
 		};
-		
-		init();		
+
+		init();
 	}
 	new LinkDecor();
-	
-	
+
+
 
 	/**
 	 * Decorates a dialog around a given html-construct of form:
@@ -213,7 +213,7 @@
 	 * <div class="header">here put your header contents</div>
 	 * <div class="content">here put your content</div>
 	 * </div>
-	 * 
+	 *
 	 * Optional the content can contain a button bar and within buttons:
 	 * <div class="content">
 	 * here put your content
@@ -228,12 +228,12 @@
 			}
 		}
 	});
-	
+
 	/**
 	 * Instantiate this to obtain a dialog-decor around the given $el. It is a EventEmitter and
-	 * therefore can be used to interplay in observer-pattern. 	  
-	 * 
-	 * This class is intended to be extended with dialog-specific view logic. 
+	 * therefore can be used to interplay in observer-pattern.
+	 *
+	 * This class is intended to be extended with dialog-specific view logic.
 	 * @param: args {$el, options}
 	 * @constructor
 	 */
@@ -251,21 +251,21 @@
 				appendTo : 'body', /* by default is appended to body, specified by selector */
 				onClosing : function(){} /* invoke when dialog's closeDialog is executed */
 		};
-		this.$header = jQuery('.header', this.$el);	
+		this.$header = jQuery('.header', this.$el);
 		this.$content = jQuery('.content', this.$el);
 		this.$wrapper = undefined;
-		
+
 		function init(){
-			jQuery.extend(options, args.options);			
+			jQuery.extend(options, args.options);
 			initWrapper();
 			addStyling();
 			options.showClosing && initCloseIcon();
-		};		
-		
+		};
+
 		// add positioning-styles to target element
 		function addStyling() {
 			options.warning && scope.$wrapper.addClass('warning');
-			
+
 			scope.$el.addClass('dialog-decor-target').css({
 				'margin-left' : -options.editorWidth / 2 + 'px',
 				'width' : options.editorWidth + 'px',
@@ -274,7 +274,7 @@
 
 			scope.$header.css({
 				height : options.headerHeight + 'px'
-			});			
+			});
 
 			scope.$content.css({
 				height : options.editorHeight === 'auto' ? 'auto' : ((options.editorHeight - options.headerHeight) + 'px'),
@@ -285,24 +285,24 @@
 				'border-top' : '1px solid ' + options.borderColor
 			});
 		}
-		
+
 		function initWrapper(){
-			scope.$wrapper = jQuery('<div class="dialog-decor-wrapper"></div>');			
-			scope.$wrapper.appendTo(options.appendTo);						
+			scope.$wrapper = jQuery('<div class="dialog-decor-wrapper"></div>');
+			scope.$wrapper.appendTo(options.appendTo);
 			scope.$wrapper.append(scope.$el);
 		}
-		
+
 		function initCloseIcon(){
-			var $closeIcon = jQuery('<span class="closing">X</span>').appendTo(scope.$header);			
+			var $closeIcon = jQuery('<span class="closing">X</span>').appendTo(scope.$header);
 			$closeIcon.on('click', scope.closeDialog);
 		}
-		
+
 		this.showDialog = function(){
 			scope.$wrapper.show();
 			scope.$el.show();
 			return this;
 		};
-		
+
 
 		this.closeDialog = function() {
 			if (!options.onTheFly) {
@@ -311,16 +311,16 @@
 				scope.removeDialog();
 			}
 			options.onClosing();
-		};	
-		
-		this.removeDialog = function(){			
+		};
+
+		this.removeDialog = function(){
 			scope.$wrapper.remove();
 		};
-		
+
 		init();
-	
+
 	}
-	
+
 	/**
 	 * Useful as prototype. Adds to a class event-emitter
 	 * functionalities.
@@ -370,7 +370,7 @@
 		};
 
 	}
-	
-	
+
+
 
 }());

@@ -125,11 +125,14 @@ body {
 .table-header .state.ApprovedState:before {
   background-color: #2de70b;
 }
-.table-header .statistics,
-.table-header .print,
-.table-header .audits {
+.table-header .link-decor {
   margin-left: 50px;
   font-size: 15px;
+  color: #2351a6;
+  text-decoration: none;
+}
+.table-header .link-decor:hover {
+  text-decoration: underline;
 }
 .table-header .scheduleInfo {
   color: #f2883a;

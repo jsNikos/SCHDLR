@@ -1,4 +1,4 @@
-@import "utils.less"; 
+@import "utils.less";
 
 
 /* status colors */
@@ -127,11 +127,15 @@ body {
 .table-header .state.ApprovedState:before {
   background-color: #2de70b;
 }
-.table-header .statistics,
-.table-header .print,
-.table-header .audits {
-  margin-left: 50px;  
-  font-size: 15px;  
+.table-header .link-decor {
+  margin-left: 50px;
+  font-size: 15px;
+  color: #2351a6;
+  text-decoration: none;
+}
+
+.table-header .link-decor:hover{
+  text-decoration: underline;
 }
 
 .table-header .scheduleInfo{
@@ -232,4 +236,3 @@ body {
   box-shadow: 1px 1px 1px 0 #000000 inset, 1px 1px 0px 0 #FFFFFF;
   cursor: default;
 }
-

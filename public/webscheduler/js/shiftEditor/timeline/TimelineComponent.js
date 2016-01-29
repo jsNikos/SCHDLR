@@ -23,10 +23,10 @@ define(['text!shiftEditor/timeline/timeline.html',
 
         methods: {
           showScheduledSlot: function(timeSlot) {
-            return timeSlot.shift && timeSlot.unavails.length === 0;
+            return timeSlot.shift;
           },
           showUnavailSlot: function(timeSlot) {
-            return timeSlot.shift && timeSlot.unavails.length > 0;
+            return timeSlot.unavails && timeSlot.unavails.length > 0;
           },
           handleDrag: handleDrag,
           handleDragEnd: function() {
