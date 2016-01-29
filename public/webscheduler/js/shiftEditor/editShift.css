@@ -126,6 +126,8 @@
   margin: 40px 0px;
   height: 68px;
   overflow-y: visible;
+  position: relative;
+  z-index: 1;
 }
 .edit-dialog input.who {
   width: auto;

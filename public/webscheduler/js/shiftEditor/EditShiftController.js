@@ -40,9 +40,6 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent){
 		this.selectedEndTime = undefined;
 		this.timeSlots = undefined;
 
-		/**
-		 *
-		 */
 		this.init = function() {
 			scope = this;
 			webSchedulerController = scope.tableController.webSchedulerController;
@@ -441,7 +438,7 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent){
 			return scope.fetchEditDialogInit().then(function(resp) {
 				scope.updateModel(resp);
 				extractOpenCloseTimes(scope.weekDay);
-				initView();				
+				initView();
 				scope.editShiftView.applyInitData();
 				scope.editShiftView.applyPreselections(scope.scheduleDetail);
 				scope.editShiftView.showValidationIssues(scope.scheduleDetail);

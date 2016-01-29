@@ -3,7 +3,8 @@ define(['EditShiftView'], function(EditShiftView){
 		EditShiftView.prototype = jQuery.decor.dialogDecor({
 			$el : args.$el,
 			options : {
-				onTheFly : true
+				onTheFly : true,
+				editorHeight: 510
 			}
 		});
 		ByEmplsEditShiftView.prototype = new EditShiftView();
