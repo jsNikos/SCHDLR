@@ -18,38 +18,38 @@ define(['EditShiftView'], function(EditShiftView){
 	function ByRolesEditShiftView(args){
 		var scope = this;
 		this.editShiftCtrl = args.controller;
-		
+
 		// el's
-		var $who = jQuery('.who', scope.$el);	 
+		var $who = jQuery('.who', scope.$el);
 		var $availableTab = jQuery('#availableTab', scope.$el);
 		var $unavailableTab = jQuery('#unavailableTab', scope.$el);
 		var $postedTab = jQuery('#postedTab', scope.$el);
 		var $whoSelect = jQuery('.who-select', scope.$el);
-		
+
 		function init(){
 			scope.init.call(scope);
 			initWhoSelect();
 			initWhoInput();
 		}
-		
+
 		/**
 		 * Registers click-listener which triggers to open employee-selector
 		 * in case it is enabled.
 		 */
-		function initWhoInput(){			
-			$who.on('click', function(){				
+		function initWhoInput(){
+			$who.on('click', function(){
 				if(!$who.hasClass('enabled')){
-					$who.tooltip('open'); 
+					$who.tooltip('open');
 					return;
-				}				
-				$whoSelect.show();				
+				}
+				$whoSelect.show();
 			}).tooltip();
 		}
-		
+
 		/**
 		 * Inits who-select-box and registers defering click-listener.
 		 */
-		function initWhoSelect(){			
+		function initWhoSelect(){
 			// init-tabs
 			$whoSelect.tabs();
 			// employee-select
@@ -60,55 +60,55 @@ define(['EditShiftView'], function(EditShiftView){
 			// register click-listener for closing
 			jQuery('body').on('click', function(event){
 				var $target = jQuery(event.target);
-				if($target.closest('.who-select').size() > 0 
+				if($target.closest('.who-select').size() > 0
 					|| $target.hasClass('who')){
 					return;
 				}
 				scope.closeWhoSelector();
 			});
 		}
-		
+
 		/**
 		 * triggers to close the employee-selector
 		 */
 		this.closeWhoSelector = function(){
 			$whoSelect.fadeOut();
 		};
-		
+
 		/**
 		 * Applies pre-selections according to given scheduleDetail.
 		 */
 		this.applyPreselections = function(scheduleDetail) {
 			Object.getPrototypeOf(scope).applyPreselections.call(scope, scheduleDetail);
-			scope.enableWhoSelect();				
-			scope.renderSelectedEmployee(scope.editShiftCtrl.findEmployeeFromEditedShift());		
-			
+			scope.enableWhoSelect();
+			scope.renderSelectedEmployee(scope.editShiftCtrl.findEmployeeFromEditedShift());
+
 			// apply unavailabilities
-			scope.renderUnavailabilities(scope.editShiftCtrl.unavailabilities);			
+			scope.renderUnavailabilities(scope.editShiftCtrl.unavailabilities);
 		};
-		
-				
+
+
 		/**
 		 * Overwrite.
 		 */
 		this.showDialog = function() {
 			scope.$forWhom.text(' for ' + scope.editShiftCtrl.role);
 			Object.getPrototypeOf(scope).showDialog.call(scope);
-		};		
-		
+		};
+
 		/**
 		 * Grasps from view selected values, suitable to make create-request and
 		 * perform validations.
-		 * 
+		 *
 		 * @returns {ScheduleDetail}
 		 */
 		this.findSelections = function() {
 			var result = Object.getPrototypeOf(scope).findSelections.call(scope);
 			result.employeeName = $who.attr('data-name');
-			return result;			
-		};				
-		
-		
+			return result;
+		};
+
+
 		/**
 		 * Refreshes the employee-list in given target-tab.
 		 * @param employees : [EmployeeHolder]
@@ -126,18 +126,18 @@ define(['EditShiftView'], function(EditShiftView){
 					.data('employee', employee)
 					.text(employee.displayName)
 					.appendTo($list);
-			});			
+			});
 		}
-	    
+
 	    /**
 	     * Triggers to refresh tab for employee selection.
 	     */
-	    this.updateSelectWhoTab = function(){	    	
+	    this.updateSelectWhoTab = function(){
 	    	updateEmployeeList(scope.editShiftCtrl.findAvailableEmployees(), $availableTab);
 	    	updateEmployeeList(scope.editShiftCtrl.findApprovedUnavailableEmployees(), $unavailableTab);
-	    	updateEmployeeList(scope.editShiftCtrl.findPostedUnavailableEmployees(), $postedTab);	    	
+	    	updateEmployeeList(scope.editShiftCtrl.findPostedUnavailableEmployees(), $postedTab);
 	    };
-	    
+
 	    /**
 	     * Enables who-select.
 	     */
@@ -145,32 +145,32 @@ define(['EditShiftView'], function(EditShiftView){
 	    	$who.tooltip('disable');
 	    	$who.addClass('enabled');
 	    };
-	    
+
 	    /**
 	     * Disables who-select.
 	     */
 	    this.disableWhoSelect = function(){
 	    	$who.removeClass('enabled');
 	    };
-	    
+
 	    /**
 	     * Renders selected employee as 'who'
 	     * @param employee : EmployeeHolder
 	     */
 	    this.renderSelectedEmployee = function(employee){
 	    	$who.attr('value', employee.displayName)
-	    		.attr('data-name', employee.name);	    		
+	    		.attr('data-name', employee.name);
 	    };
-		
+
 		/**
 		 * Applies employees available for role to view in case of 'edit'-mode.
 		 */
 		this.applyInitData = function() {
 			scope.editShiftCtrl.isEditMode() && scope.updateSelectWhoTab();
-		};		
-		
+		};
+
 		init();
-		
+
 	}
-	
+
 });

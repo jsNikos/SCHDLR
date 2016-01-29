@@ -73,10 +73,19 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent){
 				data: {model: {timeSlots: scope.timeSlots}},
 				components: {
 					'timeline': new TimelineComponent()
-				}
+				},
+				methods: scope
 			});
-
 		}
+
+		this.handleCancel = function(){
+			scope.editShiftView.closeDialog();
+		};
+
+		this.handleApply = function(){
+			scope.editShiftView.$apply.buttonDecor('startLoading');
+			handleSubmit(scope.editShiftView.findSelections());
+		};
 
 		/**
 		 * From given list of unvails, creates list of availabilities by computing
@@ -407,7 +416,6 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent){
 				scope.updateModel(resp);
 				extractOpenCloseTimes(scope.weekDay);
 				initView();
-				scope.editShiftView.on('submit', handleSubmit);
 				scope.editShiftView.showDialog();
 				scope.editShiftView.applyInitData();
 			});
@@ -433,8 +441,7 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent){
 			return scope.fetchEditDialogInit().then(function(resp) {
 				scope.updateModel(resp);
 				extractOpenCloseTimes(scope.weekDay);
-				initView();
-				scope.editShiftView.on('submit', handleSubmit);
+				initView();				
 				scope.editShiftView.applyInitData();
 				scope.editShiftView.applyPreselections(scope.scheduleDetail);
 				scope.editShiftView.showValidationIssues(scope.scheduleDetail);

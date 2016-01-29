@@ -13,6 +13,7 @@ define(['text!shiftEditor/timeline/timeline.html',
       return {
         template: timelineHtml,
 
+        // {timeSlots: [TimeSlot]}
         props: ['model'],
 
         ready: function() {

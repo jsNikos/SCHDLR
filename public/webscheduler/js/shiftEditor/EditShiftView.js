@@ -20,26 +20,14 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 		var $shiftWarning = jQuery('.shift-warning', this.$el);
 		this.$apply = jQuery('button.apply', this.$el); // the apply button
 
-		// events
-		var SUBMIT = 'submit';
-
 		// template
 		var unavailInfoTmpl = _.template(jQuery('#unavailInfoTmpl').text());
 		var overtimeWarnTmpl = _.template(jQuery('#overtimeWarnTmpl').text());
 
 		this.init = function() {
 			scope = this;
-			initCancel();
 			initPeriodInputs();
-			initApply();
 		};
-
-		function initApply() {
-			jQuery('button.apply', scope.$el).on('click', function() {
-				scope.$apply.buttonDecor('startLoading');
-				scope.fire(SUBMIT, scope.findSelections());
-			});
-		}
 
 		/**
 		 * Removes loading-state from dialog.
@@ -178,10 +166,6 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 			$shiftValError.text(validationMsg);
 			$shiftValError.show('pulsate', 800);
 		};
-
-		function initCancel() {
-			jQuery('button.cancel', scope.$el).on('click', scope.closeDialog);
-		}
 
 		/**
 		 * Inits timepicker on input-fields for period.
