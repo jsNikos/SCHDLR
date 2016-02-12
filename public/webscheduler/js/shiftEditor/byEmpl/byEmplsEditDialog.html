@@ -8,11 +8,31 @@
     <div class="date-header">
       <!-- data-header is rendred here -->
     </div>
+
     <div class="interval-line">
       <div class="label">From:</div>
-      <input class="from-time input-decor" type="text" readonly="readonly" />
+      <frompicker v-bind:selected-time.sync="selectedStartTime"
+                  v-bind:min-hour="storeScheduleOpen"
+                  v-bind:max-hour="fromPickerMaxHour"
+                  v-bind:min-Minute="storeScheduleOpen"
+                  v-bind:max-Minute="fromPickerMaxMinute"
+                  v-bind:show-period="!!weeklyScheduleInRegularTimeFormat"
+                  v-bind:show-leading-zero="!weeklyScheduleInRegularTimeFormat"
+                  v-bind:minutes-interval="scheduleGranularity"
+                  v-on:close="handleTimePickerClose"
+                  v-on:selected="handleFromSelected"></frompicker>
+
       <div class="label">To:</div>
-      <input class="to-time input-decor" type="text" readonly="readonly" />
+      <topicker v-bind:selected-time.sync="selectedEndTime"
+                v-bind:min-hour="toPickerMinHour"
+                v-bind:max-hour="storeScheduleClose"
+                v-bind:min-Minute="toPickerMinMinute"
+                v-bind:max-Minute="storeScheduleClose"
+                v-bind:show-period="!!weeklyScheduleInRegularTimeFormat"
+                v-bind:show-leading-zero="!weeklyScheduleInRegularTimeFormat"
+                v-bind:minutes-interval="scheduleGranularity"
+                v-on:close="handleTimePickerClose"
+                v-on:selected="handleToSelected"></topicker>
     </div>
     <div class="select-line">
       <div class="label">As:</div>
@@ -25,7 +45,7 @@
     </div>
     <div class="unavailability">
       <div class="label">Availability</div>
-      <timeline v-bind:model="model"></timeline>
+      <timeline v-bind:model="model" v-on:dragend="handleDragEnd"></timeline>
       <div class="unavail-container">
         <!-- unavail-info are rendered here -->
       </div>

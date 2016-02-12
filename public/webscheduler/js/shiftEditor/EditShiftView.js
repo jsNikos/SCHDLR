@@ -11,8 +11,6 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 		this.editShiftCtrl = undefined;
 
 		// el's
-		var $fromTime = jQuery('.from-time', this.$el);
-		var $toTime = jQuery('.to-time', this.$el);
 		this.$forWhom = jQuery('.for-whom', this.$el);
 		var $dateHeader = jQuery('.date-header', this.$el);
 		this.$unavailContainer = jQuery('.unavail-container', this.$el);
@@ -26,7 +24,6 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 
 		this.init = function() {
 			scope = this;
-			initPeriodInputs();
 		};
 
 		/**
@@ -85,9 +82,6 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 		 * Applies pre-selections according to given scheduleDetail.
 		 */
 		this.applyPreselections = function(scheduleDetail) {
-			// this sets time without triggering select-event
-			$fromTime.timepicker('setTime', timeZoneUtils.inServerTime(scope.editShiftCtrl.selectedStartTime), true);
-			$toTime.timepicker('setTime', timeZoneUtils.inServerTime(scope.editShiftCtrl.selectedEndTime), true);
 		};
 
 
@@ -96,12 +90,7 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 		 * @returns {ScheduleDetail}
 		 */
 		this.findSelections = function() {
-			return {
-				startMinute : $fromTime.timepicker('getMinute'),
-				startHour : $fromTime.timepicker('getHour'),
-				endMinute : $toTime.timepicker('getMinute'),
-				endHour : $toTime.timepicker('getHour')
-			};
+			return {};
 		};
 
 		/**
@@ -166,96 +155,6 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 			$shiftValError.text(validationMsg);
 			$shiftValError.show('pulsate', 800);
 		};
-
-		/**
-		 * Inits timepicker on input-fields for period.
-		 */
-		function initPeriodInputs() {
-			var options = {
-				showPeriod : !!scope.editShiftCtrl.tableController.weeklyScheduleInRegularTimeFormat,
-				showLeadingZero: !scope.editShiftCtrl.tableController.weeklyScheduleInRegularTimeFormat,
-				minutes : {
-					starts : 0,
-					interval : scope.editShiftCtrl.tableController.scheduleGranularity
-				},
-				defaultTime : '12:00',
-				beforeShow : function(input, picker) {
-					// this fixes position-problem if shown in fixed-context
-					setTimeout(correctPosition, 0);
-
-					function correctPosition() {
-						var $picker = jQuery(picker.tpDiv);
-						var top = jQuery(input).offset().top - jQuery(window).scrollTop() + 33;
-						$picker.css('top', top);
-					}
-				},
-				onClose: scope.editShiftCtrl.handleTimePickerClose
-			};
-
-			initFromPicker(options);
-			initToPicker(options);
-		}
-
-		/**
-		 * Inits the from-time-picker, adds upper-restriction depending on to-picker selection.
-		 * @param options
-		 */
-		function initFromPicker(options){
-			var bounds = {};
-			bounds.onHourShow = function(hour) {
-				var time = moment(scope.editShiftCtrl.extractShiftTime(hour, 0));
-				var upperTime = scope.editShiftCtrl.selectedEndTime || scope.editShiftCtrl.storeScheduleClose;
-				// this works, because the 'hour' determines the (real-)day and therefore 'time' is set correctly
-				if(time.isBefore(scope.editShiftCtrl.storeScheduleOpen, 'hour') || time.isAfter(upperTime, 'hour')){
-					return false;
-				}
-				return true;
-			};
-			bounds.onMinuteShow = function(hour, minute) {
-				if(minute == undefined){ return false; }
-				var time = moment(scope.editShiftCtrl.extractShiftTime(hour, minute));
-				var upperTime = scope.editShiftCtrl.selectedEndTime || scope.editShiftCtrl.storeScheduleClose;
-				if(time.isBefore(scope.editShiftCtrl.storeScheduleOpen, 'minute') || time.isAfter(upperTime, 'minute')){
-					return false;
-				}
-				return true;
-			};
-			bounds.onSelect = function(){
-				scope.editShiftCtrl.handleFromSelected($fromTime.timepicker('getHour'), $fromTime.timepicker('getMinute'));
-			};
-			$fromTime.timepicker(_.chain(bounds).extend(options).value());
-		}
-
-		/**
-		 * Inits the to-time-picker, adds lower-restriction depending on from-picker selection.
-		 * @param options
-		 */
-		function initToPicker(options){
-			var bounds = {};
-			bounds.onHourShow = function(hour) {
-				var time = moment(scope.editShiftCtrl.extractShiftTime(hour, 0));
-				var lowerTime = scope.editShiftCtrl.selectedStartTime || scope.editShiftCtrl.storeScheduleOpen;
-				// this works, because the 'hour' determines the (real-)day and therefore 'time' is set correctly
-				if(time.isBefore(lowerTime, 'hour') || time.isAfter(scope.editShiftCtrl.storeScheduleClose, 'hour')){
-					return false;
-				}
-				return true;
-			};
-			bounds.onMinuteShow = function(hour, minute) {
-				if(minute == undefined){ return false; }
-				var time = moment(scope.editShiftCtrl.extractShiftTime(hour, minute));
-				var lowerTime = scope.editShiftCtrl.selectedStartTime || scope.editShiftCtrl.storeScheduleOpen;
-				// this works, because the 'hour' determines the (real-)day and therefore 'time' is set correctly
-				if(time.isBefore(lowerTime, 'minute') || time.isAfter(scope.editShiftCtrl.storeScheduleClose, 'minute')){
-					return false;
-				}
-				return true;
-			};
-			bounds.onSelect = function(){
-				scope.editShiftCtrl.handleToSelected($toTime.timepicker('getHour'), $toTime.timepicker('getMinute'));
-			};
-			$toTime.timepicker(_.chain(bounds).extend(options).value());
-		}
 
 	}
 

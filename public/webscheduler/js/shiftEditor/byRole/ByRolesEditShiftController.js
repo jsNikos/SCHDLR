@@ -164,24 +164,6 @@ function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml, timeZ
 
 		/**
 		 * @override
-		 * @param hour
-		 * @param minute
-		 */
-		this.handleFromSelected = function(hour, minute){
-			Object.getPrototypeOf(scope).handleFromSelected.call(this, hour, minute);
-		};
-
-		/**
-		 * @override
-		 * @param hour
-		 * @param minute
-		 */
-		this.handleToSelected = function(hour, minute){
-			Object.getPrototypeOf(scope).handleToSelected.call(this, hour, minute);
-		};
-
-		/**
-		 * @override
 		 * Handles timepicker-closing by updating who-select.
 		 */
 		this.handleTimePickerClose = function(){
@@ -212,7 +194,7 @@ function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml, timeZ
 		 * @returns {Boolean}
 		 */
 		function allowEditWho(){
-			return !!(scope.selectedStartTime && scope.selectedEndTime);
+			return !!(scope.vueScope.$data.selectedStartTime && scope.vueScope.$data.selectedEndTime);
 		}
 
 		init();

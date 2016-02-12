@@ -41,6 +41,7 @@ require.config({
 		timeZoneUtils : '../../commons/libs/timeZoneUtils',
 		vue: '../../commons/libs/vue.min',
 		TimelineComponent : 'shiftEditor/timeline/TimelineComponent',
+		TimepickerComponent: 'shiftEditor/TimepickerComponent',
 		fontawsome: '../../commons/libs/font-awesome-4.4.0/css/font-awesome.min'
 	},
 	shim:{

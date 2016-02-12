@@ -14,6 +14,7 @@ define(['text!shiftEditor/timeline/timeline.html',
         template: timelineHtml,
 
         // {timeSlots: [TimeSlot]}
+        //TimeSlot: {shift: boolean, shiftStarts: boolean, shiftEnds: boolean, unavails: [Unavailibility]}
         props: ['model'],
 
         ready: function() {
@@ -31,7 +32,7 @@ define(['text!shiftEditor/timeline/timeline.html',
           },
           handleDrag: handleDrag,
           handleDragEnd: function() {
-            this.$emit('dragend');
+            this.$dispatch('dragend');
           }
         }
       }
@@ -141,8 +142,10 @@ define(['text!shiftEditor/timeline/timeline.html',
           })
           .on('dragend', function(event) {
             currDraggedTimeSlotIdx = undefined;
+            if(!invalidDragStart){
+                vueScope.handleDragEnd();
+            }
             invalidDragStart = true;
-            vueScope.handleDragEnd();
           })
           .on('mouseleave', function(event) {
             $timeline.trigger('dragend');
