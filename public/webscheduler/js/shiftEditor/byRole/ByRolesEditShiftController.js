@@ -45,7 +45,7 @@ function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml, timeZ
 			fetchInfoForEmployee(employee.name)
       .then(function(resp){
         scope.unavailabilities = resp.unavailabilities;
-        scope.vueScope.$data.model.timeSlots = resp.timeSlots;
+        scope.vueScope.$data.timeSlots = resp.timeSlots;
         scope.vueScope.$emit('selectedTimeChange');
 				scope.editShiftView.renderUnavailabilities(scope.unavailabilities);
 				(scope.modifiable !== false) && scope.editShiftView.enableApply();

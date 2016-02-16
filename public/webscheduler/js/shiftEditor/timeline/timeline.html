@@ -1,7 +1,7 @@
 <div class="timeline-container">
 
   <div class="timeline" js-role="draggable-timeline">
-    <div v-for="(idx, timeSlot) in model.timeSlots" class="timeslot-cell"
+    <div v-for="(idx, timeSlot) in timeSlots" class="timeslot-cell"
          v-bind:class="{'scheduled-slot': showScheduledSlot(timeSlot), 'unavail-slot': showUnavailSlot(timeSlot)}"
          data-idx="{{idx}}">
          <div v-if="timeSlot.shiftStarts || timeSlot.shiftEnds" class="marker">

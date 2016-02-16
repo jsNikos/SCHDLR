@@ -54,9 +54,8 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 
 		 scope.vueScope =	new Vue({
 				el: '.edit-dialog',
-				data: {model: {
-							 timeSlots: undefined
-						 },
+				data: {
+				    timeSlots: undefined,
 					  selectedStartTime: undefined, // (Date)
 					  selectedEndTime: undefined,  // (Date) note: this end-time is +1second over the shift endTime
 						storeScheduleClose: scope.storeScheduleClose,
@@ -104,7 +103,7 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 		}
 
 		this.handleSelectedTimeChange = function(){
-			_.chain(scope.vueScope.$data.model.timeSlots)
+			_.chain(scope.vueScope.$data.timeSlots)
 				.each(unassignSlot)
 				.each(assignSlot);
 		};
@@ -128,7 +127,7 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 		}
 
 		this.handleDragEnd =function(){
-			var assignedSlots =	_.filter(scope.vueScope.$data.model.timeSlots, function(timeSlot){ return timeSlot.shift; });
+			var assignedSlots =	_.filter(scope.vueScope.$data.timeSlots, function(timeSlot){ return timeSlot.shift; });
 			if(assignedSlots.length === 0){
 				scope.vueScope.$data.selectedStartTime = undefined;
 				scope.vueScope.$data.selectedEndTime = undefined;
@@ -476,7 +475,7 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 				scope.updateModel(resp);
 				extractOpenCloseTimes(scope.weekDay);
 				initView();
-				scope.vueScope.$data.model.timeSlots = resp.timeSlots;
+				scope.vueScope.$data.timeSlots = resp.timeSlots;
 				scope.editShiftView.showDialog();
 				scope.editShiftView.applyInitData();
 			});
@@ -501,7 +500,7 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 				scope.updateModel(resp);
 				extractOpenCloseTimes(scope.weekDay);
 				initView();
-				scope.vueScope.$data.model.timeSlots = resp.timeSlots;
+				scope.vueScope.$data.timeSlots = removeSelectedShiftUnavails(resp.timeSlots);
 				scope.vueScope.$data.selectedStartTime = new Date(scope.scheduleDetail.startTime);
 				scope.vueScope.$data.selectedEndTime = moment(scope.scheduleDetail.endTime).add('second', 1).toDate();
 				scope.editShiftView.applyInitData();
@@ -512,6 +511,22 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 				scope.editShiftView.showDialog();
 			});
 		};
+
+		function removeSelectedShiftUnavails(timeSlots){
+			_.chain(timeSlots)
+			 .filter(function(timeSlot){
+					return timeSlot.unavails && timeSlot.unavails.length > 0;
+			 })
+			 .each(function(timeSlot){
+				 timeSlot.unavails =
+				 	_.reject(timeSlot.unavails, function(unavail){
+							return unavail.unavailType === 'EmployeeScheduleDetail' &&
+										 unavail.startDate === scope.scheduleDetail.startTime &&
+										 unavail.employeeName === scope.scheduleDetail.employeeName;
+			 			});
+			 });
+			 return timeSlots;
+		}
 
 		/**
 		 * Returns if opened in edit-mode.

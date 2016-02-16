@@ -15,7 +15,7 @@ define(['text!shiftEditor/timeline/timeline.html',
 
         // {timeSlots: [TimeSlot]}
         //TimeSlot: {shift: boolean, shiftStarts: boolean, shiftEnds: boolean, unavails: [Unavailibility]}
-        props: ['model'],
+        props: ['timeSlots'],
 
         ready: function() {
           vueScope = this;
@@ -26,7 +26,7 @@ define(['text!shiftEditor/timeline/timeline.html',
         },
 
         watch:{
-          'model.timeSlots': function(val, oldVal){
+          'timeSlots': function(val, oldVal){
               this.$nextTick(function(){
                 adaptCellWidth();
               });
@@ -48,9 +48,9 @@ define(['text!shiftEditor/timeline/timeline.html',
       }
 
       function handleDrag(timeSlot, idx, prevIdx) {
-        var prev = prevIdx != undefined && vueScope.$data.model.timeSlots[prevIdx]; // previous drag target
-        var left = vueScope.$data.model.timeSlots[idx - 1];
-        var right = vueScope.$data.model.timeSlots[idx + 1];
+        var prev = prevIdx != undefined && vueScope.$data.timeSlots[prevIdx]; // previous drag target
+        var left = vueScope.$data.timeSlots[idx - 1];
+        var right = vueScope.$data.timeSlots[idx + 1];
         var hasLeft = left && left.shift;
         var hasRight = right && right.shift;
 
@@ -124,7 +124,7 @@ define(['text!shiftEditor/timeline/timeline.html',
         $timeline
           .on('dragstart', '.timeslot-cell', function(event) {
             var idx = jQuery(event.target).data('idx');
-            invalidDragStart = checkDragStartInvalid(idx, vueScope.$data.model.timeSlots[idx]);
+            invalidDragStart = checkDragStartInvalid(idx, vueScope.$data.timeSlots[idx]);
           })
           .on('drag', '.timeslot-cell', function(event, dragprops) {
             if (invalidDragStart) {
@@ -148,7 +148,7 @@ define(['text!shiftEditor/timeline/timeline.html',
             }
             var prevIdx = currDraggedTimeSlotIdx;
             currDraggedTimeSlotIdx = idx;
-            vueScope.handleDrag(vueScope.$data.model.timeSlots[idx], idx, prevIdx);
+            vueScope.handleDrag(vueScope.$data.timeSlots[idx], idx, prevIdx);
           })
           .on('dragend', function(event) {
             currDraggedTimeSlotIdx = undefined;
@@ -170,14 +170,14 @@ define(['text!shiftEditor/timeline/timeline.html',
       }
 
       function hasShift() {
-        return !!_.findWhere(vueScope.$data.model.timeSlots, {
+        return !!_.findWhere(vueScope.$data.timeSlots, {
           shiftStarts: true
         });
       }
 
       function adaptCellWidth() {
         var $timeline = jQuery(vueScope.$el).find('.timeline');
-        var cellWidth = $timeline.innerWidth() / vueScope.$data.model.timeSlots.length;
+        var cellWidth = $timeline.innerWidth() / vueScope.$data.timeSlots.length;
         cellWidth = Math.min(10, Math.floor(cellWidth));
         $timeline.find('.timeslot-cell').outerWidth(cellWidth);
       }
