@@ -34,6 +34,7 @@
                 v-on:close="handleTimePickerClose"
                 v-on:selected="handleToSelected"></topicker>
     </div>
+    <div class="time-scheduled" v-if="selectedStartTime && selectedEndTime">{{timeScheduled}} hours</div>
     <div class="select-line">
       <div class="label">As:</div>
       <select name="role">

@@ -30,6 +30,7 @@
                 v-on:close="handleTimePickerClose"
                 v-on:selected="handleToSelected"></topicker>
 		</div>
+		<div class="time-scheduled" v-if="selectedStartTime && selectedEndTime">{{timeScheduled}} hours</div>
 		<div class="who-line">
 			<div class="label">Who:</div>
 			<input class="who input-decor" type="text" readonly="readonly"

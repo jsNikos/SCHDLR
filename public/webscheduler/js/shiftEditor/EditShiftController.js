@@ -67,7 +67,8 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 					fromPickerMaxHour: fromPickerMaxHour,
 					fromPickerMaxMinute: fromPickerMaxMinute,
 					toPickerMinHour: toPickerMinHour,
-					toPickerMinMinute: toPickerMinMinute
+					toPickerMinMinute: toPickerMinMinute,
+					timeScheduled: timeScheduled
 				},
 				components: {
 					'timeline': new TimelineComponent(),
@@ -83,6 +84,11 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 					selectedTimeChange: scope.handleSelectedTimeChange
 				}
 			});
+		}
+
+		function timeScheduled(){
+			return timeZoneUtils.parseInServerTimeAsMoment(this.selectedEndTime)
+							.diff(timeZoneUtils.parseInServerTimeAsMoment(this.selectedStartTime), 'hours', true);							
 		}
 
 		// 'this' is essential for computed-props to work
