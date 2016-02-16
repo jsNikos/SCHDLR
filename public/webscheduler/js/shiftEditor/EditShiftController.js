@@ -52,21 +52,10 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 				$el : jQuery(scope.getDialogTmpl()())
 			});
 
-			//TODO must come from server
-			_.each(scope.timeSlots, function(timeSlot, idx){
-							_.extend(timeSlot, {shift: undefined,
-							shiftStarts: undefined,
-							shiftEnds: undefined,
-							unavails: []});
-							if(idx > 5 && idx < 27){
-								timeSlot.unavails.push({});
-							}
-						});
-
 		 scope.vueScope =	new Vue({
 				el: '.edit-dialog',
 				data: {model: {
-							 timeSlots: scope.timeSlots
+							 timeSlots: undefined
 						 },
 					  selectedStartTime: undefined, // (Date)
 					  selectedEndTime: undefined,  // (Date) note: this end-time is +1second over the shift endTime
@@ -88,8 +77,11 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 				},
 				methods: scope,
 				watch: {
-					selectedStartTime: handleSelectedTimeChange,
-					selectedEndTime: handleSelectedTimeChange
+					selectedStartTime: scope.handleSelectedTimeChange,
+					selectedEndTime: scope.handleSelectedTimeChange
+				},
+				events:{
+					selectedTimeChange: scope.handleSelectedTimeChange
 				}
 			});
 		}
@@ -111,11 +103,11 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 			return this.$data.selectedStartTime || this.$data.storeScheduleOpen;
 		}
 
-		function handleSelectedTimeChange(val, oldVal){
-			_.chain(scope.timeSlots)
+		this.handleSelectedTimeChange = function(){
+			_.chain(scope.vueScope.$data.model.timeSlots)
 				.each(unassignSlot)
 				.each(assignSlot);
-		}
+		};
 
 		function assignSlot(timeSlot){
 			if(timeSlot.startTime >= scope.vueScope.$data.selectedStartTime && timeSlot.startTime < scope.vueScope.$data.selectedEndTime){
@@ -136,7 +128,7 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 		}
 
 		this.handleDragEnd =function(){
-			var assignedSlots =	_.filter(scope.timeSlots, function(timeSlot){ return timeSlot.shift; });
+			var assignedSlots =	_.filter(scope.vueScope.$data.model.timeSlots, function(timeSlot){ return timeSlot.shift; });
 			if(assignedSlots.length === 0){
 				scope.vueScope.$data.selectedStartTime = undefined;
 				scope.vueScope.$data.selectedEndTime = undefined;
@@ -484,6 +476,7 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 				scope.updateModel(resp);
 				extractOpenCloseTimes(scope.weekDay);
 				initView();
+				scope.vueScope.$data.model.timeSlots = resp.timeSlots;
 				scope.editShiftView.showDialog();
 				scope.editShiftView.applyInitData();
 			});
@@ -508,6 +501,7 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 				scope.updateModel(resp);
 				extractOpenCloseTimes(scope.weekDay);
 				initView();
+				scope.vueScope.$data.model.timeSlots = resp.timeSlots;
 				scope.vueScope.$data.selectedStartTime = new Date(scope.scheduleDetail.startTime);
 				scope.vueScope.$data.selectedEndTime = moment(scope.scheduleDetail.endTime).add('second', 1).toDate();
 				scope.editShiftView.applyInitData();
@@ -585,7 +579,6 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 			scope.unavailabilities = resp.unavailabilities;
 			scope.employees = resp.employees;
 			scope.startOfDay = resp.startOfDay;
-			scope.timeSlots = resp.timeSlots;
 		};
 
 	}

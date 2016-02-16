@@ -1,8 +1,8 @@
 define(['EditShiftController',
         'ByRolesEditShiftView',
         'text!shiftEditor/byRole/byRolesEditDialog.html',
-        'timeZoneUtils'],
-function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml, timeZoneUtils){
+        'timeZoneUtils', 'q'],
+function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml, timeZoneUtils, q){
 	return function(args){
 		ByRolesEditShiftController.prototype = new EditShiftController();
 		return new ByRolesEditShiftController(args);
@@ -42,11 +42,16 @@ function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml, timeZ
 				return;
 			}
 			// request unavails for selected employee
-			fetchUnavailsForEmployee(employee.name, function(unavails){
-				scope.editShiftView.renderUnavailabilities(unavails);
+			fetchInfoForEmployee(employee.name)
+      .then(function(resp){
+        scope.unavailabilities = resp.unavailabilities;
+        scope.vueScope.$data.model.timeSlots = resp.timeSlots;
+        scope.vueScope.$emit('selectedTimeChange');
+				scope.editShiftView.renderUnavailabilities(scope.unavailabilities);
 				(scope.modifiable !== false) && scope.editShiftView.enableApply();
 				scope.editShiftView.renderSelectedEmployee(employee);
-			});
+			})
+      .catch(console.log);
 			scope.editShiftView.closeWhoSelector();
 			scope.editShiftView.disableApply();
 		};
@@ -55,23 +60,22 @@ function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml, timeZ
 		 * Fetches unavailabilities for given employee.
 		 *
 		 * @param employeeName
-		 * @param callback : [unavailibilities]
 		 */
-		function fetchUnavailsForEmployee(employeeName, callback) {
+		function fetchInfoForEmployee(employeeName) {
 			var dateInWeek = timeZoneUtils.parseInServerTimeAsMoment(scope.weekDay, scope.tableController.DAY_COORD_FORMAT).valueOf();
-			jQuery.ajax({
-				url : scope.tableController.CONTROLLER_URL + '/findUnavailsForEmployee',
-				dataType : 'json',
-				type : 'GET',
-				data : {
-					employeeName : employeeName,
-					dateInWeek : dateInWeek
-				},
-				success : function(resp){
-					scope.unavailabilities = resp.unavailabilities;
-					callback(resp.unavailabilities);
-				}
-			});
+      return q.Promise(function(resolve, reject){
+        jQuery.ajax({
+  				url : scope.tableController.CONTROLLER_URL + '/findInfoForEmployee',
+  				dataType : 'json',
+  				type : 'GET',
+  				data : {
+  					employeeName : employeeName,
+  					dateInWeek : dateInWeek
+  				},
+  				success : resolve,
+          error: reject
+  			});
+      });
 		}
 
 		/**

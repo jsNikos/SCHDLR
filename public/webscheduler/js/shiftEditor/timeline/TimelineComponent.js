@@ -19,8 +19,18 @@ define(['text!shiftEditor/timeline/timeline.html',
 
         ready: function() {
           vueScope = this;
-          adaptCellWidth();
+          if(this.$data.model && this.$data.model.length > 0){
+            adaptCellWidth();
+          }
           initDragEvents();
+        },
+
+        watch:{
+          'model.timeSlots': function(val, oldVal){
+              this.$nextTick(function(){
+                adaptCellWidth();
+              });
+          }
         },
 
         methods: {
