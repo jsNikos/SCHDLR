@@ -4,8 +4,12 @@
     <div v-for="(idx, timeSlot) in timeSlots" class="timeslot-cell"
          v-bind:class="{'scheduled-slot': showScheduledSlot(timeSlot), 'unavail-slot': showUnavailSlot(timeSlot)}"
          data-idx="{{idx}}">
-         <div v-if="timeSlot.shiftStarts || timeSlot.shiftEnds" class="marker">
+         <div v-if="timeSlot.shiftStarts" class="marker">
            <div class="label">{{timeSlot.label}}</div>
+           <i class="fa fa-angle-down fa-2x"></i>
+         </div>
+         <div v-if="!timeSlot.shiftStarts && timeSlot.shiftEnds" class="marker">
+           <div class="label">{{timeSlot.endLabel}}</div>
            <i class="fa fa-angle-down fa-2x"></i>
          </div>
     </div>

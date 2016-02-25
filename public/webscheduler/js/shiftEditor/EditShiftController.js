@@ -61,7 +61,8 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 						storeScheduleClose: scope.storeScheduleClose,
 						storeScheduleOpen: scope.storeScheduleOpen,
 						weeklyScheduleInRegularTimeFormat: scope.tableController.weeklyScheduleInRegularTimeFormat,
-						scheduleGranularity: scope.tableController.scheduleGranularity
+						scheduleGranularity: scope.tableController.scheduleGranularity,
+						showWarnings: true
 					},
 				computed:{
 					fromPickerMaxHour: fromPickerMaxHour,
@@ -88,7 +89,7 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 
 		function timeScheduled(){
 			return timeZoneUtils.parseInServerTimeAsMoment(this.selectedEndTime)
-							.diff(timeZoneUtils.parseInServerTimeAsMoment(this.selectedStartTime), 'hours', true);							
+							.diff(timeZoneUtils.parseInServerTimeAsMoment(this.selectedStartTime), 'hours', true);
 		}
 
 		// 'this' is essential for computed-props to work
@@ -108,7 +109,11 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 			return this.$data.selectedStartTime || this.$data.storeScheduleOpen;
 		}
 
-		this.handleSelectedTimeChange = function(){
+		this.handleSelectedTimeChange = function(val, oldVal){
+			if(oldVal){
+				this.$data.showWarnings = false;
+			}
+
 			_.chain(scope.vueScope.$data.timeSlots)
 				.each(unassignSlot)
 				.each(assignSlot);

@@ -29,8 +29,8 @@
                 v-bind:minutes-interval="scheduleGranularity"
                 v-on:close="handleTimePickerClose"
                 v-on:selected="handleToSelected"></topicker>
+			<div class="label" v-if="selectedStartTime && selectedEndTime">{{timeScheduled}} hours</div>
 		</div>
-		<div class="time-scheduled" v-if="selectedStartTime && selectedEndTime">{{timeScheduled}} hours</div>
 		<div class="who-line">
 			<div class="label">Who:</div>
 			<input class="who input-decor" type="text" readonly="readonly"
@@ -53,7 +53,7 @@
 			</div>
 		</div>
 
-		<div class="shift-warning">
+		<div class="shift-warning" v-show="showWarnings">
 			<!-- warnings are rendered here -->
 		</div>
 		<div class="unavailability">
