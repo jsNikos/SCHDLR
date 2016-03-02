@@ -1,5 +1,5 @@
 .timeline-container{
-  height: 60px;
+  height: 100px;
   position: relative;
 }
 
@@ -7,7 +7,7 @@
   width: 500px;
   padding: 0 important!;
   position: absolute;
-  bottom: 0;
+  bottom: 40px;
   left: 0;
 }
 
@@ -15,7 +15,7 @@
   float: left;
   height: 20px;
   position: relative;
-  background-color: #e8e8e8;
+  background-color: white;
   box-sizing: border-box;
   border-right: solid 1px #cccccc;
   border-bottom: solid 1px #cccccc;
@@ -33,6 +33,16 @@
   cursor: move;
 }
 
+.timeslot-cell .marker.below{
+  top:auto;
+  bottom: -40px;
+}
+
+.timeslot-cell .marker.below .label{
+  position: relative;
+  top: -7px;
+}
+
 .timeslot-cell .marker .label{
   border: 1px solid #e8e8e8;
   border-radius: 7px;
@@ -44,7 +54,7 @@
 }
 
 .timeslot-cell.scheduled-slot{
-  background-color: green;
+  background-color: #6995f8;
 }
 
 .timeslot-cell.unavail-slot{
@@ -52,5 +62,17 @@
 }
 
 .timeslot-cell.unavail-slot.scheduled-slot{
-  background-color: red;
+  background-color: #e65c5c;
+}
+
+.timeline-container .open-label{
+  position: absolute;
+  left: -13px;
+  bottom: 61px;
+}
+
+.timeline-container .close-label{
+  position: absolute;
+  bottom: 25px;
+  left:450px;
 }

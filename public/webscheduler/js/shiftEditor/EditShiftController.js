@@ -1,5 +1,6 @@
-define(['ValidateShiftModifUtils', 'timeZoneUtils', 'q', 'vue', 'TimelineComponent', 'TimepickerComponent'],
-function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, TimepickerComponent){
+define(['ValidateShiftModifUtils', 'unavailabilityUtils', 'timeZoneUtils',
+ 'q', 'vue', 'TimelineComponent', 'TimepickerComponent'],
+function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, TimelineComponent, TimepickerComponent){
 	_.chain(EditShiftController.prototype).extend(new ValidateShiftModifUtils());
 	return EditShiftController;
 
@@ -157,84 +158,9 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 			handleSubmit(scope.editShiftView.findSelections());
 		};
 
-		/**
-		 * From given list of unvails, creates list of availabilities by computing
-		 * the complement of schedule-store hours.
-		 * @param unavails : [UnavailibilityHolder]
-		 */
-		this.findAvailabilities = function(unavails){
-			var dayInfo = scope.tableController.findDayInfo(scope.weekDay);
-			var avails = [];
-			var currStart;
-			// check start to be contained in unvail
-			var nextConnEnd = findLargestConnEndDate(dayInfo.startDate);
-			if(nextConnEnd > dayInfo.startDate){
-				// start is contained in unavail, set currStart to highest possible end
-				currStart = nextConnEnd + 1000;
-			} else{
-				currStart = dayInfo.startDate;
-			}
-			createAvailIntervals(currStart);
-
-			// creates availability interval starting at start
-			// start is assumed not to be contained in any unvail
-			// recursively creates following intervals
-			function createAvailIntervals(start){
-				if(!start || start >= dayInfo.endDate){
-					return;
-				}
-				var unavailStarts = _.chain(unavails).filter(function(unavail){
-					return unavail.startDate > start && unavail.startDate < dayInfo.endDate;
-				}).pluck('startDate').value();
-				if(unavailStarts.length > 0){
-					var nextUnavailStart = _.min(unavailStarts);
-					avails.push(createAvailability(start, nextUnavailStart-1000));
-					largestConnEnd = findLargestConnEndDate(nextUnavailStart);	// next start
-					createAvailIntervals(largestConnEnd+1000);
-				} else{
-					// no further unvails
-					avails.push(createAvailability(start, dayInfo.endDate));
-					return;
-				}
-			}
-
-			// extracts the maximal end-date of intervals which chain together up-from given date
-			// this is the maximal unvailability spanned by intervals starting with those enclosing given date
-			function findLargestConnEndDate(date){
-				var enclosing = findEnclosing(date);
-				if(date >= dayInfo.endDate){
-					return dayInfo.endDate;
-				} else if(enclosing && enclosing.length > 0){
-					var maxEnclosingEnd = _.chain(enclosing).pluck('endDate').max().value();
-					return findLargestConnEndDate(maxEnclosingEnd + 1000);
-				} else{
-					return date;
-				}
-			}
-
-			// find all unvails which enclose given date
-			function findEnclosing(date){
-				return _.chain(unavails).filter(function(unavail){
-					return unavail.startDate <= date && unavail.endDate > date;
-				}).value();
-			}
-
-			return avails;
-		};
-
-		/**
-		 * Creates a availability instance.
-		 * @param startDate
-		 * @param endDate
-		 * @returns
-		 */
-		function createAvailability(startDate, endDate) {
-			return {
-				startDate : startDate,
-				endDate : endDate,
-				availabilityType : 'available',
-				unavailType : 'available'
-			};
+		this.addAvailabilities = function(unavailabilities){
+			//TODO
+			return unavailabilityUtils.addAvailabilities(unavailabilities, scope.tableController.findDayInfo(scope.weekDay));
 		}
 
 		/**
@@ -330,20 +256,25 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 
 			if (scope.isEditMode()) {
 				// its an edit
-				scope.validateEdit(scheduleDetail, scope.scheduleDetail, scope.tableController.CONTROLLER_URL, function(validationIssues) {
-					handleValidationResult(scheduleDetail, validationIssues, function(){
-						handleAsEdit(scheduleDetail);
-					});
-				});
+				scope.validateEdit(scheduleDetail, scope.scheduleDetail, scope.tableController.CONTROLLER_URL)
+				 	   .then(function(validationIssues) {
+							 	 		return handleValidationResult(scheduleDetail, validationIssues);
+							})
+						 .then(function(answer){
+							 	answer &&	handleAsEdit(scheduleDetail);
+							})
+						 .catch(console.log);
 			} else {
 				// its a create
-				scope.validateCreate(scheduleDetail, scope.tableController.CONTROLLER_URL, function(validationIssues) {
-					handleValidationResult(scheduleDetail, validationIssues, function(){
-						handleAsCreate(scheduleDetail);
-					});
-				});
+				scope.validateCreate(scheduleDetail, scope.tableController.CONTROLLER_URL)
+				 			.then(function(validationIssues) {
+										 return handleValidationResult(scheduleDetail, validationIssues);
+							 })
+						  .then(function(answer){
+										 answer && handleAsCreate(scheduleDetail);
+							})
+							.catch(console.log);
 			}
-
 		}
 
 		/**
@@ -352,34 +283,38 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 		 * Otherwise lets operation go through and triggers edit/create.
 		 * @param scheduleDetail : the instance to be created/edited
 		 * @param validationIssues : issues returned from validation
-		 * @param validationOkMethod : the method invoked if validation is ok or issues are overwritten
+		 * @returns promise: answer (boolean), true if validation is ok or issues are overwritten
 		 */
-		function handleValidationResult(scheduleDetail, validationIssues, validationOkMethod){
-			var notOverwritableIssues = scope.extractNotOverwritableIssues(validationIssues);
-			if (scope.issuesCanBeOverwritten(validationIssues)) {
-				// show dialog for overwriting
-				var $dialog = scope.tableController.tableView.showOverwriteIssuePop({
-					validationIssues : validationIssues,
-					onOverwrite : function(event) {
-						// handle overwrite-click
-						$dialog.closeDialog();
-						validationOkMethod();
-					},
-					onCancel : function() {
-						// handle cancel click
-						$dialog.closeDialog();
-						scope.editShiftView.$apply.buttonDecor('stopLoading');
-						scope.editShiftView.showValidationMsg(validationIssues[0].errorMsg);
-					}
-				});
-			} else if(notOverwritableIssues && notOverwritableIssues.length > 0) {
-				// show error-msg
-				scope.editShiftView.$apply.buttonDecor('stopLoading');
-				scope.editShiftView.showValidationMsg(notOverwritableIssues[0].errorMsg);
-			} else{
-				// validation is ok
-				validationOkMethod();
-			}
+		function handleValidationResult(scheduleDetail, validationIssues){
+			return q.Promise(function(resolve){
+				var notOverwritableIssues = scope.extractNotOverwritableIssues(validationIssues);
+				if (scope.issuesCanBeOverwritten(validationIssues)) {
+					// show dialog for overwriting
+					var $dialog = scope.tableController.tableView.showOverwriteIssuePop({
+						validationIssues : validationIssues,
+						onOverwrite : function(event) {
+							// handle overwrite-click
+							$dialog.closeDialog();
+							resolve(true);
+						},
+						onCancel : function() {
+							// handle cancel click
+							$dialog.closeDialog();
+							scope.editShiftView.$apply.buttonDecor('stopLoading');
+							scope.editShiftView.showValidationMsg(validationIssues[0].errorMsg);
+							resolve(false);
+						}
+					});
+				} else if(notOverwritableIssues && notOverwritableIssues.length > 0) {
+					// show error-msg
+					scope.editShiftView.$apply.buttonDecor('stopLoading');
+					scope.editShiftView.showValidationMsg(notOverwritableIssues[0].errorMsg);
+					resolve(false);
+				} else{
+					// validation is ok
+					resolve(true);
+				}
+			});
 		}
 
 
@@ -511,7 +446,7 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 				scope.updateModel(resp);
 				extractOpenCloseTimes(scope.weekDay);
 				initView();
-				scope.vueScope.$data.timeSlots = removeSelectedShiftUnavails(resp.timeSlots);
+				scope.vueScope.$data.timeSlots = resp.timeSlots;
 				scope.vueScope.$data.selectedStartTime = new Date(scope.scheduleDetail.startTime);
 				scope.vueScope.$data.selectedEndTime = moment(scope.scheduleDetail.endTime).add('second', 1).toDate();
 				scope.editShiftView.applyInitData();
@@ -522,22 +457,6 @@ function(ValidateShiftModifUtils, timeZoneUtils, q, Vue, TimelineComponent, Time
 				scope.editShiftView.showDialog();
 			});
 		};
-
-		function removeSelectedShiftUnavails(timeSlots){
-			_.chain(timeSlots)
-			 .filter(function(timeSlot){
-					return timeSlot.unavails && timeSlot.unavails.length > 0;
-			 })
-			 .each(function(timeSlot){
-				 timeSlot.unavails =
-				 	_.reject(timeSlot.unavails, function(unavail){
-							return unavail.unavailType === 'EmployeeScheduleDetail' &&
-										 unavail.startDate === scope.scheduleDetail.startTime &&
-										 unavail.employeeName === scope.scheduleDetail.employeeName;
-			 			});
-			 });
-			 return timeSlots;
-		}
 
 		/**
 		 * Returns if opened in edit-mode.

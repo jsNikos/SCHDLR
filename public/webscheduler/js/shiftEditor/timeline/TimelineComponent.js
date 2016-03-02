@@ -1,10 +1,11 @@
 define(['text!shiftEditor/timeline/timeline.html',
     'underscore',
+    'timeZoneUtils',
     'css!shiftEditor/timeline/timeline.css',
     'css!fontawsome',
     'jquery.event.drag-2.2'
   ],
-  function(timelineHtml, _) {
+  function(timelineHtml, _, timeZoneUtils) {
     return TimelineComponent;
 
     function TimelineComponent() {
@@ -15,7 +16,7 @@ define(['text!shiftEditor/timeline/timeline.html',
 
         // {timeSlots: [TimeSlot]}
         //TimeSlot: {shift: boolean, shiftStarts: boolean, shiftEnds: boolean, unavails: [Unavailibility]}
-        props: ['timeSlots'],
+        props: ['timeSlots', 'openLabel', 'closeLabel'],
 
         ready: function() {
           vueScope = this;
@@ -44,7 +45,13 @@ define(['text!shiftEditor/timeline/timeline.html',
           handleDragEnd: function() {
             this.$dispatch('dragend');
           }
-        }
+        },
+
+        filters: {
+					'day-time': function(date){
+						return timeZoneUtils.parseInServerTimeAsMoment(date).format('h:mm a');
+					}
+				}
       }
 
       function handleDrag(timeSlot, idx, prevIdx) {

@@ -58,7 +58,8 @@
 		</div>
 		<div class="unavailability">
 			<div class="label">Availability</div>
-			<timeline v-bind:time-slots="timeSlots" v-on:dragend="handleDragEnd"></timeline>
+			<timeline v-bind:time-slots="timeSlots" v-bind:open-label="storeScheduleOpen"
+			 v-bind:close-label="storeScheduleClose" v-on:dragend="handleDragEnd"></timeline>			
 			<div class="unavail-container">
 				<!-- unavail-info are rendered here -->
 			</div>

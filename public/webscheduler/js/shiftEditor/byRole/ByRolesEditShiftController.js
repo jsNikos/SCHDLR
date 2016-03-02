@@ -70,7 +70,8 @@ function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml, timeZ
   				type : 'GET',
   				data : {
   					employeeName : employeeName,
-  					dateInWeek : dateInWeek
+  					dateInWeek : dateInWeek,
+            scheduleDetail: scope.scheduleDetail && JSON.stringify(scope.scheduleDetail)
   				},
   				success : resolve,
           error: reject

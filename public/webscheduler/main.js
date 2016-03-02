@@ -28,6 +28,7 @@ require.config({
 		ValidateShiftModifUtils : 'schedulerTable/ValidateShiftModifUtils',
 		EditShiftController : 'shiftEditor/EditShiftController',
 		EditShiftView : 'shiftEditor/EditShiftView',
+		unavailabilityUtils: 'shiftEditor/unavailabilityUtils',
 		ByEmplsEditShiftView : 'shiftEditor/byEmpl/ByEmplsEditShiftView',
 		ByRolesEditShiftView : 'shiftEditor/byRole/ByRolesEditShiftView',
 		TotalsModel : 'schedulerTable/TotalsModel',

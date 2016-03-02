@@ -4,7 +4,7 @@ define(['EditShiftView'], function(EditShiftView){
 			$el : args.$el,
 			options : {
 				onTheFly: true,
-				editorHeight: 540
+				editorHeight: 585
 			}
 		});
 		ByRolesEditShiftView.prototype = new EditShiftView();

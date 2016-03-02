@@ -111,16 +111,8 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 		 * @param unavailabilities : [unavailability]
 		 */
 		this.renderUnavailabilities = function(unavailabilities) {
-			_.chain([])
-			 .union(scope.editShiftCtrl.findAvailabilities(unavailabilities)) /*add availabilities*/
-			 .union(unavailabilities) /* add unavails */
-			 .sortBy(function(interval) { /* sort by startDate */
-				return interval.startDate;
-			  })
+			_.chain(scope.editShiftCtrl.addAvailabilities(unavailabilities))
 			 .each(function(interval) { /* render */
-				if (interval.unavailType === 'EmployeeScheduleDetail') {
-					interval.availabilityType = 'scheduled';
-				}
 				scope.$unavailContainer.append(unavailInfoTmpl({
 					startTime : formatUnavailTime(interval.startDate),
 					endTime : formatUnavailTime(interval.endDate, true),
