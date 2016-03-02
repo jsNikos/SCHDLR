@@ -86,10 +86,7 @@ define(['EditShiftView'], function(EditShiftView){
 					.text(scheduleDetail.role.name)
 					.appendTo($asRole);
 			}
-			$asRole.selectDecor('refresh');
-
-			// apply unavailabilities
-			scope.renderUnavailabilities(scope.editShiftCtrl.unavailabilities);
+			$asRole.selectDecor('refresh');			
 		};
 
 		init();

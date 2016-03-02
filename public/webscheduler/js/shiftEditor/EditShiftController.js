@@ -19,7 +19,6 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 
 		// model
 		this.roles = undefined;
-		this.unavailabilities = undefined;
 		// {String} the selected week-day
 		this.weekDay = undefined;
 		// business-day start (int)
@@ -63,7 +62,8 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 						storeScheduleOpen: scope.storeScheduleOpen,
 						weeklyScheduleInRegularTimeFormat: scope.tableController.weeklyScheduleInRegularTimeFormat,
 						scheduleGranularity: scope.tableController.scheduleGranularity,
-						showWarnings: true
+						showWarnings: true,
+						unavailabilities: []
 					},
 				computed:{
 					fromPickerMaxHour: fromPickerMaxHour,
@@ -84,6 +84,9 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 				},
 				events:{
 					selectedTimeChange: scope.handleSelectedTimeChange
+				},
+				filters:{
+					unavailTimeFilter: unavailTimeFilter
 				}
 			});
 		}
@@ -158,11 +161,6 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 			handleSubmit(scope.editShiftView.findSelections());
 		};
 
-		this.addAvailabilities = function(unavailabilities){
-			//TODO
-			return unavailabilityUtils.addAvailabilities(unavailabilities, scope.tableController.findDayInfo(scope.weekDay));
-		}
-
 		/**
 		 * Handles selection of from-time.
 		 * @param hour
@@ -187,6 +185,13 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 		this.handleTimePickerClose = function(){
 			// default do nothing
 		};
+
+		function unavailTimeFilter(time, isEndtime) {
+			var mom = timeZoneUtils.parseInServerTimeAsMoment(time);
+			isEndtime && mom.add(1, 'seconds');
+			var timeFormat = scope.tableController.weeklyScheduleInRegularTimeFormat ? 'h:mm a' : 'HH:mm';
+			return mom.format(timeFormat);
+		}
 
 		/**
 		 * Points to the template backing the dialog.
@@ -353,7 +358,6 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 			});
 		}
 
-
 		/**
 		 * Adds employeeName and role to given scheduleDetail, extracted from
 		 * model and given selection.
@@ -421,13 +425,13 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 				scope.updateModel(resp);
 				extractOpenCloseTimes(scope.weekDay);
 				initView();
+				scope.vueScope.$data.unavailabilities
+					= unavailabilityUtils.addAvailabilities(resp.unavailabilities, scope.tableController.findDayInfo(scope.weekDay));
 				scope.vueScope.$data.timeSlots = resp.timeSlots;
 				scope.editShiftView.showDialog();
 				scope.editShiftView.applyInitData();
 			});
 		};
-
-
 
 		/**
 		 *
@@ -447,6 +451,8 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 				extractOpenCloseTimes(scope.weekDay);
 				initView();
 				scope.vueScope.$data.timeSlots = resp.timeSlots;
+				scope.vueScope.$data.unavailabilities
+					= unavailabilityUtils.addAvailabilities(resp.unavailabilities, scope.tableController.findDayInfo(scope.weekDay));
 				scope.vueScope.$data.selectedStartTime = new Date(scope.scheduleDetail.startTime);
 				scope.vueScope.$data.selectedEndTime = moment(scope.scheduleDetail.endTime).add('second', 1).toDate();
 				scope.editShiftView.applyInitData();
@@ -521,7 +527,6 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 		 */
 		this.updateModel = function(resp){
 			scope.roles = resp.roles;
-			scope.unavailabilities = resp.unavailabilities;
 			scope.employees = resp.employees;
 			scope.startOfDay = resp.startOfDay;
 		};

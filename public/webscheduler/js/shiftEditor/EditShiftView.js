@@ -13,13 +13,11 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 		// el's
 		this.$forWhom = jQuery('.for-whom', this.$el);
 		var $dateHeader = jQuery('.date-header', this.$el);
-		this.$unavailContainer = jQuery('.unavail-container', this.$el);
 		var $shiftValError = jQuery('.shift-val-error', this.$el);
 		var $shiftWarning = jQuery('.shift-warning', this.$el);
 		this.$apply = jQuery('button.apply', this.$el); // the apply button
 
 		// template
-		var unavailInfoTmpl = _.template(jQuery('#unavailInfoTmpl').text());
 		var overtimeWarnTmpl = _.template(jQuery('#overtimeWarnTmpl').text());
 
 		this.init = function() {
@@ -102,41 +100,6 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 			$dateHeader.text(formattedDate);
 			parent.showDialog.call(scope);
 		};
-
-
-		/**
-		 * Renders given unavailabilities into container, by adding them.
-		 * Extends presented intervals by availabilies, computed as complement of
-		 * schedule-hours and unavails.
-		 * @param unavailabilities : [unavailability]
-		 */
-		this.renderUnavailabilities = function(unavailabilities) {
-			_.chain(scope.editShiftCtrl.addAvailabilities(unavailabilities))
-			 .each(function(interval) { /* render */
-				scope.$unavailContainer.append(unavailInfoTmpl({
-					startTime : formatUnavailTime(interval.startDate),
-					endTime : formatUnavailTime(interval.endDate, true),
-					type : interval.availabilityType,
-					unavailType : interval.unavailType
-				}));
-			 });
-		};
-
-		/**
-		 * Formates the given time as given in unavailabilities.
-		 *
-		 * @param time :
-		 *            {number}
-		 * @param isEndtime :
-		 *            {boolean} if it is a interval end-time
-		 */
-		function formatUnavailTime(time, isEndtime) {
-			var mom = timeZoneUtils.parseInServerTimeAsMoment(time);
-			isEndtime && mom.add(1, 'seconds');
-			var timeFormat = scope.editShiftCtrl.tableController.weeklyScheduleInRegularTimeFormat ? 'h:mm a' : 'HH:mm';
-			return mom.format(timeFormat);
-		}
-
 
 		this.removeValidatonMsgs = function(){
 			$shiftValError.empty();

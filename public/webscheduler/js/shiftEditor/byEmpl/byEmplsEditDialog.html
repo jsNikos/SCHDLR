@@ -41,17 +41,26 @@
         <!-- roles are rendered here -->
       </select>
     </div>
+
     <div class="shift-warning" v-show="showWarnings">
       <!-- warnings are rendered here -->
     </div>
+
     <div class="unavailability">
       <div class="label">Availability</div>
       <timeline v-bind:time-slots="timeSlots" v-bind:open-label="storeScheduleOpen"
-       v-bind:close-label="storeScheduleClose" v-on:dragend="handleDragEnd"></timeline>      
+       v-bind:close-label="storeScheduleClose" v-on:dragend="handleDragEnd"></timeline>
+
       <div class="unavail-container">
-        <!-- unavail-info are rendered here -->
+        <template v-for="unavail in unavailabilities">
+          <div class="unavail-info">
+            <div class="period {{unavail.unavailType}}">{{unavail.startDate | unavailTimeFilter}} - {{unavail.endDate | unavailTimeFilter 'true'}}</div>
+      		  <div class="type">{{unavail.availabilityType}}</div>
+      	  </div>
+       </template>
       </div>
     </div>
+
     <div class="button-bar">
       <div class="shift-val-error">
         <!-- validation errors are rendered here -->

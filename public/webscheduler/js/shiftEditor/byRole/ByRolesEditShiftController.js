@@ -1,8 +1,9 @@
 define(['EditShiftController',
         'ByRolesEditShiftView',
         'text!shiftEditor/byRole/byRolesEditDialog.html',
-        'timeZoneUtils', 'q'],
-function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml, timeZoneUtils, q){
+        'timeZoneUtils', 'q', 'unavailabilityUtils'],
+function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml,
+   timeZoneUtils, q, unavailabilityUtils){
 	return function(args){
 		ByRolesEditShiftController.prototype = new EditShiftController();
 		return new ByRolesEditShiftController(args);
@@ -44,10 +45,10 @@ function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml, timeZ
 			// request unavails for selected employee
 			fetchInfoForEmployee(employee.name)
       .then(function(resp){
-        scope.unavailabilities = resp.unavailabilities;
+        scope.vueScope.$data.unavailabilities
+					= unavailabilityUtils.addAvailabilities(resp.unavailabilities, scope.tableController.findDayInfo(scope.weekDay));
         scope.vueScope.$data.timeSlots = resp.timeSlots;
         scope.vueScope.$emit('selectedTimeChange');
-				scope.editShiftView.renderUnavailabilities(scope.unavailabilities);
 				(scope.modifiable !== false) && scope.editShiftView.enableApply();
 				scope.editShiftView.renderSelectedEmployee(employee);
 			})

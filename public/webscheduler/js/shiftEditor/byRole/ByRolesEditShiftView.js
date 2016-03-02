@@ -53,8 +53,7 @@ define(['EditShiftView'], function(EditShiftView){
 			// init-tabs
 			$whoSelect.tabs();
 			// employee-select
-			$whoSelect.on('click', '.employeeName', function(event){
-				scope.$unavailContainer.empty();
+			$whoSelect.on('click', '.employeeName', function(event){				
 				scope.editShiftCtrl.handleWhoChange(jQuery(event.target).data('employee'));
 			});
 			// register click-listener for closing
@@ -82,9 +81,6 @@ define(['EditShiftView'], function(EditShiftView){
 			Object.getPrototypeOf(scope).applyPreselections.call(scope, scheduleDetail);
 			scope.enableWhoSelect();
 			scope.renderSelectedEmployee(scope.editShiftCtrl.findEmployeeFromEditedShift());
-
-			// apply unavailabilities
-			scope.renderUnavailabilities(scope.editShiftCtrl.unavailabilities);
 		};
 
 

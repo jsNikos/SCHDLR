@@ -4,6 +4,7 @@ define(function(){
   function UnavailabilityUtils(){
 
     this.addAvailabilities = function(unavailabilities, dayInfo){
+      unavailabilities = unavailabilities || [];
       return _.chain([])
 			 .union(findAvailabilities(unavailabilities, dayInfo)) /*add availabilities*/
 			 .union(unavailabilities) /* add unavails */
