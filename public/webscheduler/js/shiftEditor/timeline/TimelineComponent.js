@@ -41,7 +41,6 @@ define(['text!shiftEditor/timeline/timeline.html',
           showUnavailSlot: function(timeSlot) {
             return timeSlot.unavails && timeSlot.unavails.length > 0;
           },
-          handleDrag: handleDrag,
           handleDragEnd: function() {
             this.$dispatch('dragend');
           }
@@ -52,59 +51,6 @@ define(['text!shiftEditor/timeline/timeline.html',
 						return timeZoneUtils.parseInServerTimeAsMoment(date).format('h:mm a');
 					}
 				}
-      }
-
-      function handleDrag(timeSlot, idx, prevIdx) {
-        var prev = prevIdx != undefined && vueScope.$data.timeSlots[prevIdx]; // previous drag target
-        var left = vueScope.$data.timeSlots[idx - 1];
-        var right = vueScope.$data.timeSlots[idx + 1];
-        var hasLeft = left && left.shift;
-        var hasRight = right && right.shift;
-
-        // only one slot (drag started here)
-        if (timeSlot.shiftStarts && timeSlot.shiftEnds) {
-          unassign(timeSlot);
-          return;
-        }
-
-        // starting new shift (drag started here)
-        if (!hasShift()) {
-          assign(timeSlot, true, true);
-          return;
-        }
-
-        // shift has at least 2 slots
-        if (timeSlot.shift) {
-          // drag end to left
-          if (prev.shiftEnds) {
-            unassign(prev);
-            assign(timeSlot, undefined, true);
-            return;
-          }
-
-          // drag start to right
-          if (prev.shiftStarts) {
-            unassign(prev);
-            assign(timeSlot, true, undefined);
-            return;
-          }
-        }
-
-        if (!timeSlot.shift) {
-          // drag start to left
-          if (prev.shiftStarts) {
-            assign(timeSlot, true, false);
-            assign(prev, false, undefined);
-            return;
-          }
-
-          // drag end to right
-          if (prev.shiftEnds) {
-            assign(timeSlot, false, true);
-            assign(prev, undefined, false);
-            return;
-          }
-        }
       }
 
       function unassign(timeSlot) {
@@ -138,7 +84,7 @@ define(['text!shiftEditor/timeline/timeline.html',
         });
       }
 
-      function shouldHandleDragMarker(startIdx, movedIndexes, lastIdx){
+      function shouldHandleDrag(startIdx, movedIndexes, lastIdx){
         if(movedIndexes === 0){
           return false;
         }
@@ -152,7 +98,7 @@ define(['text!shiftEditor/timeline/timeline.html',
         return true;
       }
 
-      function handleDragMarker(idx){
+      function handleDrag(idx){
         var timeslot = vueScope.$data.timeSlots[idx];
         if(timeslot.shift){
           unassign(timeslot);
@@ -164,71 +110,36 @@ define(['text!shiftEditor/timeline/timeline.html',
 
       function initDragEvents() {
         var invalidDragStart = true;
-        var currDraggedTimeSlotIdx = undefined; // last drag-event's target
-        var markerDragStartIdx = undefined; // the timeslot-idx where marker-drag started
-        var lastMarkerDragIdx = undefined; // the timeslot-idx the last drag-event took place
+        var dragStartIdx = undefined; // the timeslot-idx where dragging started
+        var lastDragIdx = undefined; // the timeslot-idx the last drag-event took place
 
         var $timeline = jQuery(vueScope.$el).find('[js-role="draggable-timeline"]');
         $timeline
-          .on('dragstart', '.marker', function(event, dragprops) {
+          .on('dragstart', '.timeslot-cell', function(event, dragprops) {
             var $timeslot = jQuery(event.target).closest('.timeslot-cell');
-            markerDragStartIdx = parseInt($timeslot.attr('data-idx'));
-            lastMarkerDragIdx = markerDragStartIdx;
-            var timeSlot = vueScope.$data.timeSlots[markerDragStartIdx];
-            invalidDragStart = checkDragStartInvalid(markerDragStartIdx, timeSlot);
+            dragStartIdx = parseInt($timeslot.attr('data-idx'));
+            lastDragIdx = dragStartIdx;
+            var timeSlot = vueScope.$data.timeSlots[dragStartIdx];
+            invalidDragStart = checkDragStartInvalid(dragStartIdx, timeSlot);
             if(timeSlot.shift){
               unassign(timeSlot);
               reassignTimeSlots();
             }
           })
-          .on('drag', '.marker', function(event, dragprops) {
+          .on('drag', '.timeslot-cell', function(event, dragprops) {
             var $timeslot = jQuery(event.target).closest('.timeslot-cell');
             var delta = dragprops.deltaX;
             var slotWidth = $timeslot.outerWidth();
             var movedIndexes = Math.floor(delta/slotWidth);
-            if(!invalidDragStart && shouldHandleDragMarker(markerDragStartIdx, movedIndexes, lastMarkerDragIdx)){
-              var idx = markerDragStartIdx + movedIndexes;
-              handleDragMarker(idx);
-              lastMarkerDragIdx = idx;
+            if(!invalidDragStart && shouldHandleDrag(dragStartIdx, movedIndexes, lastDragIdx)){
+              var idx = dragStartIdx + movedIndexes;
+              handleDrag(idx);
+              lastDragIdx = idx;
             }
-          })
-          .on('dragstart', '.timeslot-cell', function(event) {
-            var $target = jQuery(event.target);
-            if(!$target.hasClass('timeslot-cell')){
-              return;
-            }
-            var idx = $target.data('idx');
-            invalidDragStart = checkDragStartInvalid(idx, vueScope.$data.timeSlots[idx]);
-          })
-          .on('drag', '.timeslot-cell', function(event, dragprops) {
-            var $target = jQuery(event.target);
-            if (!$target.hasClass('timeslot-cell') || invalidDragStart) {
-              return;
-            }
-
-            // ensure valid drag target
-            var idx = $target.data('idx');
-            if (idx == undefined) {
-              $timeline.trigger('dragend');
-              return;
-            }
-
-            // ensure to trigger drag only once per cell
-            if (currDraggedTimeSlotIdx === idx) {
-              return;
-            }
-            // ensure not ot skip drags because browser didn't fire mousemove
-            if (Math.abs(idx - currDraggedTimeSlotIdx) > 1) {
-              return;
-            }
-            var prevIdx = currDraggedTimeSlotIdx;
-            currDraggedTimeSlotIdx = idx;
-            vueScope.handleDrag(vueScope.$data.timeSlots[idx], idx, prevIdx);
           })
           .on('dragend', function(event) {
-            currDraggedTimeSlotIdx = undefined;
-            markerDragStartIdx = undefined;
-            lastMarkerDragIdx = undefined;
+            dragStartIdx = undefined;
+            lastDragIdx = undefined;
             if(!invalidDragStart){
                 vueScope.handleDragEnd();
             }
