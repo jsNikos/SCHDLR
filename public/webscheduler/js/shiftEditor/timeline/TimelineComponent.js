@@ -16,7 +16,7 @@ define(['text!shiftEditor/timeline/timeline.html',
 
         // {timeSlots: [TimeSlot]}
         //TimeSlot: {shift: boolean, shiftStarts: boolean, shiftEnds: boolean, unavails: [Unavailibility]}
-        props: ['timeSlots', 'openLabel', 'closeLabel'],
+        props: ['timeSlots', 'openLabel', 'closeLabel', 'labelFormat'],
 
         ready: function() {
           vueScope = this;
@@ -48,7 +48,7 @@ define(['text!shiftEditor/timeline/timeline.html',
 
         filters: {
 					'day-time': function(date){
-						return timeZoneUtils.parseInServerTimeAsMoment(date).format('h:mm a');
+						return timeZoneUtils.parseInServerTimeAsMoment(date).format(this.$data.labelFormat);
 					}
 				}
       }
@@ -166,7 +166,7 @@ define(['text!shiftEditor/timeline/timeline.html',
       function adaptCellWidth() {
         var $timeline = jQuery(vueScope.$el).find('.timeline');
         var cellWidth = $timeline.innerWidth() / vueScope.$data.timeSlots.length;
-        cellWidth = Math.min(10, Math.floor(cellWidth));
+        cellWidth = Math.floor(cellWidth);
         $timeline.find('.timeslot-cell').outerWidth(cellWidth);
       }
     }

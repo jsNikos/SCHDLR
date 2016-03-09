@@ -70,7 +70,8 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 					fromPickerMaxMinute: fromPickerMaxMinute,
 					toPickerMinHour: toPickerMinHour,
 					toPickerMinMinute: toPickerMinMinute,
-					timeScheduled: timeScheduled
+					timeScheduled: timeScheduled,
+          timeFormat: findTimeFormat
 				},
 				components: {
 					'timeline': new TimelineComponent(),
@@ -90,6 +91,10 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 				}
 			});
 		}
+
+    function findTimeFormat(){
+      return this.weeklyScheduleInRegularTimeFormat ? 'h:mm a' : 'HH:mm';
+    }
 
 		function timeScheduled(){
 			return timeZoneUtils.parseInServerTimeAsMoment(this.selectedEndTime)
@@ -189,8 +194,7 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 		function unavailTimeFilter(time, isEndtime) {
 			var mom = timeZoneUtils.parseInServerTimeAsMoment(time);
 			isEndtime && mom.add(1, 'seconds');
-			var timeFormat = scope.tableController.weeklyScheduleInRegularTimeFormat ? 'h:mm a' : 'HH:mm';
-			return mom.format(timeFormat);
+			return mom.format(findTimeFormat());
 		}
 
 		/**
