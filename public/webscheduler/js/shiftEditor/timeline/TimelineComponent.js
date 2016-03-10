@@ -41,7 +41,11 @@ define(['text!shiftEditor/timeline/timeline.html',
           showUnavailSlot: function(timeSlot) {
             return timeSlot.unavails && timeSlot.unavails.length > 0;
           },
-          handleDragEnd: function() {
+          handleDragEnd: function(dragStartIdx, lastDragIdx, isNewShiftCreation) {
+            if(dragStartIdx === lastDragIdx && !isNewShiftCreation){
+              unassign(vueScope.$data.timeSlots[dragStartIdx]);
+              reassignTimeSlots();
+            }
             this.$dispatch('dragend');
           }
         },
@@ -67,6 +71,14 @@ define(['text!shiftEditor/timeline/timeline.html',
         if (end !== undefined) {
           timeSlot.shiftEnds = end;
         }
+      }
+
+      function unassignWhere(filter){
+        _.chain(vueScope.$data.timeSlots)
+         .filter(filter)
+         .each(function(timeSlot){
+           unassign(timeSlot);
+         });
       }
 
       function reassignTimeSlots(){
@@ -98,10 +110,12 @@ define(['text!shiftEditor/timeline/timeline.html',
         return true;
       }
 
-      function handleDrag(idx){
-        var timeslot = vueScope.$data.timeSlots[idx];
+      function handleDrag(currDragIdx, lastDragIdx){
+        var timeslot = vueScope.$data.timeSlots[currDragIdx];
         if(timeslot.shift){
-          unassign(timeslot);
+          var deltaIdx = currDragIdx - lastDragIdx;
+          (deltaIdx > 0) && unassignWhere(function(el, idx){ return idx < currDragIdx; });
+          (deltaIdx < 0) && unassignWhere(function(el, idx){ return idx > currDragIdx; });
         } else{
           assign(timeslot, true);
         }
@@ -112,6 +126,7 @@ define(['text!shiftEditor/timeline/timeline.html',
         var invalidDragStart = true;
         var dragStartIdx = undefined; // the timeslot-idx where dragging started
         var lastDragIdx = undefined; // the timeslot-idx the last drag-event took place
+        var isNewShiftCreation = undefined; // if shift is created by action
 
         var $timeline = jQuery(vueScope.$el).find('[js-role="draggable-timeline"]');
         $timeline
@@ -121,29 +136,40 @@ define(['text!shiftEditor/timeline/timeline.html',
             lastDragIdx = dragStartIdx;
             var timeSlot = vueScope.$data.timeSlots[dragStartIdx];
             invalidDragStart = checkDragStartInvalid(dragStartIdx, timeSlot);
-            if(timeSlot.shift){
-              unassign(timeSlot);
+            if(!invalidDragStart && !timeSlot.shift){
+              assign(timeSlot, true, true);
               reassignTimeSlots();
+              isNewShiftCreation = true;
             }
           })
           .on('drag', '.timeslot-cell', function(event, dragprops) {
             var $timeslot = jQuery(event.target).closest('.timeslot-cell');
             var delta = dragprops.deltaX;
             var slotWidth = $timeslot.outerWidth();
-            var movedIndexes = Math.floor(delta/slotWidth);
+            var movedIndexes = Math.floor(Math.abs(delta)/slotWidth) * Math.sign(delta);
+
+            var $marker = $timeslot.find('.marker');
+            if($marker.length > 0){
+                console.log($timeslot.find('.marker').offset().left); //TODO
+                var offset = $timeslot.find('.marker').offset();
+                offset.left = offset.left + delta;
+                $timeslot.find('.marker').offset(offset);
+            }
+
             if(!invalidDragStart && shouldHandleDrag(dragStartIdx, movedIndexes, lastDragIdx)){
               var idx = dragStartIdx + movedIndexes;
-              handleDrag(idx);
+              handleDrag(idx, lastDragIdx);
               lastDragIdx = idx;
             }
           })
           .on('dragend', function(event) {
+            if(!invalidDragStart){
+                vueScope.handleDragEnd(dragStartIdx, lastDragIdx, isNewShiftCreation);
+            }
             dragStartIdx = undefined;
             lastDragIdx = undefined;
-            if(!invalidDragStart){
-                vueScope.handleDragEnd();
-            }
             invalidDragStart = true;
+            isNewShiftCreation = undefined;
           })
           .on('mouseleave', function(event) {
             $timeline.trigger('dragend');
@@ -159,7 +185,7 @@ define(['text!shiftEditor/timeline/timeline.html',
 
       function hasShift() {
         return !!_.findWhere(vueScope.$data.timeSlots, {
-          shiftStarts: true
+          shift: true
         });
       }
 
