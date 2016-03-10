@@ -122,11 +122,25 @@ define(['text!shiftEditor/timeline/timeline.html',
         reassignTimeSlots();
       }
 
+      function moveMarker($marker, deltaDragX){
+        if($marker.length > 0){
+            var offset = $marker.offset();
+            offset.left = offset.left + deltaDragX;
+            $marker.offset(offset);
+        }
+      }
+
+      function cleanMarkerStyles($timeline){
+        $timeline.find('.marker').removeAttr('style');
+      }
+
       function initDragEvents() {
         var invalidDragStart = true;
         var dragStartIdx = undefined; // the timeslot-idx where dragging started
         var lastDragIdx = undefined; // the timeslot-idx the last drag-event took place
         var isNewShiftCreation = undefined; // if shift is created by action
+
+        var lastDragX = undefined; // x-position of last encountered drag
 
         var $timeline = jQuery(vueScope.$el).find('[js-role="draggable-timeline"]');
         $timeline
@@ -135,6 +149,7 @@ define(['text!shiftEditor/timeline/timeline.html',
             dragStartIdx = parseInt($timeslot.attr('data-idx'));
             lastDragIdx = dragStartIdx;
             var timeSlot = vueScope.$data.timeSlots[dragStartIdx];
+            lastDragX = dragprops.startX;
             invalidDragStart = checkDragStartInvalid(dragStartIdx, timeSlot);
             if(!invalidDragStart && !timeSlot.shift){
               assign(timeSlot, true, true);
@@ -144,28 +159,30 @@ define(['text!shiftEditor/timeline/timeline.html',
           })
           .on('drag', '.timeslot-cell', function(event, dragprops) {
             var $timeslot = jQuery(event.target).closest('.timeslot-cell');
+            var $marker = $timeslot.find('.marker');
             var delta = dragprops.deltaX;
             var slotWidth = $timeslot.outerWidth();
             var movedIndexes = Math.floor(Math.abs(delta)/slotWidth) * Math.sign(delta);
+            var currDragX = dragprops.startX + delta;
 
-            var $marker = $timeslot.find('.marker');
-            if($marker.length > 0){
-                console.log($timeslot.find('.marker').offset().left); //TODO
-                var offset = $timeslot.find('.marker').offset();
-                offset.left = offset.left + delta;
-                $timeslot.find('.marker').offset(offset);
-            }
+            moveMarker($marker, currDragX - lastDragX);
+            lastDragX = currDragX;
 
             if(!invalidDragStart && shouldHandleDrag(dragStartIdx, movedIndexes, lastDragIdx)){
               var idx = dragStartIdx + movedIndexes;
               handleDrag(idx, lastDragIdx);
+              cleanMarkerStyles($timeline);
               lastDragIdx = idx;
             }
           })
           .on('dragend', function(event) {
             if(!invalidDragStart){
                 vueScope.handleDragEnd(dragStartIdx, lastDragIdx, isNewShiftCreation);
+                var $timeslot = jQuery(event.target).closest('.timeslot-cell');
+                var $marker = $timeslot.find('.marker');
+                cleanMarkerStyles($timeline);
             }
+            lastDragX = undefined;
             dragStartIdx = undefined;
             lastDragIdx = undefined;
             invalidDragStart = true;

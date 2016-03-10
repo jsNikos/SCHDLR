@@ -176,6 +176,14 @@ function(EditShiftController, ByRolesEditShiftView, byRolesEditDialogHtml,
 			allowEditWho() && updateWhoSelect();
 		};
 
+    /**
+    * @override
+    */
+    this.handleDragEnd = function(){
+      Object.getPrototypeOf(scope).handleDragEnd.call(this);
+      allowEditWho() && updateWhoSelect();
+    };
+
 		/**
 		 * Triggers to update who-select for the current period and role. First fetches
 		 * unavailable-employees from server for this parameter.

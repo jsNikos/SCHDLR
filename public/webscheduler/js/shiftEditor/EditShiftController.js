@@ -146,7 +146,7 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 			timeSlot.shiftEnds = undefined;
 		}
 
-		this.handleDragEnd =function(){
+		this.handleDragEnd = function(){
 			var assignedSlots =	_.filter(scope.vueScope.$data.timeSlots, function(timeSlot){ return timeSlot.shift; });
 			if(assignedSlots.length === 0){
 				scope.vueScope.$data.selectedStartTime = undefined;
