@@ -189,6 +189,7 @@ define(['text!shiftEditor/timeline/timeline.html',
             isNewShiftCreation = undefined;
           })
           .on('mouseleave', function(event) {
+            cleanMarkerStyles($timeline);
             $timeline.trigger('dragend');
           });
       }
