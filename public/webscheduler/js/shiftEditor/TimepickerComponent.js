@@ -15,7 +15,7 @@ define(['timeZoneUtils'], function(timeZoneUtils){
     }
 
     function handleSelectedTimeChange(value){
-      $fromTime.timepicker('setTime', timeZoneUtils.inServerTime(value), true);
+      value && $fromTime.timepicker('setTime', timeZoneUtils.inServerTime(value), true);
     }
 
     function initialize(){
