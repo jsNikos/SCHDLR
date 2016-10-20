@@ -20,7 +20,7 @@ app.use(logger('dev'));
 //app.use(bodyParser.json());
 //app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(require('less-middleware')(path.join(__dirname, 'public'), {compiler: {compress: false, yuicompress:false}}));
+// app.use(require('less-middleware')(path.join(__dirname, 'public'), {compiler: {compress: false, yuicompress:false}}));
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
@@ -47,6 +47,9 @@ app.all('/Login*', function(req, res){
 	proxy.web(req, res);
 });
 app.all('/reports/*', function(req, res){
+	proxy.web(req, res);
+});
+app.all('/webapps/*', function(req, res){
 	proxy.web(req, res);
 });
 

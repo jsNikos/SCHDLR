@@ -3,7 +3,7 @@ define(['ValidateShiftModifUtils', 'unavailabilityUtils', 'timeZoneUtils',
 function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, TimelineComponent, TimepickerComponent){
 	_.chain(EditShiftController.prototype).extend(new ValidateShiftModifUtils());
 	return EditShiftController;
-
+	
 	/**
 	 * ABSTRACT controller supporting edit-shift for both, byEmployee and byRoles -view.
 	 * Note: for each use of this editor, create a new instance and call on of its showAs..-methods.
@@ -12,25 +12,25 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 	function EditShiftController() {
 		var scope = undefined;
 		this.tableController = undefined;
-		var webSchedulerController = undefined;
+		var webSchedulerController = undefined;		
 
 		this.vueScope = undefined;
 		this.editShiftView = undefined;
-
+		
 		// model
 		this.roles = undefined;
 		// {String} the selected week-day
-		this.weekDay = undefined;
+		this.weekDay = undefined;	
 		// business-day start (int)
-		this.startOfDay = undefined;
-		// {string} the selected employee from shift
+		this.startOfDay = undefined;		
+		// {string} the selected employee from shift		
 		this.employeeName = undefined;
-		// in case of edit, points to shift and its scheduleDetail
+		// in case of edit, points to shift and its scheduleDetail 
 		this.$selectedShift = undefined;
 		this.scheduleDetail = undefined;
 		// if underlying shift may be modified
-		this.modifiable = undefined;
-
+		this.modifiable = undefined;		
+		
 		// (Date) which hold store's schedule-open/close for this day
 		this.storeScheduleOpen = undefined;
 		this.storeScheduleClose = undefined;
@@ -39,9 +39,9 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 
 		this.init = function() {
 			scope = this;
-			webSchedulerController = scope.tableController.webSchedulerController;
+			webSchedulerController = scope.tableController.webSchedulerController;					
 		};
-
+		
 		/**
 		 * Intitializes the view.
 		 */
@@ -71,7 +71,7 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 					toPickerMinHour: toPickerMinHour,
 					toPickerMinMinute: toPickerMinMinute,
 					timeScheduled: timeScheduled,
-          timeFormat: findTimeFormat
+					timeFormat: findTimeFormat
 				},
 				components: {
 					'timeline': new TimelineComponent(),
@@ -174,7 +174,7 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 		this.handleFromSelected = function(args){
 			scope.vueScope.$data.selectedStartTime = scope.extractShiftTime(args.hour, args.minute);
 		};
-
+		
 		/**
 		 * Handles selection of to-time.
 		 * @param hour
@@ -183,7 +183,7 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 		this.handleToSelected = function(args){
 			scope.vueScope.$data.selectedEndTime = scope.extractShiftTime(args.hour, args.minute);
 		};
-
+		
 		/**
 		 * Called when time-picker from/to select is closed.
 		 */
@@ -204,33 +204,33 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 		this.getDialogTmpl = function(){
 			throw new Error('this is abstract');
 		};
-
+		
 		/**
 		 * Returns the constructor to be used to init view.
 		 */
 		this.getViewConstructor = function(){
 			throw new Error('this is abstract');
-		};
-
+		};		
+		
 		/**
 		 * Transforms the given selected shift-time (hour, minutes) into a time (in millis, server's TimeZone).
 		 * Contains the logic of considering business-day.
 		 * @param hour
-		 * @param minute
+		 * @param minute		 
 		 * @return Date
 		 */
 		this.extractShiftTime = function(hour, minute){
 			var time = timeZoneUtils.parseInServerTimeAsMoment(scope.startOfDay)
 									.hour(hour)
-									.minute(minute);
+									.minute(minute);			
 
 			if(time.isBefore(scope.startOfDay)){
 				// time is in next (real-)day
 				time.add('days', 1);
 			}
-			return time.toDate();
-		};
-
+			return time.toDate();			
+		};		
+		
 		/**
 		 * From input-data constructs the startEnd, endTime as submitted in request to
 		 * edit/create shift.
@@ -242,26 +242,26 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 				endTime : scope.vueScope.$data.selectedEndTime && moment(scope.vueScope.$data.selectedEndTime).add('second', -1).valueOf()
 			};
 		};
-
+		
 		/**
 		 * Handles apply-event by first performing validations, than send to server create-request and
 		 * afterwrads informing the table-controller to update model and show shift in view.
 		 * @param selection
 		 * @returns
 		 */
-		function handleSubmit(selection){
+		function handleSubmit(selection){			
 			// create a scheduleDetail instance to submit
-			var scheduleDate = scope.scheduleDetail ? scope.scheduleDetail.scheduleDate
+			var scheduleDate = scope.scheduleDetail ? scope.scheduleDetail.scheduleDate 
 													: timeZoneUtils.parseInServerTimeAsMoment(scope.weekDay, scope.tableController.DAY_COORD_FORMAT).valueOf();
 			var scheduleDetail = {
 					scheduleDate : scheduleDate,
-					weekDay : scope.weekDay
-				};
+					weekDay : scope.weekDay					
+				};			
 			_.extend(scheduleDetail, scope.findPeriodToSubmit());
-			scope.addRoleAndEmplFromSelections(scheduleDetail, selection);
+			scope.addRoleAndEmplFromSelections(scheduleDetail, selection);										
 
 			// clean-up the view
-			scope.editShiftView.removeValidatonMsgs();
+			scope.editShiftView.removeValidatonMsgs();			
 
 			if (scope.isEditMode()) {
 				// its an edit
@@ -285,11 +285,11 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 							.catch(console.log);
 			}
 		}
-
+		
 		/**
-		 * Handles valdation-result for a edit/create. In case of validationIssues, decides to show issueOverwrite-popup in
+		 * Handles valdation-result for a edit/create. In case of validationIssues, decides to show issueOverwrite-popup in 
 		 * case they are overwritable, or validationErrors in case they are not.
-		 * Otherwise lets operation go through and triggers edit/create.
+		 * Otherwise lets operation go through and triggers edit/create. 
 		 * @param scheduleDetail : the instance to be created/edited
 		 * @param validationIssues : issues returned from validation
 		 * @returns promise: answer (boolean), true if validation is ok or issues are overwritten
@@ -325,12 +325,12 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 				}
 			});
 		}
-
-
+		
+		
 		/**
 		 * Called after validation to trigger create.
 		 * @param scheduleDetail : the instance to be created.
-		 */
+		 */ 
 		function handleAsCreate(scheduleDetail) {
 			scope.editShiftView.$apply.buttonDecor('startLoading');
 			requestCreateShift(scheduleDetail, function(resp) {
@@ -338,11 +338,11 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 				scope.tableController.handleCreateShift(resp, _.pick(scheduleDetail, [ 'employeeName', 'startTime' ]));
 			});
 		}
-
+		
 		/**
 		 * Called after validation to trigger edit.
 		 * @param scheduleDetail : the instance containing the changes
-		 */
+		 */ 
 		function handleAsEdit(scheduleDetail) {
 			scope.editShiftView.$apply.buttonDecor('startLoading');
 			requestEditShift({
@@ -358,21 +358,22 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 					newEmployeeName : scheduleDetail.employeeName,
 					newStartTime : scheduleDetail.startTime,
 					newScheduleDate : scheduleDetail.scheduleDate
-				});
+				});				
 			});
 		}
-
+		
+		
 		/**
 		 * Adds employeeName and role to given scheduleDetail, extracted from
 		 * model and given selection.
 		 * @param scheduleDetail
-		 * @param selection
+		 * @param selection		  
 		 */
 		this.addRoleAndEmplFromSelections = function(scheduleDetail, selection) {
 			throw new Error('this is abstract');
-		};
-
-
+		};		
+						
+		
 		/**
 		 * @param args: {oldScheduleDetail, newScheduleDetail}, new and old scheduleDetail for the shift.
 		 * @param callback : success-callback, called with {schedule}, containing the edited shift.
@@ -391,7 +392,7 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 				}
 			});
 		}
-
+		
 		/**
 		 * Async request to create given scheduleDetail.
 		 * @param callback : is called with schedule which contains created scheduleDetail and
@@ -406,28 +407,28 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 				data : {
 					scheduleDetail : JSON.stringify(scheduleDetail)
 				},
-				success : function(resp) {
+				success : function(resp) {					
 					callback(resp);
 				}
 			});
-		}
+		}	
 
 		/**
 		 * Show-up dialog to create shift and init with given params.
-		 *
+		 * 
 		 * @param args :
 		 *            {$shifts, employeeName, weekDay}
-		 * @returns promise : resolved against the dialog being rendered
-		 *
+		 * @returns promise : resolved against the dialog being rendered		
+		 * 
 		 */
-		this.showForCreate = function(args) {
+		this.showForCreate = function(args) {			
 			scope.$selectedShift = undefined;
-			// sets shiftsCell-coordinates onto model
-			jQuery.extend(scope, scope.tableController.extractCoordFromShiftsCell(args.$shifts));
+			// sets shiftsCell-coordinates onto model		
+			jQuery.extend(scope, scope.tableController.extractCoordFromShiftsCell(args.$shifts));					
 
 			return scope.fetchEditDialogInit().then(function(resp) {
 				scope.updateModel(resp);
-				extractOpenCloseTimes(scope.weekDay);
+				extractOpenCloseTimes(scope.weekDay);	
 				initView();
 				scope.vueScope.$data.unavailabilities
 					= unavailabilityUtils.addAvailabilities(resp.unavailabilities, scope.tableController.findDayInfo(scope.weekDay));
@@ -438,14 +439,14 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 		};
 
 		/**
-		 *
-		 * @param args : {$shift, scheduleDetail}, the scheduleDetail of the selected shift and the selected shift.
+		 * 
+		 * @param args : {$shift, scheduleDetail}, the scheduleDetail of the selected shift and the selected shift.		 
 		 * @returns promise : resolved against the dialog being rendered
 		 */
-		this.showForEdit = function(args, callback) {
+		this.showForEdit = function(args, callback) {			
 			scope.scheduleDetail = args.scheduleDetail;
 			scope.employeeName = scope.scheduleDetail.employeeName;
-			scope.weekDay = scope.scheduleDetail.weekDay;
+			scope.weekDay = scope.scheduleDetail.weekDay;			
 			scope.role = scope.scheduleDetail.role.name;
 			scope.modifiable = scope.scheduleDetail.modifiable && scope.tableController.isScheduleModifiable;
 			scope.$selectedShift = args.$shift;
@@ -475,25 +476,25 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 		this.isEditMode = function(){
 			return !!scope.$selectedShift;
 		};
-
+		
 		/**
 		 * Fetches open/close times for weekDay from dayInfos, and extract/sets the
-		 * corresponding open/close hours/minutes into model.
+		 * corresponding open/close hours/minutes into model.		
 		 * Note: close-time 00:0 is transformed to 24:0 to make it unique.
 		 */
-		function extractOpenCloseTimes(weekDay){
+		function extractOpenCloseTimes(weekDay){						
 			var time = findSchedulePeriod('openTime', weekDay).split(':');
 			var openTimeHour = parseInt(time[0], 10);
 			var openTimeMinute = parseInt(time[1], 10);
-
+			
 			time = findSchedulePeriod('closeTime', weekDay).split(':');
 			var closeTimeHour = parseInt(time[0], 10);
-			var closeTimeMinute = parseInt(time[1], 10);
-
+			var closeTimeMinute = parseInt(time[1], 10);			
+						
 			scope.storeScheduleOpen = scope.extractShiftTime(openTimeHour, openTimeMinute);
-			scope.storeScheduleClose = scope.extractShiftTime(closeTimeHour, closeTimeMinute);
+			scope.storeScheduleClose = scope.extractShiftTime(closeTimeHour, closeTimeMinute);			
 		}
-
+	
 
 		/**
 		 * Fetches from tableController's dayInfos the open or close time for the given week-day.
@@ -503,15 +504,15 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 		function findSchedulePeriod(timeProp, weekDay) {
 			return scope.tableController.findDayInfo(weekDay)[timeProp];
 		}
-
+		
 		/**
 		 * Fetches infos for employee (scheduleable roles, unavailabilities)
-		 *
+		 * 
 		 * @param args
 		 *            {employeeName, weekDay}
 		 */
 		this.fetchEditDialogInit = function() {
-			var dateInWeek = timeZoneUtils.parseInServerTimeAsMoment(scope.weekDay, scope.tableController.DAY_COORD_FORMAT).valueOf();
+			var dateInWeek = timeZoneUtils.parseInServerTimeAsMoment(scope.weekDay, scope.tableController.DAY_COORD_FORMAT).valueOf(); 
 			return jQuery.ajax({
 				url : scope.tableController.CONTROLLER_URL + '/findEditDialogInit',
 				dataType : 'json',
@@ -524,7 +525,7 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 				}
 			});
 		};
-
+		
 		/**
 		 * Updates the model based on the given server-response.
 		 * @param resp
@@ -534,6 +535,6 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils, q, Vue, Ti
 			scope.employees = resp.employees;
 			scope.startOfDay = resp.startOfDay;
 		};
-
+	
 	}
 });

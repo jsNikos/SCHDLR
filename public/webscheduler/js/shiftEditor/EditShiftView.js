@@ -1,11 +1,11 @@
 define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtils){
 	return EditShiftView;
-
+	
 	/**
 	 * ABSTRACT view supporting edit-shift for both, byEmployee and byRoles -view.
 	 * This class is intended to extend instance of 'jQuery.decor.dialogDecor'.
 	 */
-	function EditShiftView() {
+	function EditShiftView() {	
 		var scope = undefined;
 		var parent = Object.getPrototypeOf(this);
 		this.editShiftCtrl = undefined;
@@ -30,32 +30,32 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 		this.removeLoadingState = function(){
 			scope.$apply.buttonDecor('stopLoading');
 		};
-
+		
 		/**
 		 * Disables apply-button.
 		 */
 		this.disableApply = function(){
 			scope.$apply.attr('disabled', 'disabled');
 		};
-
+		
 		/**
 		 * Enable apply-button.
 		 */
 		this.enableApply = function(){
 			scope.$apply.removeAttr('disabled');
 		};
-
+		
 		/**
 		 * Applies init-data on dialog (selectable elements, ...)
 		 */
 		this.applyInitData = function(){
 			throw new Error('this is abstract');
 		};
-
-
+		
+		
 		/**
 		 * For edit-mode, intended to show validation-issues for the given validated scheduleDetail-instance.
-		 *
+		 * 
 		 */
 		this.showValidationIssues = function(scheduleDetail) {
 			var issues = scope.editShiftCtrl.extractNotOverwrittenIssues(scheduleDetail);
@@ -63,9 +63,9 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 				scope.showValidationMsg(_.chain(issues).pluck('errorMsg').value()[0]);
 			}
 		};
-
+		
 		/**
-		 * For edit-mode. Renders warnings (due to overtime) from selected shift.
+		 * For edit-mode. Renders warnings (due to overtime) from selected shift. 
 		 */
 		this.showWarnings = function() {
 			var scheduleDetail = scope.editShiftCtrl.$selectedShift.data('scheduleDetail');
@@ -75,14 +75,14 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 				}));
 			}
 		};
-
+		
 		/**
 		 * Applies pre-selections according to given scheduleDetail.
 		 */
 		this.applyPreselections = function(scheduleDetail) {
 		};
-
-
+		
+		
 		/**
 		 * Grasps from view selected values, suitable to make create-request and perform validations.
 		 * @returns {ScheduleDetail}
@@ -90,7 +90,7 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 		this.findSelections = function() {
 			return {};
 		};
-
+		
 		/**
 		 * Overwrite.
 		 */
@@ -98,18 +98,18 @@ define(['timeZoneUtils', 'css!shiftEditor/editShift.css'], function(timeZoneUtil
 			var formattedDate = timeZoneUtils.parseInServerTimeAsMoment(scope.editShiftCtrl.weekDay, scope.editShiftCtrl.tableController.DAY_COORD_FORMAT)
 										     .format('dddd, MMMM D YYYY');
 			$dateHeader.text(formattedDate);
-			parent.showDialog.call(scope);
+			parent.showDialog.call(scope);		
 		};
 
 		this.removeValidatonMsgs = function(){
 			$shiftValError.empty();
 		};
-
+		
 		this.showValidationMsg = function(validationMsg){
 			$shiftValError.hide();
 			$shiftValError.text(validationMsg);
 			$shiftValError.show('pulsate', 800);
-		};
+		};		
 
 	}
 

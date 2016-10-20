@@ -1,7 +1,7 @@
 define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'underscore'],
   function(WebSchedulerView, SchedulerTableCtrl, q){
 	return WebSchedulerController;
-
+	
 	/**
 	 * @class WebSchedulerController
 	 * @constructor
@@ -9,17 +9,17 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 	function WebSchedulerController() {
 		var scope = this;
 		var view = undefined;
-		this.CONTROLLER_URL = '/ws/webScheduler';
+		this.CONTROLLER_URL = '/ws/webScheduler';		
 		var byEmplsTableController = undefined; // part of strategy for schedulerTableCtrl
 		var byRolesTableController = undefined; // part of strategy for schedulerTableCtrl
-
-		// model
+		
+		// model	
 		this.selectedDate = undefined; // {Date} week selection, part of state
 		this.selectedView = 'byEmployees'; // or 'byRoles', part of state
 		this.selectedDepartmentName = undefined; // selected departmentName (string), part of state
 		var firstPop = false;
 
-		function init() {
+		function init() {			
 			reConstructState();
 			initAjaxErrorHandler();
 			initPopState();
@@ -44,25 +44,25 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 						view.schedulerTableCtrl.tableView.hideLoading();
 					},
 					newData : false
-				});
+				});				
 			}).fail(scope.logError);
-		}
-
+		}		
+		
 		this.logError = function(err){
-			window.console && console.error(err);
+			window.console && console.error(err); 
 		};
-
+		
 		/**
 		 * Creates are returns a schedulerTableController-instance depending on the
-		 * current 'selectedView'.
-		 * @param promise resolved with : {instance: ScheduleTableController, isNew: boolean}
+		 * current 'selectedView'.		  
+		 * @param promise resolved with : {instance: ScheduleTableController, isNew: boolean}		
 		 */
 		this.findSchedulerTableController = function() {
 			return q.Promise(function(resolve){
 				if(typeof initReady !== 'function'){
 					initReady = function(){};
 				}
-
+				
 				// loading controller which is required only
 				if(scope.selectedView === 'byEmployees'){
 					require(['ByEmplsTableController'], function(ByEmplsTableController){
@@ -71,10 +71,10 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 				}else if (scope.selectedView === 'byRoles') {
 					require(['ByRolesTableController'], function(ByRolesTableController){
 						instantiate(byRolesTableController, ByRolesTableController, resolve);
-					});
+					});				
 				}
 			});
-
+			
 			// contains logic how to init and if necessary
 			function instantiate(instance, Constr, resolve) {
 				if (!instance) {
@@ -95,35 +95,35 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 					} else {
 						byEmplsTableController = instance;
 					}
-
+					
 					// register listeners
 					instance.on(instance.BEFORE_TABLE_REFRESH, updateStateActions)
 							.on(instance.INITIAL_DATA_FETCHED, handleTableInitDataFetched);
 				}
-			}
-
+			}						
+			
 		};
-
+		
 		/**
 		 * Handles data-fetch event when schedulerTableController is initialized, by
-		 * setting the 'selectedDate' if not set.
+		 * setting the 'selectedDate' if not set. 
 		 */
 		function handleTableInitDataFetched(resp){
 			if(!scope.selectedDate){
 				scope.selectedDate = new Date(resp.week.businessStartOfWeek);
 			}
 		}
-
+		
 		/**
 		 * Delegates handling to current active scheduleTableController-instance.
 		 * (byRoles or byEmpl)
 		 */
-		this.handleStatisticsClicked = function(){
+		this.handleStatisticsClicked = function(){			
 			return scope.findSchedulerTableController().then(function(instanceHolder){
 				return instanceHolder.instance.handleStatisticsClicked();
 			});
 		};
-
+		
 		/**
 		 * Delegates handling to current active scheduleTableController-instance.
 		 * (byRoles or byEmpl)
@@ -133,7 +133,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 				return instanceHolder.instance.handleAuditsClicked();
 			});
 		};
-
+		
 		/**
 		 * Handles click on print-view link by navigating to scheduler's print-view in reports
 		 * with parameter based on current model.
@@ -147,23 +147,23 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 						tabbed : true,
 						printview : true,
 						incr : 2
-				};
+				};			
 
 				submitLink({
 					method : 'post',
 					target : '_blank',
 					action : '/reports/WeeklySchedule?' + jQuery.param(printViewParams)
-				});
+				});	
 			});
 		};
-
+		
 		/**
 		 * Triggers view to update table-header.
 		 */
 		this.updateTableHeader = function(){
 			view.updateTableHeader();
-		};
-
+		};		
+		
 		/**
 		 * Handles selection of department. Changes state and triggers reload.
 		 */
@@ -181,12 +181,12 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 					view.schedulerTableCtrl.tableView.hideLoading();
 				}
 			});
-		};
-
+		};		
+		
 		function updateStateActions(){
 			view.updateStateActions();
 		}
-
+		
 		/**
 		 * Intended to handle ajax-erros, mainly due to authentiction and authorization.
 		 */
@@ -197,28 +197,28 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 					// not authenticated
 					var state = jQuery.parseQuery();
 					state.targetURI = location.pathname;
-					view.showLoginPopup(scope.CONTROLLER_URL+'/public/login?'+jQuery.param(state));
+					view.showLoginPopup(scope.CONTROLLER_URL+'/public/login?'+jQuery.param(state));									
 					break;
 				case 403:
 					// not authorized
-					handleNotAuthorized(jqxhr);
+					handleNotAuthorized(jqxhr);					
 					break;
 				case 500:
 					handleServerSideError(jqxhr);
 					break;
 				default:
 					break;
-				}
-			});
+				}				
+			}); 
 		}
-
+		
 		/**
 		 * Handles server-side errors by showing general error-message.
 		 */
 		function handleServerSideError(jqxhr){
 			view.showServerError();
 		}
-
+		
 		/**
 		 * Handles change of view (byRoles, byEmployees).
 		 * Switches SchedulerTableCtrl -instance on view and triggers
@@ -232,12 +232,12 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 				// trigger to hide current
 				view.schedulerTableCtrl.hideView();
 				// trigger to halt current table-refresh task (if any)
-				view.schedulerTableCtrl.abortCurrentRefreshTable();
+				view.schedulerTableCtrl.abortCurrentRefreshTable();				
 				// switch table-controller
-				view.schedulerTableCtrl = instanceHolder.instance;
-				view.schedulerTableCtrl.showView();
+				view.schedulerTableCtrl = instanceHolder.instance;				
+				view.schedulerTableCtrl.showView(); 
 				view.schedulerTableCtrl.tableView.showLoading();
-				view.schedulerTableCtrl.refreshTable({
+				view.schedulerTableCtrl.refreshTable({ 
 					selectedDepartmentName : scope.selectedDepartmentName,
 					dateInWeek : scope.selectedDate,
 					success : function() {
@@ -267,8 +267,8 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 				view.showNotAuthorized();
 			}
 		}
-
-
+		
+		
 		// constructs state from url and applies on models
 		function reConstructState() {
 			var state = jQuery.parseQuery();
@@ -276,7 +276,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 			scope.selectedView = state.selectedView || scope.selectedView;
 			scope.selectedDepartmentName = state.selectedDepartmentName;
 		}
-
+		
 		// registers popstate-event listener which triggers to reload-page.
 		function initPopState() {
 			jQuery(window).on('popstate', function(event) {
@@ -286,7 +286,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 				firstPop = true;
 			});
 		}
-
+		
 		/**
 		 * Handles click on resore-button, by requesting first to apply master template to current
 		 * week and than to refresh the table.
@@ -294,7 +294,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 		this.handleRestoreClick = function() {
 			var $restoreButton = jQuery(this);
 			requestRestoreMaster(function(err, resp) {
-				$restoreButton.buttonDecor('stopLoading');
+				$restoreButton.buttonDecor('stopLoading'); 
 				if(err){ return; }
 				view.schedulerTableCtrl.tableView.showLoading();
 				view.schedulerTableCtrl.refreshTable({
@@ -309,7 +309,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 				});
 			});
 		};
-
+		
 		/**
 		 * Request to apply master-schedule on current selected week.
 		 * @param callback : function(err, resp)
@@ -330,7 +330,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 				}
 			});
 		};
-
+		
 		/**
 		 * Handle click on save-as-master by requesting from server to save current selected
 		 * week as master.
@@ -347,9 +347,9 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 				}
 			});
 		};
-
+		
 		/**
-		 *
+		 * 
 		 * @param callback : function(err, resp), where err of type jqXHR and
 		 * 				resp: {skippedEmployees : [EmployeeHolder]}
 		 */
@@ -363,23 +363,23 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 				success : function(resp){
 					callback(null, resp);
 				},
-				error : function(jqXHR){
+				error : function(jqXHR){					
 					callback(jqXHR);
 				}
 			});
 		};
-
+		
 		/**
 		 * Handling week-arrow selects, by setting the week in weekPicker and
 		 * triggering 'handleWeekSelect'-actions.
 		 * @param selectedDate
 		 */
 		this.handleWeekArrowSelect = function(selectedDate){
-			scope.selectedDate = selectedDate;
+			scope.selectedDate = selectedDate;			
 			view.weekPicker.setWeek(scope.selectedDate);
 			scope.handleWeekSelect(scope.selectedDate);
 		};
-
+		
 		/**
 		 * Handles selection of week, be triggering to refresh schedule-table
 		 * and updates state.
@@ -400,15 +400,15 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 				}
 			});
 		};
-
+		
 		this.showLoading = function(){
 			view.schedulerTableCtrl.tableView.showLoading();
 		};
-
+		
 		this.hideLoading = function(){
 			view.schedulerTableCtrl.tableView.hideLoading();
 		};
-
+		
 		// contains logic to put current state into url
 		function updateUrl(){
 			var state = {
@@ -416,16 +416,16 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 					selectedView : scope.selectedView,
 					selectedDepartmentName : scope.selectedDepartmentName
 				};
-
-			if(!history.pushState){
+			
+			if(!history.pushState){				
 				// navigate
-				location.search = '?'+jQuery.param(state);
+				location.search = '?'+jQuery.param(state);				
 			} else{
 				// only change url
 				history.pushState(state, '', '?'+jQuery.param(state));
-			}
+			}			
 		}
-
+		
 		/**
 		 * Intended to submit a dynamic link.
 		 * @param args : {method, target, action}
@@ -435,10 +435,11 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'underscore-ext', 'unders
 			.attr('method', args.method)
 			.attr('target', args.target)
 			.attr('action', args.action)
-			.get(0).submit();
+			.get(0).submit();			
 		}
-
+		
 		init();
-	}
-
+	}	
+	
 });
+
