@@ -142,6 +142,7 @@
 .edit-dialog .who-select {
   margin: 3px 3px 0px 104px;
   display: none;
+  position: absolute;
 }
 .edit-dialog .who-select .employee-list {
   list-style: none;
@@ -150,4 +151,16 @@
   max-height: 80px;
   overflow-x: hidden;
   overflow-y: auto;
+}
+.edit-dialog .role-selection,
+.edit-dialog .shift-note {
+  display: inline-block;
+}
+.edit-dialog .shift-note > input {
+  width: 70px;
+  padding: 5px;
+  text-align: center;
+}
+.edit-dialog .who-selection {
+  display: inline-block;
 }

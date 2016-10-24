@@ -36,10 +36,17 @@
       <div class="label" v-if="selectedStartTime && selectedEndTime">{{timeScheduled}} hours</div>
     </div>
     <div class="select-line">
-      <div class="label">As:</div>
-      <select name="role">
-        <!-- roles are rendered here -->
-      </select>
+      <div class="role-selection">
+        <div class="label">As:</div>
+        <selectdecor v-bind:selected.sync="selectedRole"
+                     v-bind:elements="roles"
+                     displayprop="name"
+                     valueprop="name"></selectdecor>
+      </div>
+      <div class="shift-note">
+        <div class="label">Note:</div>
+        <input class="input-decor" maxlength="4" v-model="note"/>
+      </div>
     </div>
 
     <div class="shift-warning" v-show="showWarnings">

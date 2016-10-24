@@ -43,7 +43,8 @@ require.config({
 		vue: '/webapps/commons/libs/vue.min',
 		TimelineComponent : 'shiftEditor/timeline/TimelineComponent',
 		TimepickerComponent: 'shiftEditor/TimepickerComponent',
-		fontawsome: '/webapps/commons/libs/font-awesome-4.4.0/css/font-awesome.min'
+		fontawsome: '/webapps/commons/libs/font-awesome-4.4.0/css/font-awesome.min',
+		SelectDecor: 'components/SelectDecor'
 	},
 	shim:{
 		'underscore-ext':{

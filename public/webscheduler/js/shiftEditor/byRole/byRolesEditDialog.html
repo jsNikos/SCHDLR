@@ -32,25 +32,34 @@
 			<div class="label" v-if="selectedStartTime && selectedEndTime">{{timeScheduled}} hours</div>
 		</div>
 		<div class="who-line">
-			<div class="label">Who:</div>
-			<input class="who input-decor" type="text" readonly="readonly"
-				data-name="" title="Please first specify from/to fields" />
-			<div class="who-select">
-				<ul>
-					<li><a href="#availableTab">Available</a></li>
-					<li><a href="#postedTab">Pending</a></li>
-					<li><a href="#unavailableTab">Unavailable</a></li>
-				</ul>
-				<div id="availableTab">
-					<!-- available employees are rendered here -->
-				</div>
-				<div id="postedTab">
-					<!-- unavailable employees with status 'posted' are rendered here -->
-				</div>
-				<div id="unavailableTab">
-					<!-- unavailable employees are rendered here -->
-				</div>
+
+			<div class="who-selection">
+				<div class="label">Who:</div>
+				<input class="who input-decor" type="text" readonly="readonly"
+					data-name="" title="Please first specify from/to fields" />
+					<div class="who-select">
+						<ul>
+							<li><a href="#availableTab">Available</a></li>
+							<li><a href="#postedTab">Pending</a></li>
+							<li><a href="#unavailableTab">Unavailable</a></li>
+						</ul>
+						<div id="availableTab">
+							<!-- available employees are rendered here -->
+						</div>
+						<div id="postedTab">
+							<!-- unavailable employees with status 'posted' are rendered here -->
+						</div>
+						<div id="unavailableTab">
+							<!-- unavailable employees are rendered here -->
+						</div>
+					</div>
 			</div>
+
+			<div class="shift-note">
+				<div class="label">Note:</div>
+				<input class="input-decor" maxlength="4" v-model="note"/>
+			</div>
+
 		</div>
 
 		<div class="shift-warning" v-show="showWarnings">
