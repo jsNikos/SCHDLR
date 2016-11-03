@@ -443,7 +443,7 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 				scope.vueScope.$data.unavailabilities
 					= unavailabilityUtils.addAvailabilities(resp.unavailabilities, scope.tableController.findDayInfo(scope.weekDay));
 				scope.vueScope.$data.timeSlots = resp.timeSlots;
-				scope.vueScope.$data.selectedRole = findDefaultRole();
+				scope.vueScope.$data.selectedRole = findDefaultRole() || scope.vueScope.$data.roles[0];
 				scope.editShiftView.showDialog();
 				scope.editShiftView.applyInitData();
 			});
@@ -471,7 +471,10 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 					= unavailabilityUtils.addAvailabilities(resp.unavailabilities, scope.tableController.findDayInfo(scope.weekDay));
 				scope.vueScope.$data.selectedStartTime = new Date(scope.scheduleDetail.startTime);
 				scope.vueScope.$data.selectedEndTime = moment(scope.scheduleDetail.endTime).add('second', 1).toDate();
+
 				scope.vueScope.$data.selectedRole = scope.scheduleDetail.role;
+        ensureExistsSelectedRole(scope.scheduleDetail.role);
+
 				scope.vueScope.$data.note = scope.scheduleDetail.note;
 				scope.editShiftView.applyInitData();
 				scope.editShiftView.applyPreselections(scope.scheduleDetail);
@@ -481,6 +484,16 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 				scope.editShiftView.showDialog();
 			});
 		};
+
+    function ensureExistsSelectedRole(role) {
+      var foundRole = _.find(scope.vueScope.$data.roles, function(r) {
+        return r.name === role.name;
+      });
+
+      if (!foundRole) {
+        scope.vueScope.$data.roles.push(role);
+      }
+    }
 
 		function findDefaultRole() {
 			return _.find(scope.vueScope.$data.roles, function(role) {
@@ -551,10 +564,6 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 		 */
 		this.updateModel = function(resp){
 			scope.roles = resp.roles;
-			if(scope.isEditMode() && scope.containsIssuesOfType(scope.scheduleDetail, 'RoleIssue')){
-				scope.roles.push(scope.scheduleDetail.role);
-			}
-
 			scope.employees = resp.employees;
 			scope.startOfDay = resp.startOfDay;
 		};

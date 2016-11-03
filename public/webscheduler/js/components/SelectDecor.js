@@ -18,12 +18,23 @@ define(['underscore'], function(_){
 
     this.handleSelectedChanged = function() {
       var vuescope = this;
-      jQuery(this.$el).find('option').each(function() {
+      var foundOption = false;
+      var $options = jQuery(this.$el).find('option');
+
+      $options.removeAttr('selected')
+      .each(function() {
         var $option = jQuery(this);
         if(vuescope.$data.selected && $option.val() === vuescope.$data.selected[vuescope.$data.valueprop]){
           $option.attr('selected', 'selected');
+          foundOption = true;
         }
       });
+
+      if(!foundOption && vuescope.$data.elements.length > 0){
+         $options.first().attr('selected', 'selected');
+         vuescope.$data.selected = vuescope.$data.elements[0];
+      }
+
       jQuery(this.$el).selectDecor('refresh');
     };
 
