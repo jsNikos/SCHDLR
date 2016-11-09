@@ -443,7 +443,7 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 				scope.vueScope.$data.unavailabilities
 					= unavailabilityUtils.addAvailabilities(resp.unavailabilities, scope.tableController.findDayInfo(scope.weekDay));
 				scope.vueScope.$data.timeSlots = resp.timeSlots;
-				scope.vueScope.$data.selectedRole = findDefaultRole() || scope.vueScope.$data.roles[0];
+				scope.vueScope.$data.selectedRole = findDefaultRole() ||  (scope.vueScope.$data.roles && scope.vueScope.$data.roles[0]);
 				scope.editShiftView.showDialog();
 				scope.editShiftView.applyInitData();
 			});
