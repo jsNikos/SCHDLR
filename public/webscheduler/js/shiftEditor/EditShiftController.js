@@ -472,8 +472,10 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 				scope.vueScope.$data.selectedStartTime = new Date(scope.scheduleDetail.startTime);
 				scope.vueScope.$data.selectedEndTime = moment(scope.scheduleDetail.endTime).add('second', 1).toDate();
 
-				scope.vueScope.$data.selectedRole = scope.scheduleDetail.role;
-        ensureExistsSelectedRole(scope.scheduleDetail.role);
+        if (scope.tableController.webSchedulerController.selectedView === 'byEmployees') {
+        	scope.vueScope.$data.selectedRole = scope.scheduleDetail.role;
+        	ensureExistsSelectedRole(scope.scheduleDetail.role);
+        }
 
 				scope.vueScope.$data.note = scope.scheduleDetail.note;
 				scope.editShiftView.applyInitData();
