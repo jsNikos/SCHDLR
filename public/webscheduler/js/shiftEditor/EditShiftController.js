@@ -1,7 +1,7 @@
 define(['ValidateShiftModifUtils', 'unavailabilityUtils', 'timeZoneUtils',
- 'q', 'vue', 'TimelineComponent', 'TimepickerComponent', 'SelectDecor'],
+ 'q', 'vue', 'TimelineComponent', 'TimepickerComponent', 'SelectDecor', 'shiftEditorService'],
 function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
-   q, Vue, TimelineComponent, TimepickerComponent, SelectDecor){
+   q, Vue, TimelineComponent, TimepickerComponent, SelectDecor, shiftEditorService){
 	_.chain(EditShiftController.prototype).extend(new ValidateShiftModifUtils());
 	return EditShiftController;
 
@@ -336,17 +336,18 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 			});
 		}
 
-
 		/**
 		 * Called after validation to trigger create.
 		 * @param scheduleDetail : the instance to be created.
 		 */
 		function handleAsCreate(scheduleDetail) {
 			scope.editShiftView.$apply.buttonDecor('startLoading');
-			requestCreateShift(scheduleDetail, function(resp) {
-				scope.editShiftView.closeDialog();
-				scope.tableController.handleCreateShift(resp, _.pick(scheduleDetail, [ 'employeeName', 'startTime' ]));
-			});
+			shiftEditorService.requestCreateShift(scheduleDetail, scope.tableController.CONTROLLER_URL)
+        .then(function(resp) {
+				      scope.editShiftView.closeDialog();
+				      scope.tableController.handleCreateShift(resp, _.pick(scheduleDetail, [ 'employeeName', 'startTime' ]));
+			  })
+        .fail(console.log);
 		}
 
 		/**
@@ -355,10 +356,12 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 		 */
 		function handleAsEdit(scheduleDetail) {
 			scope.editShiftView.$apply.buttonDecor('startLoading');
-			requestEditShift({
-				oldScheduleDetail : scope.scheduleDetail,
-				newScheduleDetail : scheduleDetail
-			}, function(resp) {
+      var requestData = {
+	       oldScheduleDetail: scope.scheduleDetail,
+	       newScheduleDetail: scheduleDetail
+      };
+      shiftEditorService.requestEditShift(requestData, scope.tableController.CONTROLLER_URL)
+      .then(function(resp) {
 				scope.editShiftView.closeDialog();
 				scope.tableController.handleEditShift({
 					schedule : resp.schedule,
@@ -369,7 +372,7 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 					newStartTime : scheduleDetail.startTime,
 					newScheduleDate : scheduleDetail.scheduleDate
 				});
-			});
+			}).fail(console.log);
 		}
 
 
@@ -382,46 +385,6 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 		this.addRoleAndEmplFromSelections = function(scheduleDetail, selection) {
 			throw new Error('this is abstract');
 		};
-
-
-		/**
-		 * @param args: {oldScheduleDetail, newScheduleDetail}, new and old scheduleDetail for the shift.
-		 * @param callback : success-callback, called with {schedule}, containing the edited shift.
-		 */
-		function requestEditShift(args, callback) {
-			jQuery.ajax({
-				url : scope.tableController.CONTROLLER_URL + '/editShift',
-				dataType : 'json',
-				type : 'POST',
-				data : {
-					oldScheduleDetail : JSON.stringify(args.oldScheduleDetail),
-					newScheduleDetail : JSON.stringify(args.newScheduleDetail)
-				},
-				success : function(resp) {
-					callback(resp);
-				}
-			});
-		}
-
-		/**
-		 * Async request to create given scheduleDetail.
-		 * @param callback : is called with schedule which contains created scheduleDetail and
-		 *                   flag if scheduleDetail is new.
-		 *         {schedule, scheduleDetailIsNew}
-		 */
-		function requestCreateShift(scheduleDetail, callback) {
-			jQuery.ajax({
-				url : scope.tableController.CONTROLLER_URL + '/createShift',
-				dataType : 'json',
-				type : 'POST',
-				data : {
-					scheduleDetail : JSON.stringify(scheduleDetail)
-				},
-				success : function(resp) {
-					callback(resp);
-				}
-			});
-		}
 
 		/**
 		 * Show-up dialog to create shift and init with given params.
@@ -436,7 +399,8 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 			// sets shiftsCell-coordinates onto model
 			jQuery.extend(scope, scope.tableController.extractCoordFromShiftsCell(args.$shifts));
 
-			return scope.fetchEditDialogInit().then(function(resp) {
+			return shiftEditorService.fetchEditDialogInit(findRequestDataForInitFetch(), scope.tableController.CONTROLLER_URL)
+      .then(function(resp) {
 				scope.updateModel(resp);
 				extractOpenCloseTimes(scope.weekDay);
 				initView();
@@ -462,7 +426,8 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 			scope.modifiable = scope.scheduleDetail.modifiable && scope.tableController.isScheduleModifiable;
 			scope.$selectedShift = args.$shift;
 
-			return scope.fetchEditDialogInit().then(function(resp) {
+			return shiftEditorService.fetchEditDialogInit(findRequestDataForInitFetch(), scope.tableController.CONTROLLER_URL)
+			.then(function(resp) {
 				scope.updateModel(resp);
 				extractOpenCloseTimes(scope.weekDay);
 				initView();
@@ -486,6 +451,16 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 				scope.editShiftView.showDialog();
 			});
 		};
+
+    function findRequestDataForInitFetch(){
+      var dateInWeek = timeZoneUtils.parseInServerTimeAsMoment(scope.weekDay, scope.tableController.DAY_COORD_FORMAT).valueOf();
+      return {
+					employeeName : scope.employeeName,
+					dateInWeek : dateInWeek,
+					role : scope.role,
+					scheduleDetail : scope.scheduleDetail
+			};
+    }
 
     function ensureExistsSelectedRole(role) {
       var foundRole = _.find(scope.vueScope.$data.roles, function(r) {
@@ -538,27 +513,6 @@ function(ValidateShiftModifUtils, unavailabilityUtils, timeZoneUtils,
 		function findSchedulePeriod(timeProp, weekDay) {
 			return scope.tableController.findDayInfo(weekDay)[timeProp];
 		}
-
-		/**
-		 * Fetches infos for employee (scheduleable roles, unavailabilities)
-		 *
-		 * @param args
-		 *            {employeeName, weekDay}
-		 */
-		this.fetchEditDialogInit = function() {
-			var dateInWeek = timeZoneUtils.parseInServerTimeAsMoment(scope.weekDay, scope.tableController.DAY_COORD_FORMAT).valueOf();
-			return jQuery.ajax({
-				url : scope.tableController.CONTROLLER_URL + '/findEditDialogInit',
-				dataType : 'json',
-				type : 'GET',
-				data : {
-					employeeName : scope.employeeName,
-					dateInWeek : dateInWeek,
-					role : scope.role,
-					scheduleDetail : scope.scheduleDetail ? JSON.stringify(scope.scheduleDetail) : null
-				}
-			});
-		};
 
 		/**
 		 * Updates the model based on the given server-response.

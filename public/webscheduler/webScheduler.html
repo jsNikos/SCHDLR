@@ -23,7 +23,21 @@
 </script>
 
 <!-- this enhances the schedule -global by a hash of release version -->
-<script src="/ws/webScheduler/findReleaseVersionHash"></script>
+<script type="text/javascript">
+(function(){
+	jQuery.ajax({
+		url: '/ws/webScheduler/findReleaseVersionHash',
+		async: false,
+		method: 'GET',
+		success: applyReleaseVersion,
+		error: console.log
+	});
+
+	function applyReleaseVersion(data){
+		jQuery.extend(true, window, { scheduler : { version : data.releaseVersion } });
+	}
+})();
+</script>
 
 <script type="text/javascript" src="/webapps/commons/libs/require.js"></script>
 <script type="text/javascript" src="main.js"></script>

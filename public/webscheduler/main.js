@@ -44,7 +44,8 @@ require.config({
 		TimelineComponent : 'shiftEditor/timeline/TimelineComponent',
 		TimepickerComponent: 'shiftEditor/TimepickerComponent',
 		fontawsome: '/webapps/commons/libs/font-awesome-4.4.0/css/font-awesome.min',
-		SelectDecor: 'components/SelectDecor'
+		SelectDecor: 'components/SelectDecor',
+		shiftEditorService: 'shiftEditor/shiftEditorService'
 	},
 	shim:{
 		'underscore-ext':{
