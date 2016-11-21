@@ -18,7 +18,6 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 
 		// el's
 		var $content = jQuery('body');
-		var $departmentsTabs = jQuery('.departments-tabs', $content);
 		var $masterSchedule = jQuery('.master-schedule', $content);
 		var $restoreMaster = jQuery('#templateRestore', $masterSchedule);
 		var $tableHeader = jQuery('.table-header');
@@ -29,13 +28,11 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 		var errorPopupTmpl = _.template(jQuery('#errorPopupTmpl').text());
 		var skippedEmployeesTmpl = _.template(jQuery('#skippedEmployeesTmpl').text());
 		var outdatedScheduleTmpl = _.template(jQuery('#outdatedScheduleTmpl').text());
-		var departmentTmpl = _.template(jQuery('#departmentTmpl').text());
 		var tableHeaderTmpl = _.template(jQuery('#tableHeaderTmpl').text());
 
 		function init(){
 			initWeekSelect();
 			initWeekArrows();
-			initDepartmentSelect();
 			initSwitchViewSelect();
 			initMasterScheduler();
 			stateChangeController = new StateChangeController({webSchedulerController: controller,
@@ -160,43 +157,6 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 				$arrow.hasClass('right') && selectedDate.add('weeks', 1);
 				controller.handleWeekArrowSelect(selectedDate.toDate());
 			});
-		}
-
-		/**
-		 * Renders departments in case scheduleBy-pref is 'Department', pre-selects
-		 * according to selectedDepartment, registers click-listener to change.
-		 */
-		function initDepartmentSelect(){
-			if(scope.schedulerTableCtrl.scheduleBy !== 'Department'
-				|| scope.schedulerTableCtrl.departments.length === 0){
-				return;
-			}
-			_.chain(scope.schedulerTableCtrl.departments).each(function(department){
-				$createDepartment(department).appendTo($departmentsTabs);
-			});
-
-			// pre-select
-			$departmentsTabs.find('[data-id="'+controller.selectedDepartmentName+'"]')
-							.addClass('selected');
-
-			// add-listener
-			$departmentsTabs.on('click', '.department', function(){
-				var $department = jQuery(this);
-				if($department.hasClass('selected')){
-					return;
-				}
-				$departmentsTabs.find('.department').removeClass('selected');
-				$department.addClass('selected');
-				controller.handleDepartmentSelect($department);
-			});
-		}
-
-		/**
-		 * Creates a department-el based on the given department.
-		 * @param department : DepartmentHolder
-		 */
-		function $createDepartment(department) {
-			return jQuery(departmentTmpl({department : department}));
 		}
 
 		function initMasterScheduler(){

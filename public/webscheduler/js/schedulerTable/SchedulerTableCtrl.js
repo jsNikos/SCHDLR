@@ -56,7 +56,6 @@ define(['SchedulesModelUtils',
 		this.authorizedActions = undefined; // [ScheduleStateAction]
 		this.isScheduleModifiable = true; // if schedule can be modified
 		this.timeZone = undefined; // string, server side timezone
-		this.departments = undefined; // [DepartmentHolder]
 		this.scheduleBy = undefined; // schedule-by pref (All, Role, Department)
 		this.selectedDepartment = undefined; // DepartmentHolder, the department the schedule is associated to
 		this.startOfWeekDay = undefined; // int (0 is sunday)
@@ -67,7 +66,7 @@ define(['SchedulesModelUtils',
                           'employees', 'scheduleGranularity',
                           'dailyOvertimeHours', 'weeklyOvertimeHours', 'roles',
                           'scheduleState', 'authorizedActions', 'isScheduleModifiable',
-                          'timeZone', 'departments', 'scheduleBy', 'selectedDepartment',
+                          'timeZone', 'scheduleBy', 'selectedDepartment',
                           'startOfWeekDay', 'useMasterSchedule', 'scheduleInfo',
                           'weeklyScheduleInRegularTimeFormat', 'helplink'];
 
@@ -75,14 +74,13 @@ define(['SchedulesModelUtils',
 			scope = this;
 			// fetch the model
 			fetchScheduleTableInit(scope.webSchedulerController.selectedDate,
-								   scope.webSchedulerController.selectedDepartmentName).then(handleResponse);
+								   scope.webSchedulerController.selectedDepartmentNumber).then(handleResponse);
 
 			function handleResponse(resp) {
 				// init model
 				scope.fire(scope.INITIAL_DATA_FETCHED, resp);
 				jQuery.extend(scope, _.pick(resp, modelProps));
 				timeZoneUtils.init({timeZone : scope.timeZone});
-				initSelectedDepartment();
 				scope.restrictShifts(scope.schedules, scope.employees);
 				scope.weekDays = scope.week.weekDays;
 				scope.initTotalsModal();
@@ -99,14 +97,6 @@ define(['SchedulesModelUtils',
 				onInitReady && onInitReady(scope);
 			}
 		};
-
-		/**
-		 * In case selected-department is not already set (from state) sets it to
-		 * the first in departments- list
-		 */
-		function initSelectedDepartment(){
-			scope.webSchedulerController.selectedDepartmentName = scope.selectedDepartment && scope.selectedDepartment.name;
-		}
 
 		/**
 		 * Initializes totals model.
@@ -152,7 +142,7 @@ define(['SchedulesModelUtils',
 		 * Triggers to render the table for the given week.
 		 * This is async.! The functions is protected against multiple calls before finishing
 		 * old ones.
-		 * @param args : {selectedDepartmentName (string), success, abort, newData},
+		 * @param args : {selectedDepartmentNumber (string), success, abort, newData},
 		 * 				 'dateInWeek' {Date} any date in week - can be null,
 		 *               'newData' if set to false, takes the current model and doesnt fetch new data from server
 		 * @return {abort} : where 'abort' is a function, when called aborts refresh.
@@ -169,10 +159,9 @@ define(['SchedulesModelUtils',
 
 			// either first fetch new data or directly render model
 			if (newData) {
-				xhr = fetchScheduleTableInit(args.dateInWeek, args.selectedDepartmentName).then(function(resp) {
+				xhr = fetchScheduleTableInit(args.dateInWeek, args.selectedDepartmentNumber).then(function(resp) {
 					// refresh model
 					jQuery.extend(scope, _.pick(resp, modelProps));
-					initSelectedDepartment();
 					scope.restrictShifts(scope.schedules, scope.employees);
 					scope.weekDays = scope.week.weekDays;
 					scope.initTotalsModal();
@@ -626,16 +615,16 @@ define(['SchedulesModelUtils',
 		 *
 		 * @param date
 		 *            {Date} : any day in week, can be null
-		 * @param selectedDepartmentName : string
+		 * @param selectedDepartmentNumber : string
 		 */
-		function fetchScheduleTableInit(date, selectedDepartmentName) {
+		function fetchScheduleTableInit(date, selectedDepartmentNumber) {
 			return jQuery.ajax({
 				url : scope.CONTROLLER_URL + '/findScheduleTableInit',
 				dataType : 'json',
 				type : 'GET',
 				data : {
 					dateInWeek : date ? date.getTime() : null,
-					selectedDepartment : selectedDepartmentName
+					selectedDepartment : selectedDepartmentNumber
 				}
 			});
 		}

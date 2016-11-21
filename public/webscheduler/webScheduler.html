@@ -43,11 +43,19 @@
 <script type="text/javascript" src="main.js"></script>
 
 </head>
-<body>
+<body id="webschedulerApp">
 	<div class="option-bar">
-		<div class="departments-tabs">
-			<!-- departments are rendered here if scheduleBy is department -->
+
+		<div class="departments-tabs"
+					v-show="scheduleBy === 'Department' && departments.length > 0">
+				<div v-for="department in departments" class="department"
+						v-bind:class="{'selected': selectedDepartmentNumber === department.deptNumber}"
+						v-on:click="handleDepartmentSelect(department)">
+					<img width="16px" height="16px" v-bind:src="department.imageUrl">
+					<span>{{department.name}}</span>
+				</div>
 		</div>
+
 		<div class="settings">
 			<div class="week-arrow left" title="go to previous"></div>
 			<button id="weekButton">Week of <span class="week-display"><!-- selected week is rendered here --></span></button>
@@ -298,14 +306,6 @@
 	  </div>
 	</div>
     </script>
-
-	<!-- temaplate to render department-tab -->
-	<script id="departmentTmpl" type="text/template">
-	<div class="department" data-id="<%- department.name %>">
-		<img width="16px" height="16px" src="/Image?name=<%- department.image %>">
-		<span><%- department.name %></span>
-	</div>
-	</script>
 
 </body>
 </html>
