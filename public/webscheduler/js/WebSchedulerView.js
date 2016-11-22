@@ -109,7 +109,7 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 			});
 
 			function createSelectDisplay(viewTitle) {
-				return 'Schedule by ' + viewTitle;
+				return 'View by ' + viewTitle;
 			}
 		}
 
