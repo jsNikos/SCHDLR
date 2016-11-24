@@ -14,6 +14,9 @@
     "animate": "https://raw.githubusercontent.com/daneden/animate.css/master/animate.css",
     "animo.js": "~1.0.2",
     "q": "https://raw.githubusercontent.com/kriskowal/q/v1/q.js",
-    "vue": "~0.12.10"
+    "vue": "1.0.4"
+  },
+  "resolutions": {
+    "vue": "1.0.4"
   }
 }

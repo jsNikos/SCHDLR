@@ -1,0 +1,23 @@
+<div>
+  <div>
+    <span>{{selectedWeek}}</span>
+    <span v-if="!hideState"
+      class="state {{scheduleState.name}}"
+      title="State of schedule-week">{{scheduleState.displayName}}</span>
+
+    <span class="audits link-decor"
+      v-on:click="handleAuditsClicked">Audits</span>
+    <span class="statistics link-decor"
+      v-on:click="handleStatisticsClicked">Statistics</span>
+    <a class="print link-decor"
+      v-bind:href="printViewUrl"
+      target="_blank">Print View</a>
+    <a href="{{helplink}}"
+      class="help link-decor"
+      target="_blank">Help</a>
+  </div>
+  <div class="scheduleInfo"
+    v-if="!!scheduleInfo">
+    <span v-for="part in scheduleInfo.split('\n')">{{part}}</span>
+  </div>
+</div>

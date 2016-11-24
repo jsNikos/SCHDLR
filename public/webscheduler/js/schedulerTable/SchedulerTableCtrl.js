@@ -38,7 +38,6 @@ define(['SchedulesModelUtils',
 		this.INITIAL_DATA_FETCHED = 'initialDataFetched'; // fire when init-data for table are fetched at init-time
 
 		// model
-		this.week = undefined;
 		// all schedules made for selected week
 		this.schedules = undefined;
 		this.employees = undefined;
@@ -52,23 +51,19 @@ define(['SchedulesModelUtils',
 		this.rowCoordProp = 'employeeName'; // part of shiftsCellCoord, alternative is 'role'
 		// prop-path to rowCoord-prop in scheduleDetail
 		this.shiftPathToRowCoord = 'employeeName'; // either ['employeeName'] or ['role', 'name']
-		this.scheduleState = undefined; // ScheduleState
 		this.authorizedActions = undefined; // [ScheduleStateAction]
 		this.isScheduleModifiable = true; // if schedule can be modified
-		this.timeZone = undefined; // string, server side timezone
-		this.scheduleBy = undefined; // schedule-by pref (All, Role, Department)
 		this.selectedDepartment = undefined; // DepartmentHolder, the department the schedule is associated to
 		this.startOfWeekDay = undefined; // int (0 is sunday)
 		this.useMasterSchedule = undefined; // if master schedule is used
 
 		// model-props must be registered here
-		var modelProps = ['week', 'dayInfos','schedules',
+		var modelProps = ['dayInfos','schedules',
                           'employees', 'scheduleGranularity',
                           'dailyOvertimeHours', 'weeklyOvertimeHours', 'roles',
-                          'scheduleState', 'authorizedActions', 'isScheduleModifiable',
-                          'timeZone', 'scheduleBy', 'selectedDepartment',
-                          'startOfWeekDay', 'useMasterSchedule', 'scheduleInfo',
-                          'weeklyScheduleInRegularTimeFormat', 'helplink'];
+                          'authorizedActions', 'isScheduleModifiable',
+                          'selectedDepartment','startOfWeekDay', 'useMasterSchedule',
+                          'weeklyScheduleInRegularTimeFormat'];
 
 		this.init = function(onInitReady) {
 			scope = this;
@@ -80,9 +75,8 @@ define(['SchedulesModelUtils',
 				// init model
 				scope.fire(scope.INITIAL_DATA_FETCHED, resp);
 				jQuery.extend(scope, _.pick(resp, modelProps));
-				timeZoneUtils.init({timeZone : scope.timeZone});
 				scope.restrictShifts(scope.schedules, scope.employees);
-				scope.weekDays = scope.week.weekDays;
+				scope.weekDays = scope.webSchedulerController.vueScope.$data.week.weekDays;
 				scope.initTotalsModal();
 
 				// init views
@@ -163,7 +157,11 @@ define(['SchedulesModelUtils',
 					// refresh model
 					jQuery.extend(scope, _.pick(resp, modelProps));
 					scope.restrictShifts(scope.schedules, scope.employees);
-					scope.weekDays = scope.week.weekDays;
+          scope.webSchedulerController.selectedDate = new Date(resp.week.businessStartOfWeek);
+          scope.webSchedulerController.vueScope.$data.week = resp.week;
+          scope.webSchedulerController.vueScope.$data.scheduleInfo = resp.scheduleInfo;
+          scope.webSchedulerController.vueScope.$data.scheduleState = resp.scheduleState;
+					scope.weekDays = scope.webSchedulerController.vueScope.$data.week.weekDays;
 					scope.initTotalsModal();
 					refreshViews();
 				});
@@ -173,7 +171,6 @@ define(['SchedulesModelUtils',
 
 			// refresh views actions
 			function refreshViews(){
-				scope.webSchedulerController.updateTableHeader();
 				scope.fire(scope.BEFORE_TABLE_REFRESH);
 				renderTableTask = scope.tableView.renderTable(function() {
 					args.success();
@@ -227,9 +224,6 @@ define(['SchedulesModelUtils',
 			// re-new related shift-cells
 			renewShiftsCellsOnModif(scheduleDetail);
 			scope.tableView.hideLoading();
-
-			// update header, state-info is maybe to hide
-			scope.webSchedulerController.updateTableHeader();
 		};
 
 		/**
@@ -416,9 +410,6 @@ define(['SchedulesModelUtils',
 				// re-new related shifts-cells
 				renewShiftsCellsOnModif(scheduleDetail);
 				scope.tableView.hideLoading();
-
-				// update header, state-info is maybe to hide
-				scope.webSchedulerController.updateTableHeader();
 			});
 		}
 

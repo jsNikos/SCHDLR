@@ -57,9 +57,9 @@
 		</div>
 
 		<div class="settings">
-			<div class="week-arrow left" title="go to previous"></div>
-			<button id="weekButton">Week of <span class="week-display"><!-- selected week is rendered here --></span></button>
-			<div class="week-arrow right" title="go to next"></div>
+			<div class="week-arrow left" title="go to previous" v-on:click="handleWeekArrowLeftClick"></div>
+			<button id="weekButton">Week of <span class="week-display">{{weekDisplay}}</span></button>
+			<div class="week-arrow right" title="go to next" v-on:click="handleWeekArrowRightClick"></div>
 			<select id="switchView" title="Schedule by">
 				<option value="byEmployees">Employee</option>
 				<option value="byRoles">Role</option>
@@ -84,7 +84,16 @@
 		</div>
 	</div>
 	<div class="table-header">
-	<!-- tableHeaderTmpl is rendered here -->
+		<tableheader v-bind:schedule-state="scheduleState"
+			v-bind:schedule-info="scheduleInfo"
+			v-bind:helplink="helplink"
+			v-bind:week="week"
+			v-bind:departments="departments"
+			v-bind:selected-department-number="selectedDepartmentNumber"
+			v-bind:schedule-by="scheduleBy"
+			v-on:audits-clicked="handleAuditsClicked"
+			v-on:statistics-clicked="handleStatisticsClicked"
+			v-on:print-clicked="handlePrintClicked"></tableheader>
 	</div>
 
 	<!-- scheduler-table el for by-empls-view -->
@@ -115,9 +124,6 @@
 		<div class="loading-overlay"></div>
 	</div>
 
-	<!-- form used for dynamic link navigation -->
-	<form class="dynamik-links" method="post" target="_blank" action=""></form>
-
 	<script type="text/javascript" src="/webapps/commons/libs/jQuery-ui/jquery-ui-1.10.4.custom.min.js"></script>
 	<script type="text/javascript" src="/webapps/commons/libs/jquery-foodtec-ui/jquery.foodtec.ui.js"></script>
 	<script type="text/javascript" src="/webapps/commons/libs/jquery-ui-timepicker/jquery.ui.timepicker.js"></script>
@@ -133,28 +139,6 @@
     </script>
 
 	<!-- templates -->
-	<script id="tableHeaderTmpl" type="text/template">
-	<div>
-	 <div>
-	  <span><%- selectedWeek %><span/>
-	  <% if(!hideState){ %>
-		<span class="state <%- scheduleState.name %>" title="State of schedule-week"><%- scheduleState.displayName %></span>
-	  <% } %>
-	  <span class="audits link-decor">Audits</span>
-	  <span class="statistics link-decor">Statistics</span>
-	  <span class="print link-decor">Print View</span>
-		<a href="<%- helplink %>" class="help link-decor" target="_blank">Help</a>
-	 </div>
-	 <div class="scheduleInfo">
-		<% if(scheduleInfo) { %>
-		<%    scheduleInfo.split('\n').forEach(function(part){ %>
-					<%- part %></br>
-		<%    }); %>
-		<% } %>
-	<div>
-	</div>
-	</script>
-
 	<script id="stateActionsTmpl" type="text/template">
 	<% _.each(authorizedActions, function(action){ %>
 	<button class="button-decor" data-action="<%- action.name %>" title="Changes state of schedule for the whole week"><%- action.displayName %></button>

@@ -20,25 +20,20 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 		var $content = jQuery('body');
 		var $masterSchedule = jQuery('.master-schedule', $content);
 		var $restoreMaster = jQuery('#templateRestore', $masterSchedule);
-		var $tableHeader = jQuery('.table-header');
-		var $weekDisplay = jQuery('.week-display');
 
 		// templates
 		var loginPopupTmpl = _.template(jQuery('#loginPopupTmpl').text());
 		var errorPopupTmpl = _.template(jQuery('#errorPopupTmpl').text());
 		var skippedEmployeesTmpl = _.template(jQuery('#skippedEmployeesTmpl').text());
 		var outdatedScheduleTmpl = _.template(jQuery('#outdatedScheduleTmpl').text());
-		var tableHeaderTmpl = _.template(jQuery('#tableHeaderTmpl').text());
 
 		function init(){
 			initWeekSelect();
-			initWeekArrows();
 			initSwitchViewSelect();
 			initMasterScheduler();
 			stateChangeController = new StateChangeController({webSchedulerController: controller,
 															   		webSchedulerView : scope,
 															    $el: jQuery('.state-change', $content)});
-			initTableHeader();
 			initSendSms();
 		}
 
@@ -47,19 +42,9 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 				var $button = jQuery(this).buttonDecor('startLoading');
 				require(['SendSmsController'], function(SendSmsController){
 					(new SendSmsController({controller: controller}))
-						.handleSendSms($button, scope.schedulerTableCtrl.week);;
+						.handleSendSms($button, controller.vueScope.$data.week);
 				});
 			});
-		}
-
-		/**
-		 * Delegating click-listener on tableHeader for statistics-link.
-		 */
-		function initTableHeader(){
-			jQuery($tableHeader)
-				.on('click', '.statistics', handleLinkClick.bind(null, controller.handleStatisticsClicked))
-				.on('click', '.print', handleLinkClick.bind(null, controller.handlePrintClicked))
-				.on('click', '.audits', handleLinkClick.bind(null, controller.handleAuditsClicked));
 		}
 
 		function handleLinkClick(handler, event){
@@ -74,21 +59,6 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 
 		this.updateStateActions = function(){
 			stateChangeController.updateStateActions();
-		};
-
-		/** updates table-header with selected week-info and scheduleState.
-		*/
-	    this.updateTableHeader = function(){
-	    	var week = timeZoneUtils.parseInServerTimeAsMoment(scope.schedulerTableCtrl.week.startOfWeek).format('dddd, MMMM D YYYY');
-	    	$tableHeader.empty().append(tableHeaderTmpl({
-				selectedWeek : 'Week of ' + week,
-				scheduleState : scope.schedulerTableCtrl.scheduleState,
-				hideState : scope.schedulerTableCtrl.scheduleState.name === 'PendingState' && !scope.schedulerTableCtrl.existsShift(),
-				scheduleInfo : scope.schedulerTableCtrl.scheduleInfo,
-				helplink: scope.schedulerTableCtrl.helplink
-			}));
-
-			$weekDisplay.text(timeZoneUtils.parseInServerTimeAsMoment(scope.schedulerTableCtrl.week.startOfWeek).format('MMM D YYYY'));
 		};
 
 		/**
@@ -143,19 +113,6 @@ function(WeekPicker, timeZoneUtils, StateChangeController){
 				scope.weekPicker.getEl().slideToggle(function(){
 					controller.handleWeekSelect(weekPicker.selectedDate);
 				});
-			});
-		}
-
-		/**
-		 * Registers click-handler on week-select arrows.
-		 */
-		function initWeekArrows(){
-			jQuery('.week-arrow', $content).on('click',function(){
-				var $arrow = jQuery(this);
-				var selectedDate = timeZoneUtils.parseInServerTimeAsMoment(controller.selectedDate);
-				$arrow.hasClass('left') && selectedDate.add('weeks', -1);
-				$arrow.hasClass('right') && selectedDate.add('weeks', 1);
-				controller.handleWeekArrowSelect(selectedDate.toDate());
 			});
 		}
 

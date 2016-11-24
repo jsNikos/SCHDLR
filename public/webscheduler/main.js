@@ -40,12 +40,13 @@ require.config({
 		q : '/webapps/commons/libs/q',
 		EventEmitter : '/webapps/commons/libs/EventEmitter',
 		timeZoneUtils : '/webapps/commons/libs/timeZoneUtils',
-		vue: '/webapps/commons/libs/vue.min',
+		vue: '/webapps/commons/libs/vue',
 		TimelineComponent : 'shiftEditor/timeline/TimelineComponent',
 		TimepickerComponent: 'shiftEditor/TimepickerComponent',
 		fontawsome: '/webapps/commons/libs/font-awesome-4.4.0/css/font-awesome.min',
 		SelectDecor: 'components/SelectDecor',
-		shiftEditorService: 'shiftEditor/shiftEditorService'
+		shiftEditorService: 'shiftEditor/shiftEditorService',
+		TableHeader: 'tableHeader/TableHeader'
 	},
 	shim:{
 		'underscore-ext':{
