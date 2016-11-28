@@ -26,7 +26,7 @@ define(['text!tableHeader/tableHeader.html', 'timeZoneUtils'], function(tableHea
 				printview: true,
 				incr: 2
 			};
-			return '/reports/WeeklySchedule?' + jQuery.param(printViewParams);
+			return '/reports/WeeklySchedulePrintout?' + jQuery.param(printViewParams);
 		}
 
 		function selectedWeek() {
