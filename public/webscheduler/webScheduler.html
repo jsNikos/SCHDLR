@@ -19,24 +19,28 @@
 
 <script type="text/javascript" src="js/Utils.js"></script>
 <script type="text/javascript">
-	scheduler.Utils.authIfRequired();
+    scheduler.Utils.authIfRequired();
 </script>
 
 <!-- this enhances the schedule -global by a hash of release version -->
 <script type="text/javascript">
-(function(){
+    (function() {
 	jQuery.ajax({
-		url: '/ws/webScheduler/findReleaseVersionHash',
-		async: false,
-		method: 'GET',
-		success: applyReleaseVersion,
-		error: console.log
+	    url : '/ws/webScheduler/findReleaseVersionHash',
+	    async : false,
+	    method : 'GET',
+	    success : applyReleaseVersion,
+	    error : console.log
 	});
 
-	function applyReleaseVersion(data){
-		jQuery.extend(true, window, { scheduler : { version : data.releaseVersion } });
+	function applyReleaseVersion(data) {
+	    jQuery.extend(true, window, {
+		scheduler : {
+		    version : data.releaseVersion
+		}
+	    });
 	}
-})();
+    })();
 </script>
 
 <script type="text/javascript" src="/webapps/commons/libs/require.js"></script>
@@ -47,19 +51,23 @@
 	<div class="option-bar">
 
 		<div class="departments-tabs"
-					v-show="scheduleBy === 'Department' && departments.length > 0">
-				<div v-for="department in departments" class="department"
-						v-bind:class="{'selected': selectedDepartmentNumber === department.deptNumber}"
-						v-on:click="handleDepartmentSelect(department)">
-					<img width="16px" height="16px" v-bind:src="department.imageUrl">
-					<span>{{department.name}}</span>
-				</div>
+			v-show="scheduleBy === 'Department' && departments.length > 0">
+			<div v-for="department in departments" class="department"
+				v-bind:class="{'selected': selectedDepartmentNumber === department.deptNumber}"
+				v-on:click="handleDepartmentSelect(department)">
+				<img width="16px" height="16px" v-bind:src="department.imageUrl">
+				<span>{{department.name}}</span>
+			</div>
 		</div>
 
 		<div class="settings">
-			<div class="week-arrow left" title="go to previous" v-on:click="handleWeekArrowLeftClick"></div>
-			<button id="weekButton">Week of <span class="week-display">{{weekDisplay}}</span></button>
-			<div class="week-arrow right" title="go to next" v-on:click="handleWeekArrowRightClick"></div>
+			<div class="week-arrow left" title="go to previous"
+				v-on:click="handleWeekArrowLeftClick"></div>
+			<button id="weekButton">
+				Week of <span class="week-display">{{weekDisplay}}</span>
+			</button>
+			<div class="week-arrow right" title="go to next"
+				v-on:click="handleWeekArrowRightClick"></div>
 			<select id="switchView" title="Schedule by">
 				<option value="byEmployees">Employee</option>
 				<option value="byRoles">Role</option>
@@ -67,7 +75,9 @@
 			<div class="datePicker"></div>
 		</div>
 
-		<button data-role="sendSms" class="sendSms" title="Sends SMS to scheduled employee in this week">Send SMS</button>
+		<button data-role="sendSms" class="sendSms"
+			title="Sends SMS to scheduled employee in this week">Send
+			SMS</button>
 
 		<div class="actions">
 			<div class="master-schedule">
@@ -85,10 +95,8 @@
 	</div>
 	<div class="table-header">
 		<tableheader v-bind:schedule-state="scheduleState"
-			v-bind:schedule-info="scheduleInfo"
-			v-bind:helplink="helplink"
-			v-bind:week="week"
-			v-bind:departments="departments"
+			v-bind:schedule-info="scheduleInfo" v-bind:helplink="helplink"
+			v-bind:week="week" v-bind:departments="departments"
 			v-bind:selected-department-number="selectedDepartmentNumber"
 			v-bind:schedule-by="scheduleBy"
 			v-on:audits-clicked="handleAuditsClicked"
@@ -124,18 +132,23 @@
 		<div class="loading-overlay"></div>
 	</div>
 
-	<script type="text/javascript" src="/webapps/commons/libs/jQuery-ui/jquery-ui-1.10.4.custom.min.js"></script>
-	<script type="text/javascript" src="/webapps/commons/libs/jquery-foodtec-ui/jquery.foodtec.ui.js"></script>
-	<script type="text/javascript" src="/webapps/commons/libs/jquery-ui-timepicker/jquery.ui.timepicker.js"></script>
-	<script type="text/javascript" src="/webapps/commons/libs/jquery.parsequery.js"></script>
-	<script type="text/javascript" src="/webapps/commons/libs/jquery.tinysort.min.js"></script>
+	<script type="text/javascript"
+		src="/webapps/commons/libs/jQuery-ui/jquery-ui-1.10.4.custom.min.js"></script>
+	<script type="text/javascript"
+		src="/webapps/commons/libs/jquery-foodtec-ui/jquery.foodtec.ui.js"></script>
+	<script type="text/javascript"
+		src="/webapps/commons/libs/jquery-ui-timepicker/jquery.ui.timepicker.js"></script>
+	<script type="text/javascript"
+		src="/webapps/commons/libs/jquery.parsequery.js"></script>
+	<script type="text/javascript"
+		src="/webapps/commons/libs/jquery.tinysort.min.js"></script>
 
 	<script type="text/javascript">
-		jQuery(function() {
-			require(['WebSchedulerController'], function(WebSchedulerController){
-				new WebSchedulerController();
-			});
-		});
+	jQuery(function() {
+	    require([ 'WebSchedulerController' ], function(WebSchedulerController) {
+	        new WebSchedulerController();
+	    });
+        });
     </script>
 
 	<!-- templates -->
@@ -154,7 +167,7 @@
 	<td><div class="week-day" data-weekday="<%- date %>" ><%- name %></div></td>
     </script>
 
-    <script id="weeklyTotalTmpl" type="text/template">
+	<script id="weeklyTotalTmpl" type="text/template">
 	<td><div class="weekly-total" data-weekday="<%- weekDay %>"><!-- totals are rendered here --></div></td>
     </script>
 
@@ -166,7 +179,7 @@
     </td>
     </script>
 
-    <script id="rowTotalTmpl" type="text/template">
+	<script id="rowTotalTmpl" type="text/template">
     <span class="row-total">
       (<span class="total" title="Total hours"><%- total %></span>
        <span class="overhours" title="Overtime hours"><%- overhours %></span>)
@@ -184,18 +197,18 @@
 	</td>
     </script>
 
-    <script id="shiftCellTotalTmpl" type="text/template">
+	<script id="shiftCellTotalTmpl" type="text/template">
 	<span>
 	   <span class="total" title="Total hours"><%- total %></span>
 	   <span class="overhours" title="Overtime hours"><%- overhours %></span>
 	</span>
     </script>
 
-    <script id="shiftsBlockerTmpl" type="text/template">
+	<script id="shiftsBlockerTmpl" type="text/template">
 	<div class="blocker"></div>
 	</script>
 
-    <!-- this shift template is intended for 'byEmployees-view' -->
+	<!-- this shift template is intended for 'byEmployees-view' -->
 	<script id="shiftTmpl" type="text/template">
     <div class="shift">
 		<img class="role" width="16px" height="16px" title="<%- role.name %>" src="/Image?name=<%- role.image %>" />
@@ -233,8 +246,8 @@
 	</div>
     </script>
 
-    <!-- popup -->
-    <script id="loginPopupTmpl" type="text/template">
+	<!-- popup -->
+	<script id="loginPopupTmpl" type="text/template">
 	<div class="error-popup">
 	  <div class="header">Login required</div>
 	  <div class="content">
@@ -245,8 +258,8 @@
 	</div>
     </script>
 
-    <!-- popup -->
-    <script id="skippedEmployeesTmpl" type="text/template">
+	<!-- popup -->
+	<script id="skippedEmployeesTmpl" type="text/template">
     <div class="skipped-empl popup">
 	  <div class="header">Info: Save as Master</div>
 	  <div class="content">
@@ -260,8 +273,8 @@
 	</div>
     </script>
 
-    <!-- popup -->
-    <script id="overwriteIssuesTmpl" type="text/template">
+	<!-- popup -->
+	<script id="overwriteIssuesTmpl" type="text/template">
     <div class="overwrite-issues popup">
 	  <div class="header">Override</div>
 	  <div class="content">
@@ -278,8 +291,8 @@
 	</div>
     </script>
 
-    <!-- popup -->
-    <script id="outdatedScheduleTmpl" type="text/template">
+	<!-- popup -->
+	<script id="outdatedScheduleTmpl" type="text/template">
     <div class="outdated-schedule popup">
 	  <div class="header">Schedule is out of date</div>
 	  <div class="content">
