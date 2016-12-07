@@ -69,7 +69,7 @@ define(['SchedulesModelUtils',
 	    scope = this;
 	    // fetch the model
 	    fetchScheduleTableInit(scope.webSchedulerController.selectedDate,
-		    scope.webSchedulerController.selectedDepartmentNumber).then(handleResponse);
+		    scope.webSchedulerController.vueScope.$data.selectedDepartmentNumber).then(handleResponse);
 
 	    function handleResponse(resp) {
 		// init model
@@ -153,7 +153,8 @@ define(['SchedulesModelUtils',
 
 	    // either first fetch new data or directly render model
 	    if (newData) {
-		xhr = fetchScheduleTableInit(args.dateInWeek, args.selectedDepartmentNumber).then(function(resp) {
+		xhr = fetchScheduleTableInit(args.dateInWeek, args.selectedDepartmentNumber);
+		xhr.then(function(resp) {
 		    // refresh model
 		    jQuery.extend(scope, _.pick(resp, modelProps));
 		    scope.restrictShifts(scope.schedules, scope.employees);
