@@ -81,7 +81,7 @@ define(['ValidateShiftModifUtils', 'unavailabilityUtils', 'timeZoneUtils',
 		    'timeline': new TimelineComponent(),
 		    'frompicker': new TimepickerComponent(),
 		    'topicker': new TimepickerComponent(),
-		    'selectdecor' : new SelectDecor({displayFilter: rolesDisplayFilter})
+		    'selectdecor' : new SelectDecor({optionStyleClassExpr: '{\'bold\': element.isDefault}'})
 		},
 		methods: scope,
 		watch: {
@@ -95,10 +95,6 @@ define(['ValidateShiftModifUtils', 'unavailabilityUtils', 'timeZoneUtils',
 		    unavailTimeFilter: unavailTimeFilter
 		}
 	    });
-	}
-
-	function rolesDisplayFilter(role) {
-	    return role.isDefault ? (role.name + ' (default)') : role.name;
 	}
 
 	function findTimeFormat(){

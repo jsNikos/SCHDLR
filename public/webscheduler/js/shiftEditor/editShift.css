@@ -164,3 +164,6 @@
 .edit-dialog .who-selection {
   display: inline-block;
 }
+.edit-dialog .bold{
+	font-weight: bold;
+}

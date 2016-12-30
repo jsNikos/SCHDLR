@@ -41,7 +41,7 @@ define(['underscore'], function(_){
     return {
       template:
         '<select v-on:change="handleChange"> ' +
-        ' <option v-for="element in elements" v-bind:value="element[valueprop]">{{element | displayFilter}}</option> ' +
+        ' <option v-for="element in elements" v-bind:value="element[valueprop]" v-bind:class="'+options.optionStyleClassExpr+'">{{element | displayFilter}}</option> ' +
         '</select> ',
       props: ['selected', 'elements', 'displayprop', 'valueprop'],
       methods: {
