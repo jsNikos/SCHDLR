@@ -100,8 +100,7 @@
 			v-bind:selected-department-number="selectedDepartmentNumber"
 			v-bind:schedule-by="scheduleBy"
 			v-on:audits-clicked="handleAuditsClicked"
-			v-on:statistics-clicked="handleStatisticsClicked"
-			v-on:print-clicked="handlePrintClicked"></tableheader>
+			v-on:statistics-clicked="handleStatisticsClicked"></tableheader>
 	</div>
 
 	<!-- scheduler-table el for by-empls-view -->
@@ -165,6 +164,20 @@
 
 	<script id="weekDateTmpl" type="text/template">
 	<td><div class="week-day" data-weekday="<%- date %>" ><%- name %></div></td>
+    </script>
+
+	<script id="calendarEventsTmpl" type="text/template">
+	<td>
+		<div class="event-creator" data-role="event-creator" data-weekday="<%- weekDay %>">click to create</div>
+		<% _.each(calendarEvents, function(calendarEvent){ %>
+		<div class="calendar-event" data-weekday="<%- weekDay %>"
+			data-event="<%- calendarEvent.event %>">
+			<i class="fa fa-times remove-icon" aria-hidden="true" title="click to delete" data-role="remove-event"></i>
+			<i class="fa fa-calendar" aria-hidden="true"></i>
+			<span class="event" title="<%- calendarEvent.event %>"><%- calendarEvent.event %></span>
+		</div>
+		<% }); %>
+	</td>
     </script>
 
 	<script id="weeklyTotalTmpl" type="text/template">

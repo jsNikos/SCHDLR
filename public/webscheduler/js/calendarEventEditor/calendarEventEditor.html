@@ -1,0 +1,25 @@
+<div class="calendar-event-editor">
+	<div class="header">New Calendar Event</div>
+	<div class="content">
+
+		<div class="input-line">
+			<div class="label">Event:</div>
+			<input class="input-decor" v-model="calendarEvent.event">
+		</div>
+
+		<div class="input-line">
+			<div class="label">Description:</div>
+			<input class="input-decor" v-model="calendarEvent.description">
+		</div>
+
+		<div class="calendar-event-val-error" title="{{validationError}}">
+			{{validationError}}</div>
+
+		<div class="button-bar">
+			<button class="apply button-decor" v-on:click="handleApply()"
+				v-el:apply-button>Save</button>
+			<button class="cancel button-decor" v-on:click="handleCancel()">Cancel</button>
+		</div>
+
+	</div>
+</div>

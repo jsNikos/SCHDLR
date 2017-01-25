@@ -40,7 +40,7 @@ app.all('/webfile', function(req, res){
 app.all('/Image', function(req, res){
 	proxy.web(req, res);
 });
-app.all('/ws/webScheduler/*', function(req, res){
+app.all('/ws/*', function(req, res){
 	proxy.web(req, res);
 });
 app.all('/Login*', function(req, res){

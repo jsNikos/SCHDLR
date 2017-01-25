@@ -1,0 +1,37 @@
+.calendar-event-editor .content {
+	padding-top: 10px;
+}
+
+.calendar-event-editor .label {
+	display: inline-block;
+	width: 90px;
+	text-align: right;
+}
+
+.calendar-event-editor .button-bar {
+	text-align: center;
+	padding-top: 10px;
+}
+
+.calendar-event-editor .button-bar button:first-child {
+	margin-right: 10px;
+}
+
+.calendar-event-editor .input-line {
+	padding-top: 10px;
+	padding-left: 10px;
+}
+
+.calendar-event-editor .input-line input {
+	width: 300px;
+}
+
+.calendar-event-editor .calendar-event-val-error {
+	height: 30px;
+	color: #e65c5c;
+	padding: 15px 10px;
+	text-align: center;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+}

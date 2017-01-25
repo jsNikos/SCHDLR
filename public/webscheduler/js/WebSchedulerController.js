@@ -44,7 +44,8 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'vue',
 			scheduleInfo: resp.scheduleInfo,
 			helplink: resp.helplink,
 			timeZone: resp.timeZone,
-			week: resp.week
+			week: resp.week,
+			calendarEventWeek: resp.calendarEventWeek
 		    },
 		    methods: {
 			handleDepartmentSelect: scope.handleDepartmentSelect,
