@@ -76,15 +76,25 @@ define(['vue', 'q', 'EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedul
 		var calendarEvent = findCalendarEvent(weekDay, event);
 		deleteCalendarEvent(calendarEvent)
 		.then(function(){
-		    var calendarEventWeek = scope.tableController.webSchedulerController.vueScope.$data.calendarEventWeek;
-		    var idx = _.findIndex(calendarEventWeek[weekDay], function(elem){
-			return elem.event = calendarEvent.event;
-		    });
-		    calendarEventWeek[weekDay].splice(idx, 1);
+		    removeCalendarEventFromModel(calendarEvent);
 		    renderCalendarEvents(jQuery('tr.calendar-events'));
 		})
 		.catch(console.log);
 	    });
+	}
+
+	function removeCalendarEventFromModel(calendarEvent){
+		var calendarEventWeek = scope.tableController.webSchedulerController.vueScope.$data.calendarEventWeek;
+		_.chain(calendarEventWeek).keys()
+		.map(function(key){return calendarEventWeek[key];})
+		.forEach(function(calendarEvents){
+			var idx = _.findIndex(calendarEvents, function(elem){
+				return elem.event === calendarEvent.event && elem.startDate === calendarEvent.startDate;
+			});
+			if(idx > -1){
+				calendarEvents.splice(idx, 1);
+			}
+		});
 	}
 
 	function findCalendarEvent(weekDay, event){
@@ -731,14 +741,29 @@ define(['vue', 'q', 'EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedul
 	    var calendarEventTmpl = _.template(jQuery('#calendarEventsTmpl').text());
 	    var calendarEventWeek =	scope.tableController.webSchedulerController.vueScope.$data.calendarEventWeek;
 	    _.each(scope.tableController.weekDays, function(weekDay) {
+		
 		var $td = jQuery(calendarEventTmpl({
 		    calendarEvents: calendarEventWeek[weekDay],
 		    weekDay: weekDay
 		}));
+
 		var dayInfo = scope.tableController.findDayInfo(weekDay);
 		if(Date.now() >= dayInfo.startOfDay){
 		    $td.addClass('not-modif');
 		}
+		
+		// events can span several days; then show them all as selected
+		$td.find('.calendar-event')
+		.on('mouseover', function(event){
+			var $event = jQuery(event.target);
+			var event =	$event.attr('data-event');
+			var startDate = $event.attr('data-startdate');
+			jQuery('[data-event="'+event+'"][data-startdate="'+startDate+'"]').addClass('show-remove');
+		})
+		.on('mouseleave', function(event){
+			jQuery('.calendar-event').removeClass('show-remove');
+		});
+
 		$calendarEventsTr.append($td);
 	    });
 	}
