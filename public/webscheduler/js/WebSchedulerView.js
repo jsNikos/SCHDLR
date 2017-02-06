@@ -173,6 +173,24 @@ define(['libs/WeekPicker', 'timeZoneUtils', 'stateChange/StateChangeController']
 	};
 
 	/**
+	 * Shows not-authorized popup.
+	 */
+	this.showNotAuthorizedForFeature = function(msg){
+	    var data = {title: 'No permission',
+		    msg: msg}
+	    jQuery.decor.dialogDecor({
+		$el : jQuery(errorPopupTmpl(data)),
+		options : {
+		    editorWidth : 350,
+		    editorHeight : 200,
+		    warning : true,
+		    onTheFly : true,
+		    showClosing : true
+		}
+	    }).showDialog();
+	};
+
+	/**
 	 * Shows pop-up for saying that modification of schedule is not permitted
 	 * due to date-in-past.
 	 * @param args : {msg (string)} - msg the message to display

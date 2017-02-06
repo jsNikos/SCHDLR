@@ -162,6 +162,7 @@ define(['SchedulesModelUtils',
 		    scope.webSchedulerController.vueScope.$data.week = resp.week;
 		    scope.webSchedulerController.vueScope.$data.scheduleInfo = resp.scheduleInfo;
 		    scope.webSchedulerController.vueScope.$data.scheduleState = resp.scheduleState;
+		    scope.webSchedulerController.vueScope.$data.calendarEventWeek = resp.calendarEventWeek;
 		    scope.weekDays = scope.webSchedulerController.vueScope.$data.week.weekDays;
 		    scope.initTotalsModal();
 		    refreshViews();

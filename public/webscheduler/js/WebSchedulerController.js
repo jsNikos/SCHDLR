@@ -237,24 +237,28 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'vue',
 	 */
 	function initAjaxErrorHandler() {
 	    jQuery(document).ajaxError(function(event, jqxhr) {
-		switch (jqxhr.status) {
-		case 401:
-		    // not authenticated
-		    var state = jQuery.parseQuery();
-		    state.targetURI = location.pathname;
-		    view.showLoginPopup(scope.CONTROLLER_URL + '/public/login?' + jQuery.param(state));
-		    break;
-		case 403:
-		    // not authorized
-		    handleNotAuthorized(jqxhr);
-		    break;
-		case 500:
-		    handleServerSideError(jqxhr);
-		    break;
-		default:
-		    break;
-		}
+		scope.handleError(jqxhr);
 	    });
+	}
+
+	this.handleError = function(err) {
+	    switch (err.status) {
+	    case 401:
+		// not authenticated
+		var state = jQuery.parseQuery();
+		state.targetURI = location.pathname;
+		view.showLoginPopup(scope.CONTROLLER_URL + '/public/login?' + jQuery.param(state));
+		break;
+	    case 403:
+		// not authorized
+		handleNotAuthorized(err);
+		break;
+	    case 500:
+		handleServerSideError(err);
+		break;
+	    default:
+		break;
+	    }
 	}
 
 	/**
@@ -319,6 +323,9 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'vue',
 	    }
 	}
 
+	this.showNotAuthorizedForFeature = function(msg){
+	    view.showNotAuthorizedForFeature(msg);
+	}
 
 	// constructs state from url and applies on models
 	function reConstructState() {

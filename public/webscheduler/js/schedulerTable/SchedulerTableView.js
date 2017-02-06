@@ -57,44 +57,57 @@ define(['vue', 'q', 'EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedul
 	    .on('click', '.week-day', function(event){
 		scope.tableController.handleWeekDayClicked(jQuery(event.target));
 	    })
-	    .on('click', '.event-creator', function(event){
-		var weekDay = jQuery(event.target).attr('data-weekday');
-		showCalendarEventEditor(weekDay)
-		.then(function(calendarEvent){
-		    if(calendarEvent){
-			var calendarEventWeek = scope.tableController.webSchedulerController.vueScope.$data.calendarEventWeek;
-			calendarEventWeek[weekDay].push(calendarEvent);
-			renderCalendarEvents(jQuery('tr.calendar-events'));
-		    }
-		})
-		.catch(console.log);
+	    .on('click', '.event-creator', handleEventCreatorClick)
+	    .on('click', '[data-role="remove-event"]', removeEventClick);
+	}
+
+	function removeEventClick(event){
+	    var $calendarEvent = jQuery(event.target).closest('.calendar-event');
+	    var weekDay = $calendarEvent.attr('data-weekday');
+	    var event = $calendarEvent.attr('data-event');
+	    var calendarEvent = findCalendarEvent(weekDay, event);
+	    deleteCalendarEvent(calendarEvent)
+	    .then(function(){
+		removeCalendarEventFromModel(calendarEvent);
+		renderCalendarEvents(jQuery('tr.calendar-events'));
 	    })
-	    .on('click', '[data-role="remove-event"]', function(event){
-		var $calendarEvent = jQuery(event.target).closest('.calendar-event');
-		var weekDay = $calendarEvent.attr('data-weekday');
-		var event = $calendarEvent.attr('data-event');
-		var calendarEvent = findCalendarEvent(weekDay, event);
-		deleteCalendarEvent(calendarEvent)
-		.then(function(){
-		    removeCalendarEventFromModel(calendarEvent);
+	    .catch(function(err){
+		if(err.status === 403){
+		    var msg = 'Your are not authorized to removed calendar events.';
+		    scope.tableController.webSchedulerController.showNotAuthorizedForFeature(msg);
+		} else {
+		    scope.tableController.webSchedulerController.handleError(err);
+		}
+	    });
+	}
+
+	function handleEventCreatorClick(event){
+	    var weekDay = jQuery(event.target).attr('data-weekday');
+	    showCalendarEventEditor(weekDay)
+	    .then(function(calendarEvent){
+		if(calendarEvent){
+		    var calendarEventWeek = scope.tableController.webSchedulerController.vueScope.$data.calendarEventWeek;
+		    calendarEventWeek[weekDay].push(calendarEvent);
 		    renderCalendarEvents(jQuery('tr.calendar-events'));
-		})
-		.catch(console.log);
+		}
+	    })
+	    .catch(function(err){
+		scope.tableController.webSchedulerController.handleError(err);
 	    });
 	}
 
 	function removeCalendarEventFromModel(calendarEvent){
-		var calendarEventWeek = scope.tableController.webSchedulerController.vueScope.$data.calendarEventWeek;
-		_.chain(calendarEventWeek).keys()
-		.map(function(key){return calendarEventWeek[key];})
-		.forEach(function(calendarEvents){
-			var idx = _.findIndex(calendarEvents, function(elem){
-				return elem.event === calendarEvent.event && elem.startDate === calendarEvent.startDate;
-			});
-			if(idx > -1){
-				calendarEvents.splice(idx, 1);
-			}
+	    var calendarEventWeek = scope.tableController.webSchedulerController.vueScope.$data.calendarEventWeek;
+	    _.chain(calendarEventWeek).keys()
+	    .map(function(key){return calendarEventWeek[key];})
+	    .forEach(function(calendarEvents){
+		var idx = _.findIndex(calendarEvents, function(elem){
+		    return elem.event === calendarEvent.event && elem.startDate === calendarEvent.startDate;
 		});
+		if(idx > -1){
+		    calendarEvents.splice(idx, 1);
+		}
+	    });
 	}
 
 	function findCalendarEvent(weekDay, event){
@@ -110,6 +123,7 @@ define(['vue', 'q', 'EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedul
 		url: '/ws/integrated/v1/store/calendarEvents?'+jQuery.param({id: calendarEvent.id}),
 		method: 'DELETE',
 		contentType: 'application/json',
+		global: false,
 		success: deferred.resolve.bind(deferred),
 		error: deferred.reject.bind(deferred),
 	    });
@@ -741,7 +755,7 @@ define(['vue', 'q', 'EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedul
 	    var calendarEventTmpl = _.template(jQuery('#calendarEventsTmpl').text());
 	    var calendarEventWeek =	scope.tableController.webSchedulerController.vueScope.$data.calendarEventWeek;
 	    _.each(scope.tableController.weekDays, function(weekDay) {
-		
+
 		var $td = jQuery(calendarEventTmpl({
 		    calendarEvents: calendarEventWeek[weekDay],
 		    weekDay: weekDay
@@ -751,17 +765,17 @@ define(['vue', 'q', 'EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedul
 		if(Date.now() >= dayInfo.startOfDay){
 		    $td.addClass('not-modif');
 		}
-		
+
 		// events can span several days; then show them all as selected
 		$td.find('.calendar-event')
 		.on('mouseover', function(event){
-			var $event = jQuery(event.target);
-			var event =	$event.attr('data-event');
-			var startDate = $event.attr('data-startdate');
-			jQuery('[data-event="'+event+'"][data-startdate="'+startDate+'"]').addClass('show-remove');
+		    var $event = jQuery(event.target);
+		    var event =	$event.attr('data-event');
+		    var startDate = $event.attr('data-startdate');
+		    jQuery('[data-event="'+event+'"][data-startdate="'+startDate+'"]').addClass('show-remove');
 		})
 		.on('mouseleave', function(event){
-			jQuery('.calendar-event').removeClass('show-remove');
+		    jQuery('.calendar-event').removeClass('show-remove');
 		});
 
 		$calendarEventsTr.append($td);

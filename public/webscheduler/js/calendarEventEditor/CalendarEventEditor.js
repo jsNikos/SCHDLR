@@ -40,15 +40,20 @@ define(['q', 'text!calendarEventEditor/calendarEventEditor.html', 'vue', 'timeZo
 		url: '/ws/integrated/v1/store/calendarEvents',
 		method: 'POST',
 		data: JSON.stringify(this.$data.calendarEvent),
-		contentType: 'application/json'
+		contentType: 'application/json',
+		global: false
 	    })
 	    .then(function(calendarEvent){
 		deferred.resolve(calendarEvent);
 		dialog.closeDialog();
 	    })
 	    .fail(function(err){
-		vueScope.$data.validationError = err.responseJSON.message;
-		jQuery(vueScope.$els.applyButton).buttonDecor('stopLoading');
+		if(err.status === 409 || err.status === 403){
+		    vueScope.$data.validationError = err.responseJSON.message;
+		    jQuery(vueScope.$els.applyButton).buttonDecor('stopLoading');
+		} else {
+		    deferred.reject(err);
+		}
 	    });
 	}
 
