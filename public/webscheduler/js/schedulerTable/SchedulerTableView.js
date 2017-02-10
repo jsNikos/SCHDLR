@@ -772,7 +772,13 @@ define(['vue', 'q', 'EventEmitter', 'timeZoneUtils', 'css!schedulerTable/schedul
 		    var $event = jQuery(event.target);
 		    var event =	$event.attr('data-event');
 		    var startDate = $event.attr('data-startdate');
-		    jQuery('[data-event="'+event+'"][data-startdate="'+startDate+'"]').addClass('show-remove');
+
+		    jQuery('.calendar-event').each(function(){
+			var $el = jQuery(this);
+			if($el.attr('data-event') === event && $el.attr('data-startdate') === startDate){
+			    $el.addClass('show-remove');
+			}
+		    });
 		})
 		.on('mouseleave', function(event){
 		    jQuery('.calendar-event').removeClass('show-remove');
