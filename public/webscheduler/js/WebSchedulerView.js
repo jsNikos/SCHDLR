@@ -91,7 +91,17 @@ define(['libs/WeekPicker', 'timeZoneUtils', 'stateChange/StateChangeController']
 	function initTemplateSave(){
 	    jQuery('#templateSave', $masterSchedule).buttonDecor().on('click', function(){
 		var $button = jQuery(this).buttonDecor('startLoading');
-		controller.handleSaveAsMaster($button);
+
+		require(['ConfirmDialog'], function(ConfirmDialog){
+		    (new ConfirmDialog({
+			title: 'Save Master Schedule',
+			html: 'This operation replaces the current master schedule by this week. This cannot be undone! <br><br>Do you want to proceed?'
+		    })).then(function(){
+			controller.handleSaveAsMaster($button);
+		    }, function(){
+			$button.buttonDecor('stopLoading');
+		    });
+		});
 	    });
 	}
 
@@ -232,9 +242,9 @@ define(['libs/WeekPicker', 'timeZoneUtils', 'stateChange/StateChangeController']
 	 * Shows pop-up for saying that modification of schedule is not permitted
 	 * due to date-in-past.
 	 */
-	this.showMasterSaveNotPermitted = function(){
+	this.showMasterSaveNotPermitted = function(msg){
 	    var data = {title: 'Empty Schedule',
-		    msg:'The week does not contain any shifts.'};
+		    msg: msg};
 	    jQuery.decor.dialogDecor({
 		$el : jQuery(errorPopupTmpl(data)),
 		options : {

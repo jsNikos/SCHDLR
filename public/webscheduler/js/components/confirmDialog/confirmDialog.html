@@ -1,0 +1,15 @@
+<div class="confirm-dialog">
+	<div class="header">
+		{{title}}<span class="closing">X</span>
+	</div>
+	<div class="content">
+		<div class="message">
+			<div v-if="!!msg">{{msg}}</div>
+			<div v-else>{{{html}}}</div>
+		</div>
+		<div class="button-bar">
+			<button v-on:click="handleConfirm" class="confirm button-decor">{{confirmButtonLabel}}</button>
+			<button v-on:click="handleCancel" class="cancel button-decor">{{cancelButtonLabel}}</button>
+		</div>
+	</div>
+</div>

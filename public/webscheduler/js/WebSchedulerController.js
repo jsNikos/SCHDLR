@@ -402,13 +402,12 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'vue',
 	this.handleSaveAsMaster = function($button) {
 	    requestSaveAsMaster(function(err, resp) {
 		if (err && err.responseJSON && err.responseJSON.type === 'MasterSaveNotPermitted') {
-		    view.showMasterSaveNotPermitted();
-		}
-		$button.buttonDecor('stopLoading');
-		if (resp.skippedEmployees && resp.skippedEmployees.length > 0) {
+		    view.showMasterSaveNotPermitted(err.responseJSON.msg);
+		} else if (resp.skippedEmployees && resp.skippedEmployees.length > 0) {
 		    // trigger to show skipped employees (because not available)
 		    view.showSkippedEmployees(resp.skippedEmployees);
 		}
+		$button.buttonDecor('stopLoading');
 	    });
 	};
 

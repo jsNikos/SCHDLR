@@ -46,7 +46,8 @@ require.config({
 		fontawsome: '/webapps/commons/libs/font-awesome-4.4.0/css/font-awesome.min',
 		SelectDecor: 'components/SelectDecor',
 		shiftEditorService: 'shiftEditor/shiftEditorService',
-		TableHeader: 'tableHeader/TableHeader'
+		TableHeader: 'tableHeader/TableHeader',
+		ConfirmDialog: 'components/confirmDialog/ConfirmDialog'
 	},
 	shim:{
 		'underscore-ext':{
