@@ -225,13 +225,18 @@ define(['ValidateShiftModifUtils', 'unavailabilityUtils', 'timeZoneUtils',
 	 * @return Date
 	 */
 	this.extractShiftTime = function(hour, minute){
+	    var startOfDayDate = timeZoneUtils.parseInServerTimeAsMoment(scope.startOfDay);
 	    var time = timeZoneUtils.parseInServerTimeAsMoment(scope.startOfDay)
 	    .hour(hour)
-	    .minute(minute);
+	    .minute(minute); 
 
-	    if(time.isBefore(scope.startOfDay)){
+	    if(startOfDayDate.hour() > hour){
 		// time is in next (real-)day
 		time.add('days', 1);
+		if(time.hour() > hour){
+		    // Hour adapted due to daylight saving. Ensure not to breach business hour.
+		    time.add(-1, 'hours');
+		}
 	    }
 	    return time.toDate();
 	};
