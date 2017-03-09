@@ -7,7 +7,8 @@ define(['text!components/confirmDialog/confirmDialog.html', 'vue', 'q',
      * options: {
      * title: string,
      * msg: string,
-     * html: string, will not be escaped
+     * html: string, will not be escaped,
+     * styleClass: string (css-class aplied on top element of dialog)
      * [cancelButtonLabel: string],
      * [confirmButtonLabel]: string],
      * [height: number], not yet supported

@@ -1,9 +1,3 @@
-/* status colors */
-/* dialogs */
-/* gantt-chart colors */
-/* status colors */
-/* dialogs */
-/* gantt-chart colors */
 body {
   font-family: arial;
   font-size: 15px;
@@ -242,4 +236,7 @@ body {
 }
 .input-decor {
   padding: 5px;
+}
+.save-master-confirm .message {
+  text-align: center;
 }

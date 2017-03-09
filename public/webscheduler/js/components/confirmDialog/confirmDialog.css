@@ -1,25 +1,19 @@
-/* status colors */
-/* dialogs */
-/* gantt-chart colors */
 .confirm-dialog .content {
-	padding: 10px 20px;
+  padding: 10px 20px;
 }
-
 .confirm-dialog .button-bar {
-	text-align: right;
-	margin-top: 20px;
+  text-align: right;
+  margin-top: 20px;
 }
-
 .confirm-dialog .button-bar button {
-	margin: 10px;
+  margin: 10px;
 }
-
 .confirm-dialog .button-bar .confirm {
-	background-image: linear-gradient(to bottom, #2de70b, #2d790b);
-	background-image: -o-linear-gradient(top, #2de70b, #2d790b);
-	background-image: -ms-linear-gradient(top, #2de70b, #2d790b);
-	background-image: -webkit-linear-gradient(top, #2de70b, #2d790b);
-	background-color: #2de70b;
-	color: white;
-	font-weight: bold;
+  background-image: linear-gradient(to bottom, #2de70b, #2d790b);
+  background-image: -o-linear-gradient(top, #2de70b, #2d790b);
+  background-image: -ms-linear-gradient(top, #2de70b, #2d790b);
+  background-image: -webkit-linear-gradient(top, #2de70b, #2d790b);
+  background-color: #2de70b;
+  color: white;
+  font-weight: bold;
 }

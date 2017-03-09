@@ -90,12 +90,18 @@ define(['libs/WeekPicker', 'timeZoneUtils', 'stateChange/StateChangeController']
 	 */
 	function initTemplateSave(){
 	    jQuery('#templateSave', $masterSchedule).buttonDecor().on('click', function(){
+		if (!controller.vueScope.$data.userConfigs.authorizedToCreateMasterSchedule) {
+		    scope.showMasterSaveNotPermitted('You are not authorized to save week as master.');
+		    return;
+		}
+
 		var $button = jQuery(this).buttonDecor('startLoading');
 
 		require(['ConfirmDialog'], function(ConfirmDialog){
 		    (new ConfirmDialog({
 			title: 'Save Master Schedule',
-			html: 'This operation replaces the current master schedule by this week. This cannot be undone! <br><br>Do you want to proceed?'
+			html: 'This operation replaces the current master schedule by this week. This cannot be undone. <br><br>Do you want to proceed?',
+			styleClass: 'save-master-confirm'
 		    })).then(function(){
 			controller.handleSaveAsMaster($button);
 		    }, function(){
@@ -238,12 +244,8 @@ define(['libs/WeekPicker', 'timeZoneUtils', 'stateChange/StateChangeController']
 	    }).showDialog();
 	};
 
-	/**
-	 * Shows pop-up for saying that modification of schedule is not permitted
-	 * due to date-in-past.
-	 */
 	this.showMasterSaveNotPermitted = function(msg){
-	    var data = {title: 'Empty Schedule',
+	    var data = {title: 'Not Permitted',
 		    msg: msg};
 	    jQuery.decor.dialogDecor({
 		$el : jQuery(errorPopupTmpl(data)),
