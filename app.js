@@ -52,6 +52,9 @@ app.all('/reports/*', function(req, res){
 app.all('/webapps/*', function(req, res){
 	proxy.web(req, res);
 });
+app.all('/admin?*', function(req, res){
+	proxy.web(req, res);
+});
 
 
 // catch 404 and forward to error handler
