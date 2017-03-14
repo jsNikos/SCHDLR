@@ -40,7 +40,7 @@ define(['timeZoneUtils',
 
 	    // custom positioning and styling
 	    dialogDecor.$wrapper.addClass('statistics').append('body'); // it's big - needs scrolling
-	    $statisticsPopup.css({top: jQuery('html').scrollTop()+20+'px',
+	    $statisticsPopup.css({top: jQuery('html').scrollTop() + 'px',
 		width: '98%',
 		height: 'auto',
 		'margin-left': '-49%'});

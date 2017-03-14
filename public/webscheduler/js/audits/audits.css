@@ -5,46 +5,64 @@
 /* dialogs */
 /* gantt-chart colors */
 .dialog-decor-wrapper.audits {
-  position: absolute;
+	position: absolute;
 }
+
+.dialog-decor-wrapper.audits .dialog-decor-target {
+	margin-top: 20px;
+}
+
+@media ( max-height : 650px) {
+	.dialog-decor-wrapper.audits .dialog-decor-target {
+		margin-top: 0px;
+	}
+}
+
 .audits.popup .content {
-  padding: 0 20px;
+	padding: 0 20px;
 }
+
 .audits.popup .audits.container {
-  padding-top: 10px;
+	padding-top: 10px;
 }
+
 .audits.popup .dataTables_wrapper.no-footer .dataTables_scrollBody {
-  border: none;
+	border: none;
 }
-.audits.popup .dataTables_wrapper .dataTables_length,
-.audits.popup .dataTables_wrapper .dataTables_filter,
-.audits.popup .dataTables_wrapper .dataTables_info,
-.audits.popup .dataTables_wrapper .dataTables_processing,
-.audits.popup .dataTables_wrapper .dataTables_paginate {
-  color: #6e6e6e;
+
+.audits.popup .dataTables_wrapper .dataTables_length, .audits.popup .dataTables_wrapper .dataTables_filter,
+	.audits.popup .dataTables_wrapper .dataTables_info, .audits.popup .dataTables_wrapper .dataTables_processing,
+	.audits.popup .dataTables_wrapper .dataTables_paginate {
+	color: #6e6e6e;
 }
+
 .audits.popup table.dataTable thead th {
-  border-bottom-color: #999999;
-  border-right: 1px #999999 solid;
+	border-bottom-color: #999999;
+	border-right: 1px #999999 solid;
 }
+
 .audits.popup table.dataTable thead th:last-child {
-  border-right: none;
+	border-right: none;
 }
+
 .audits.popup .dataTables_filter {
-  margin-bottom: 10px;
-  width: 100%;
-  text-align: left;
+	margin-bottom: 10px;
+	width: 100%;
+	text-align: left;
 }
+
 .audits.popup .dataTables_filter [type="search"] {
-  width: 50%;
+	width: 50%;
 }
-.audits.popup .dataTables_scrollHead thead > tr {
-  background-image: linear-gradient(to bottom, #cfcfcf, #bebebe);
-  background-image: -o-linear-gradient(top, #cfcfcf, #bebebe);
-  background-image: -ms-linear-gradient(top, #cfcfcf, #bebebe);
-  background-image: -webkit-linear-gradient(top, #cfcfcf, #bebebe);
-  background-color: #cfcfcf;
+
+.audits.popup .dataTables_scrollHead thead>tr {
+	background-image: linear-gradient(to bottom, #cfcfcf, #bebebe);
+	background-image: -o-linear-gradient(top, #cfcfcf, #bebebe);
+	background-image: -ms-linear-gradient(top, #cfcfcf, #bebebe);
+	background-image: -webkit-linear-gradient(top, #cfcfcf, #bebebe);
+	background-color: #cfcfcf;
 }
+
 .audits.popup td.detail {
-  white-space: pre-wrap;
+	white-space: pre-wrap;
 }
