@@ -357,21 +357,24 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'vue',
 	this.handleRestoreClick = function() {
 	    var $restoreButton = jQuery(this);
 	    requestRestoreMaster(function(err, resp) {
-		$restoreButton.buttonDecor('stopLoading');
-		if (err) {
-		    return;
-		}
-		view.schedulerTableCtrl.tableView.showLoading();
-		view.schedulerTableCtrl.refreshTable({
-		    selectedDepartmentNumber: scope.vueScope.$data.selectedDepartmentNumber,
-		    dateInWeek: scope.selectedDate,
-		    success: function() {
-			view.schedulerTableCtrl.tableView.hideLoading();
-		    },
-		    abort: function() {
-			view.schedulerTableCtrl.tableView.hideLoading();
-		    }
-		});
+	    	if (err && err.responseJSON && err.responseJSON.type === 'MasterRestoreNotPermitted') {
+                view.showMasterActionNotPermitted(err.responseJSON.msg);
+            }
+			$restoreButton.buttonDecor('stopLoading');
+			if (err) {
+				return;
+			}
+			view.schedulerTableCtrl.tableView.showLoading();
+			view.schedulerTableCtrl.refreshTable({
+				selectedDepartmentNumber: scope.vueScope.$data.selectedDepartmentNumber,
+				dateInWeek: scope.selectedDate,
+				success: function() {
+				view.schedulerTableCtrl.tableView.hideLoading();
+				},
+				abort: function() {
+				view.schedulerTableCtrl.tableView.hideLoading();
+				}
+			});
 	    });
 	};
 
@@ -403,7 +406,7 @@ define(['WebSchedulerView', 'SchedulerTableCtrl', 'q', 'vue',
 	this.handleSaveAsMaster = function($button) {
 	    requestSaveAsMaster(function(err, resp) {
 		if (err && err.responseJSON && err.responseJSON.type === 'MasterSaveNotPermitted') {
-		    view.showMasterSaveNotPermitted(err.responseJSON.msg);
+		    view.showMasterActionNotPermitted(err.responseJSON.msg);
 		} else if (resp.skippedEmployees && resp.skippedEmployees.length > 0) {
 		    // trigger to show skipped employees (because not available)
 		    view.showSkippedEmployees(resp.skippedEmployees);

@@ -91,7 +91,7 @@ define(['libs/WeekPicker', 'timeZoneUtils', 'stateChange/StateChangeController']
 	function initTemplateSave(){
 	    jQuery('#templateSave', $masterSchedule).buttonDecor().on('click', function(){
 		if (!controller.vueScope.$data.userConfigs.authorizedToCreateMasterSchedule) {
-		    scope.showMasterSaveNotPermitted('You are not authorized to save week as master.');
+		    scope.showMasterActionNotPermitted('You are not authorized to save week as master.');
 		    return;
 		}
 
@@ -147,8 +147,12 @@ define(['libs/WeekPicker', 'timeZoneUtils', 'stateChange/StateChangeController']
 	function initTemplateRestore() {
 	    $restoreMaster.buttonDecor()
 	    .on('click', function(){
-		$restoreMaster.buttonDecor('startLoading');
-		controller.handleRestoreClick.call(this);
+	    	if (!controller.vueScope.$data.userConfigs.authorizedToRestoreMasterSchedule) {
+                scope.showMasterActionNotPermitted('You are not authorized to restore week from master.');
+                return;
+            }
+            $restoreMaster.buttonDecor('startLoading');
+            controller.handleRestoreClick.call(this);
 	    });
 	}
 
@@ -244,7 +248,7 @@ define(['libs/WeekPicker', 'timeZoneUtils', 'stateChange/StateChangeController']
 	    }).showDialog();
 	};
 
-	this.showMasterSaveNotPermitted = function(msg){
+	this.showMasterActionNotPermitted = function(msg){
 	    var data = {title: 'Not Permitted',
 		    msg: msg};
 	    jQuery.decor.dialogDecor({
