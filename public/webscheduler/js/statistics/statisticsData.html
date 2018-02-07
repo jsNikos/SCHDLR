@@ -2,12 +2,30 @@
 	<!-- statistics table is rendered here -->
 </div>
 <div class="big-figures">
-	<div class="target"><%- target %></div>
-	<div class="scheduled"><%- scheduled %></div>
+	<div class="target">
+		<div class="label"><%- getBigDataLabel(target) %></div>
+		<div class="value"><%- getBigDataValue(target) %></div>
+	</div>
+	<div class="scheduled">
+			<div class="label"><%- getBigDataLabel(scheduled) %></div>
+			<div class="value"><%- getBigDataValue(scheduled) %></div>
+	</div>
 	<% if(actual != undefined){ %>	
-	<div class="actual"><%- actual %></div>
+	<div class="actual">
+			<div class="label"><%- getBigDataLabel(actual) %></div>
+			<div class="value"><%- getBigDataValue(actual) %></div>
+	</div>
 	<% } %>
 	<% if(forecast != undefined){ %>	
-	<div class="forecast"><%- forecast %></div>
-	<% } %>	
+	<div class="forecast">
+			<div class="label"><%- getBigDataLabel(forecast) %></div>
+			<div class="value"><%- getBigDataValue(forecast) %></div>
+	</div>
+	<% } %>
+	<% if(forecastSales != undefined){ %>
+		<div class="forecast-sales">
+				<div class="label"><%- getBigDataLabel(forecastSales) %></div>
+				<div class="value"><%- getBigDataValue(forecastSales) %></div>
+		</div>
+	<% } %>
 </div>

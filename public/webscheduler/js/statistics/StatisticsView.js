@@ -102,14 +102,16 @@ define(['timeZoneUtils',
 	    this.clearStatisticsContainer();
 
 	    // render model of current selection
-	    var statisticsData = controller.findCurrentModel();
-	    $statisticsContainer.append(statisticsDataTmpl(statisticsData));
-	    var $bigFigures = jQuery('.big-figures', $statisticsContainer);
-	    var maxFontSize = parseInt(jQuery('body').css('font-size'));
-	    $bigFigures.css('font-size', Math.min(jQuery(':first', $bigFigures).width()/15, maxFontSize));
-	    var $tableContainer = jQuery('.table-container', $statisticsContainer);
-	    var statisticsData = controller.findCurrentModel();
+		var statisticsData = controller.findCurrentModel();
 
+		// creating template and rendering big-data
+		const getBigDataLabel = v => v.includes(':') ? v.split(':')[0] : '';
+		const getBigDataValue = v => v.substr(v.indexOf(':') + 1).trim();
+		let statisticsDataExt = {getBigDataLabel, getBigDataValue, ...statisticsData};
+	    $statisticsContainer.append(statisticsDataTmpl(statisticsDataExt));
+	    var $tableContainer = jQuery('.table-container', $statisticsContainer);
+
+		// rendering data-table
 	    $tableContainer.hierarchyTableDecor(_.chain(statisticsData).extend({
 		fixFooter : true,
 		tableWidth : $tableContainer.width() - 70,
