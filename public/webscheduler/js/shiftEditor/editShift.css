@@ -88,10 +88,11 @@
 }
 .edit-dialog .unavail-info {
   padding-top: 10px;
+  display: grid;
+  grid-template-columns: 160px auto;
+  grid-gap: 20px;
 }
 .edit-dialog .unavail-info .period {
-  display: inline-block;
-  width: 160px;
   text-align: right;
   background-image: url("../../images/unavailable.png");
   background-repeat: no-repeat;
@@ -102,10 +103,8 @@
 .edit-dialog .unavail-info .period.available {
   background-image: url("../../images/available.png");
 }
-.edit-dialog .unavail-info .type {
-  display: inline-block;
-  text-align: left;
-  padding-left: 20px;
+.edit-dialog .unavail-info .reason {
+  font-size: 0.75em;
 }
 .edit-dialog .shift-val-error {
   position: absolute;

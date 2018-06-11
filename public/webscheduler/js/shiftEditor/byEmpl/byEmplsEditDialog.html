@@ -62,7 +62,9 @@
         <template v-for="unavail in unavailabilities">
           <div class="unavail-info">
             <div class="period {{unavail.unavailType}}">{{unavail.startDate | unavailTimeFilter}} - {{unavail.endDate | unavailTimeFilter 'true'}}</div>
-      		  <div class="type">{{unavail.availabilityType}}</div>
+            <div class="type">{{unavail.availabilityType}}
+              <div class="reason">{{unavail.reason}}</div>
+            </div>
       	  </div>
        </template>
       </div>
